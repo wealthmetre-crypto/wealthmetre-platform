@@ -1,0 +1,79 @@
+<?php
+require_once __DIR__ . '/config.php';
+$partner = requireAuth();
+$pid     = (int)$partner['id'];
+$body    = getBody();
+$act     = $_GET['action'] ?? ($body['action'] ?? '');
+
+if ($act === 'create') {
+    $db   = getDB();
+    $name = $body['customer_name'] ?? '';
+    $mob  = $body['customer_mobile'] ?? '';
+    $email= $body['customer_email'] ?? '';
+    $city = $body['city'] ?? '';
+    $occ  = $body['occupation'] ?? '';
+    $lt   = $body['loan_type'] ?? '';
+    $src  = $body['source'] ?? 'portal';
+    $pri  = $body['priority'] ?? 'medium';
+    $pt   = $body['property_title'] ?? '';
+    $pu   = $body['property_usage'] ?? '';
+    $pl   = $body['property_location'] ?? '';
+    $val  = (int)($body['valuation'] ?? 0);
+    $amt  = (int)($body['amount'] ?? 0);
+    $inc  = (int)($body['monthly_income'] ?? 0);
+    $emi  = (int)($body['existing_emi'] ?? 0);
+    $cib  = (int)($body['cibil'] ?? 0);
+    $it   = $body['income_type'] ?? '';
+    $rem  = $body['remarks'] ?? '';
+    $stmt = $db->prepare("INSERT INTO leads (partner_id,customer_name,mobile,customer_mobile,email,customer_email,city,occupation,loan_type,loan_amount,amount,income,monthly_income,existing_emi,cibil,income_type,property_type,property_title,property_usage,property_location,valuation,source,priority,notes,remarks,status,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'new',NOW())");
+    $stmt->bind_param('issssssssiiiiissssssis sss',
+        $pid,$name,$mob,$mob,$email,$email,$city,$occ,$lt,$amt,$amt,$inc,$inc,$emi,$cib,$it,$pt,$pt,$pu,$pl,$val,$src,$pri,$rem,$rem
+    );
+    $stmt->execute();
+    $lid = $db->insert_id;
+    jsonOk(['lead_id'=>$lid,'message'=>'Lead saved']);
+}
+
+if ($act === 'list') {
+    $db   = getDB();
+    $s    = $db->prepare("SELECT id AS lead_id,id,partner_id,customer_name,mobile AS customer_mobile,email AS customer_email,city,occupation,loan_type,loan_amount AS amount,income AS monthly_income,existing_emi,cibil,income_type,property_type AS property_title,property_usage,property_location,valuation,source,priority,notes AS remarks,status,next_action,next_action_date,created_at,updated_at FROM leads WHERE partner_id=? ORDER BY created_at DESC LIMIT 100");
+    $s->bind_param('i',$pid);
+    $s->execute();
+    $leads = $s->get_result()->fetch_all(MYSQLI_ASSOC);
+    jsonOk(['leads'=>$leads,'total'=>count($leads)]);
+}
+
+if ($act === 'get') {
+    $lid = (int)($_GET['lead_id'] ?? $body['lead_id'] ?? 0);
+    $db  = getDB();
+    $s   = $db->prepare("SELECT id AS lead_id,id,partner_id,customer_name,mobile AS customer_mobile,email AS customer_email,city,occupation,loan_type,loan_amount AS amount,income AS monthly_income,existing_emi,cibil,income_type,property_type AS property_title,property_usage,property_location,valuation,source,priority,notes AS remarks,status,next_action,next_action_date,created_at,updated_at FROM leads WHERE id=? AND partner_id=? LIMIT 1");
+    $s->bind_param('ii',$lid,$pid);
+    $s->execute();
+    $lead = $s->get_result()->fetch_assoc();
+    if (!$lead) jsonError('Lead not found',404);
+    jsonOk(['lead'=>$lead,'lender_results'=>[]]);
+}
+
+if ($act === 'update_status') {
+    $lid = (int)($body['lead_id'] ?? 0);
+    $st  = $body['status'] ?? '';
+    $db  = getDB();
+    $s   = $db->prepare("UPDATE leads SET status=?,updated_at=NOW() WHERE id=? AND partner_id=?");
+    $s->bind_param('sii',$st,$lid,$pid);
+    $s->execute();
+    jsonOk(['message'=>'Status updated']);
+}
+
+if ($act === 'update_next_action') {
+    $lid = (int)($body['lead_id'] ?? 0);
+    $na  = $body['next_action'] ?? '';
+    $nd  = $body['next_action_date'] ?? '';
+    $db  = getDB();
+    $s   = $db->prepare("UPDATE leads SET next_action=?,next_action_date=?,updated_at=NOW() WHERE id=? AND partner_id=?");
+    $s->bind_param('ssii',$na,$nd,$lid,$pid);
+    $s->execute();
+    jsonOk(['message'=>'Saved']);
+}
+
+if ($act === 'save_results') { jsonOk(); }
+jsonError('Invalid action');

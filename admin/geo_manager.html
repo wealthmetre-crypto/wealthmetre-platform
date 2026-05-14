@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Geo Manager — WealthMetre</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{--navy:#1e3a8a;--navy-lt:#eff4ff;--green:#16a34a;--green-lt:#f0fdf4;--amber:#f57c00;--amber-lt:#fff8ee;--red:#dc2626;--red-lt:#fef2f2;--muted:#6b7280;--border:#e5e7eb;--text:#111827;--bg:#f9fafb;--white:#ffffff;--radius:10px;--shadow:0 1px 4px rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px}
+.page{max-width:1100px;margin:0 auto;padding:24px}
+.page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.page-head h2{font-size:22px;font-weight:800;color:var(--navy)}
+.page-head p{font-size:13px;color:var(--muted);margin-top:2px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.stat-card .val{font-size:26px;font-weight:800;color:var(--navy)}
+.stat-card .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px}
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{padding:8px 18px;border-radius:6px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-weight:600;font-size:13px;color:var(--muted)}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{display:none}.panel.active{display:block}
+.search-bar{display:flex;gap:10px;margin-bottom:14px}
+.search-bar input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px}
+.btn{padding:8px 16px;border-radius:7px;border:none;cursor:pointer;font-weight:600;font-size:13px;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--navy);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-ghost{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid #fecaca}
+.district-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;box-shadow:var(--shadow)}
+.district-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;user-select:none}
+.district-header:hover{background:var(--navy-lt)}
+.district-header.open{background:var(--navy-lt);border-bottom:1px solid var(--border)}
+.district-name{font-weight:700;font-size:14px;color:var(--navy)}
+.district-km{font-size:12px;color:var(--muted);background:var(--bg);padding:2px 8px;border-radius:20px;border:1px solid var(--border)}
+.district-km.filled{background:var(--green-lt);color:var(--green);border-color:#bbf7d0}
+.district-meta{font-size:11px;color:var(--muted)}
+.tehsil-list{display:none;padding:8px 0}
+.tehsil-list.open{display:block}
+.tehsil-row{display:flex;align-items:center;justify-content:space-between;padding:7px 16px 7px 36px;border-bottom:1px solid #f3f4f6;gap:8px}
+.tehsil-row:hover{background:#fafafa}
+.tehsil-name{font-size:13px;flex:1}
+.km-badge{font-size:11px;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.km-badge.filled{background:var(--green-lt);color:var(--green)}
+.km-badge.empty{background:var(--amber-lt);color:var(--amber)}
+.km-input-wrap{display:flex;gap:6px;align-items:center}
+.km-input-wrap input{width:70px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;text-align:center}
+.unknown-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;box-shadow:var(--shadow)}
+.unknown-city{font-weight:700;font-size:14px}
+.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-red{background:var(--red-lt);color:var(--red)}
+.resolve-form{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.resolve-form select,.resolve-form input{padding:6px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px}
+.add-form{background:var(--white);border:1.5px dashed var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.add-form h4{font-size:13px;font-weight:700;margin-bottom:10px;color:var(--navy)}
+.add-form-grid{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.add-form-grid .field{display:flex;flex-direction:column;gap:4px}
+.add-form-grid .field label{font-size:11px;font-weight:700;color:var(--muted)}
+.add-form-grid .field input,.add-form-grid .field select{padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:13px;min-width:140px}
+.toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.toast-success{background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0}
+.toast-error{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.progress-bar{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden;margin-top:6px}
+.progress-bar-fill{height:100%;background:var(--green);border-radius:3px;transition:width .5s}
+.empty-state{text-align:center;padding:48px 24px;color:var(--muted)}
+.chevron{transition:transform .2s;color:var(--muted);font-size:12px}
+.chevron.open{transform:rotate(180deg)}
+</style>
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h2><i class="fa fa-map-location-dot" style="margin-right:8px"></i>Geo Distance Manager</h2>
+      <p>Manage Rajasthan city distances from Jaipur — used for lender geo-radius matching</p>
+    </div>
+    <button class="btn btn-primary" onclick="showAddForm()"><i class="fa fa-plus"></i> Add City</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="val" id="s-districts">—</div><div class="lbl">Districts</div></div>
+    <div class="stat-card"><div class="val" id="s-tehsils">—</div><div class="lbl">Total Tehsils</div></div>
+    <div class="stat-card">
+      <div class="val" id="s-filled">—</div><div class="lbl">Distances Filled</div>
+      <div class="progress-bar"><div class="progress-bar-fill" id="s-progress" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card"><div class="val" id="s-unfilled" style="color:var(--amber)">—</div><div class="lbl">Blank (fill as needed)</div></div>
+    <div class="stat-card"><div class="val" id="s-unknown" style="color:var(--red)">—</div><div class="lbl">Unknown Cities</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('districts',this)"><i class="fa fa-map"></i> Districts & Tehsils</button>
+    <button class="tab" onclick="switchTab('unknown',this)"><i class="fa fa-circle-question"></i> Unknown Cities Queue</button>
+  </div>
+  <div class="panel active" id="panel-districts">
+    <div class="add-form" id="addForm" style="display:none">
+      <h4><i class="fa fa-plus-circle"></i> Add New City / Tehsil</h4>
+      <div class="add-form-grid">
+        <div class="field"><label>District</label>
+          <select id="add-district" onchange="onDistrictChange()">
+            <option value="">Select district...</option><option value="__new__">+ New District</option>
+          </select>
+        </div>
+        <div class="field" id="new-district-wrap" style="display:none">
+          <label>New District Name</label><input type="text" id="add-new-district" placeholder="District name"/>
+        </div>
+        <div class="field"><label>Tehsil Name (optional)</label>
+          <input type="text" id="add-tehsil" placeholder="Leave blank for district HQ only"/>
+        </div>
+        <div class="field"><label>KM from Jaipur</label>
+          <input type="number" id="add-km" placeholder="e.g. 85" style="max-width:100px"/>
+        </div>
+        <div class="field" style="justify-content:flex-end;flex-direction:row;gap:6px">
+          <button class="btn btn-green" onclick="addCity()"><i class="fa fa-check"></i> Save</button>
+          <button class="btn btn-ghost" onclick="hideAddForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search district or tehsil..." oninput="filterDistricts()"/>
+      <button class="btn btn-ghost btn-sm" onclick="expandAll()"><i class="fa fa-chevron-down"></i> Expand All</button>
+      <button class="btn btn-ghost btn-sm" onclick="collapseAll()"><i class="fa fa-chevron-up"></i> Collapse</button>
+    </div>
+    <div id="districtList"></div>
+  </div>
+  <div class="panel" id="panel-unknown">
+    <div style="margin-bottom:14px;padding:12px 16px;background:var(--amber-lt);border:1px solid var(--amber);border-radius:8px;font-size:13px;color:var(--amber)">
+      <i class="fa fa-triangle-exclamation"></i> <strong>Cities typed by customers but not in distance table.</strong> Resolve to improve geo accuracy.
+    </div>
+    <div id="unknownList"></div>
+  </div>
+</div>
+<script>
+const API='/api/admin/geo_manager.php';
+const authToken=localStorage.getItem('wm_admin_token')||'';
+let allDistricts=[];
+
+async function apiFetch(action,body=null){
+  const opts={headers:{'Content-Type':'application/json','X-Auth-Token':authToken}};
+  if(body){opts.method='POST';opts.body=JSON.stringify({action,...body});}
+  else opts.method='GET';
+  const url=body?API:`${API}?action=${action}`;
+  const r=await fetch(url,opts);return r.json();
+}
+function toast(msg,type='success'){
+  const c=document.getElementById('toastContainer');const t=document.createElement('div');
+  t.className=`toast toast-${type}`;
+  t.innerHTML=`<i class="fa ${type==='success'?'fa-check-circle':'fa-circle-xmark'}"></i>${msg}`;
+  c.appendChild(t);setTimeout(()=>t.remove(),3000);
+}
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');document.getElementById('panel-'+name).classList.add('active');
+  if(name==='unknown')loadUnknown();
+}
+async function loadStats(){
+  const r=await apiFetch('stats');if(!r)return;
+  document.getElementById('s-districts').textContent=r.districts||0;
+  document.getElementById('s-tehsils').textContent=r.total_tehsils||0;
+  document.getElementById('s-filled').textContent=r.filled_tehsils||0;
+  document.getElementById('s-unfilled').textContent=r.unfilled||0;
+  document.getElementById('s-unknown').textContent=r.unknown_queue||0;
+  document.getElementById('s-progress').style.width=(r.fill_pct||0)+'%';
+}
+async function loadDistricts(){
+  const r=await apiFetch('list');if(!r?.districts)return;
+  allDistricts=r.districts;renderDistricts(allDistricts);
+  const sel=document.getElementById('add-district');
+  const opts=['<option value="">Select district...</option>','<option value="__new__">+ New District</option>'];
+  opts.push(...allDistricts.map(d=>`<option value="${d.district}">${d.district}</option>`));
+  sel.innerHTML=opts.join('');
+}
+function renderDistricts(districts){
+  const el=document.getElementById('districtList');
+  if(!districts.length){el.innerHTML='<div class="empty-state"><i class="fa fa-map"></i>No districts found</div>';return;}
+  el.innerHTML=districts.map(d=>{
+    const hq=d.hq;const km=hq?.km_from_jaipur;
+    const kmBadge=km!=null?`<span class="district-km filled">${km} km</span>`:`<span class="district-km">No KM</span>`;
+    const filled=d.tehsils.filter(t=>t.km_from_jaipur!=null).length;
+    return `<div class="district-card" data-district="${d.district.toLowerCase()}">
+      <div class="district-header" onclick="toggleDistrict(this)">
+        <div style="display:flex;align-items:center;gap:10px">
+          <i class="fa fa-chevron-down chevron"></i>
+          <div><div class="district-name">&#128205; ${d.district}</div>
+          <div class="district-meta">${d.tehsils.length} tehsils &middot; ${filled} filled</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${kmBadge}
+          ${hq?`<button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editKm(${hq.id},${km??''},this)"><i class="fa fa-pen"></i></button>`:''}
+        </div>
+      </div>
+      <div class="tehsil-list" data-district="${d.district}">
+        ${d.tehsils.map(t=>renderTehsil(t)).join('')}
+        <div style="padding:8px 16px 8px 36px">
+          <button class="btn btn-ghost btn-sm" onclick="quickAdd('${d.district}')"><i class="fa fa-plus"></i> Add Tehsil</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderTehsil(t){
+  const km=t.km_from_jaipur;
+  const badge=km!=null?`<span class="km-badge filled"><i class="fa fa-check" style="font-size:9px"></i> ${km} km</span>`:`<span class="km-badge empty">Not filled</span>`;
+  return `<div class="tehsil-row" id="tr-${t.id}">
+    <div class="tehsil-name">${t.tehsil}</div>
+    <span id="badge-${t.id}">${badge}</span>
+    <div id="kw-${t.id}" style="display:none;display:flex;gap:6px;align-items:center">
+      <input type="number" id="kv-${t.id}" value="${km??''}" placeholder="km" style="width:70px;padding:4px 8px;border:1.5px solid var(--border);border-radius:6px;font-size:12px;text-align:center"
+        onkeydown="if(event.key==='Enter')saveKm(${t.id})"/>
+      <button class="btn btn-green btn-sm" onclick="saveKm(${t.id})"><i class="fa fa-check"></i></button>
+      <button class="btn btn-ghost btn-sm" onclick="cancelKm(${t.id})"><i class="fa fa-xmark"></i></button>
+    </div>
+    <div style="display:flex;gap:4px">
+      <button class="btn btn-ghost btn-sm" onclick="showKm(${t.id})"><i class="fa fa-pen"></i></button>
+      <button class="btn btn-danger btn-sm" onclick="delTehsil(${t.id},'${t.tehsil}')"><i class="fa fa-trash"></i></button>
+    </div>
+  </div>`;
+}
+function showKm(id){
+  document.getElementById(`badge-${id}`).style.display='none';
+  const kw=document.getElementById(`kw-${id}`);kw.style.display='flex';
+  document.getElementById(`kv-${id}`).focus();
+}
+function cancelKm(id){
+  document.getElementById(`kw-${id}`).style.display='none';
+  document.getElementById(`badge-${id}`).style.display='';
+}
+async function saveKm(id){
+  const val=document.getElementById(`kv-${id}`).value;
+  const r=await apiFetch('update_km',{id,km:val});
+  if(r.message){toast(`Saved ${val} km`);loadDistricts();loadStats();}
+  else toast(r.error||'Failed','error');
+}
+function editKm(id,cur){
+  const km=prompt('Enter KM from Jaipur:',cur||'');
+  if(km===null)return;
+  apiFetch('update_km',{id,km}).then(r=>{
+    if(r.message){toast('Updated');loadDistricts();loadStats();}
+    else toast(r.error||'Failed','error');
+  });
+}
+async function delTehsil(id,name){
+  if(!confirm(`Delete "${name}"?`))return;
+  const r=await apiFetch('delete_city',{id});
+  if(r.message){toast(`Deleted ${name}`);loadDistricts();loadStats();}
+  else toast(r.error||'Failed','error');
+}
+function toggleDistrict(h){
+  const list=h.nextElementSibling;const c=h.querySelector('.chevron');
+  const open=list.classList.toggle('open');h.classList.toggle('open',open);c.classList.toggle('open',open);
+}
+function expandAll(){
+  document.querySelectorAll('.tehsil-list').forEach(l=>l.classList.add('open'));
+  document.querySelectorAll('.district-header').forEach(h=>h.classList.add('open'));
+  document.querySelectorAll('.chevron').forEach(c=>c.classList.add('open'));
+}
+function collapseAll(){
+  document.querySelectorAll('.tehsil-list').forEach(l=>l.classList.remove('open'));
+  document.querySelectorAll('.district-header,.chevron').forEach(e=>{e.classList.remove('open');});
+}
+function filterDistricts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  if(!q){renderDistricts(allDistricts);return;}
+  const f=allDistricts.filter(d=>d.district.toLowerCase().includes(q)||d.tehsils.some(t=>t.tehsil?.toLowerCase().includes(q)));
+  renderDistricts(f);if(q.length>=2)expandAll();
+}
+function showAddForm(){document.getElementById('addForm').style.display='block';}
+function hideAddForm(){document.getElementById('addForm').style.display='none';}
+function onDistrictChange(){
+  const v=document.getElementById('add-district').value;
+  document.getElementById('new-district-wrap').style.display=v==='__new__'?'block':'none';
+}
+function quickAdd(district){
+  showAddForm();document.getElementById('add-district').value=district;
+  document.getElementById('add-tehsil').focus();
+  document.getElementById('addForm').scrollIntoView({behavior:'smooth'});
+}
+async function addCity(){
+  let district=document.getElementById('add-district').value;
+  if(district==='__new__')district=document.getElementById('add-new-district').value.trim();
+  const tehsil=document.getElementById('add-tehsil').value.trim();
+  const km=document.getElementById('add-km').value;
+  if(!district){toast('Select or enter a district','error');return;}
+  const r=await apiFetch('add_city',{district,tehsil,km});
+  if(r.message){toast(r.message);document.getElementById('add-tehsil').value='';document.getElementById('add-km').value='';loadDistricts();loadStats();}
+  else toast(r.error||'Failed','error');
+}
+async function loadUnknown(){
+  const r=await apiFetch('unknown_list');const el=document.getElementById('unknownList');
+  if(!r?.unknown?.length){el.innerHTML='<div class="empty-state"><i class="fa fa-circle-check" style="color:var(--green)"></i>No unknown cities!</div>';return;}
+  const distOpts=(r.districts||[]).map(d=>`<option value="${d}">${d}</option>`).join('');
+  el.innerHTML=r.unknown.map(u=>`
+    <div class="unknown-card" id="unk-${u.id}">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="unknown-city">&#127759; ${u.city_name}</div>
+        <span class="badge badge-red">Seen ${u.seen_count}x</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">
+        ${u.detected_district?`Possibly: ${u.detected_district} &middot; `:''}Last seen: ${new Date(u.last_seen).toLocaleDateString('en-IN')}
+      </div>
+      <div class="resolve-form">
+        <select id="ud-${u.id}"><option value="">Select district</option>${distOpts}</select>
+        <input type="text" id="ut-${u.id}" placeholder="Tehsil name" value="${u.city_name}"/>
+        <input type="number" id="uk-${u.id}" placeholder="KM from Jaipur" style="width:140px"/>
+        <button class="btn btn-green btn-sm" onclick="resolveCity(${u.id},'${u.city_name}')"><i class="fa fa-check"></i> Resolve</button>
+        <button class="btn btn-ghost btn-sm" onclick="dismissCity(${u.id})"><i class="fa fa-xmark"></i> Dismiss</button>
+      </div>
+    </div>`).join('');
+}
+async function resolveCity(id,cityName){
+  const district=document.getElementById(`ud-${id}`).value;
+  const tehsil=document.getElementById(`ut-${id}`).value;
+  const km=document.getElementById(`uk-${id}`).value;
+  if(!district){toast('Select a district first','error');return;}
+  const r=await apiFetch('resolve_unknown',{unknown_id:id,district,tehsil,km,city_name:cityName});
+  if(r.message){toast(r.message);document.getElementById(`unk-${id}`)?.remove();loadStats();}
+  else toast(r.error||'Failed','error');
+}
+async function dismissCity(id){
+  const r=await apiFetch('dismiss_unknown',{id});
+  if(r.message){document.getElementById(`unk-${id}`)?.remove();toast('Dismissed');}
+}
+loadStats();loadDistricts();
+</script>
+</body>
+</html>

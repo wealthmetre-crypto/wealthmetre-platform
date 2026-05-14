@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WealthMetre — Command Center Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{
+  --navy:#1e3a8a;--navy-2:#1e4db7;--navy-dk:#0f2060;--navy-lt:#eff4ff;
+  --orange:#ff9800;--orange-dk:#f57c00;
+  --green:#16a34a;--red:#dc2626;--amber:#d97706;
+  --text:#1a1a2e;--text-soft:#4b5563;--muted:#6b7280;
+  --border:#e5e7eb;--bg:#f0f4ff;--card:#ffffff;
+  --shadow-lg:0 20px 60px rgba(30,58,138,.16);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#0a1a4e 0%,#1e3a8a 50%,#1e4db7 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-wrap{width:100%;max-width:420px}
+.login-card{background:#fff;border-radius:20px;padding:40px;box-shadow:var(--shadow-lg)}
+.login-brand{text-align:center;margin-bottom:32px}
+.login-brand img{height:48px;margin:0 auto 12px;display:block;object-fit:contain}
+.login-brand h1{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.login-brand p{font-size:13px;color:var(--muted)}
+.badge-cmd{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;padding:4px 12px;border-radius:50px;font-size:11px;font-weight:700;margin-bottom:12px;letter-spacing:.04em}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px}
+.input-wrap{position:relative}
+.input-wrap .icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.inp{width:100%;padding:11px 13px 11px 38px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;font-size:14px;color:var(--text);outline:none;transition:all .2s}
+.inp:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,.08)}
+.inp.error{border-color:var(--red)}
+.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:4px}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+.btn-login:hover{box-shadow:0 8px 24px rgba(30,58,138,.3);transform:translateY(-1px)}
+.btn-login:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.err-msg{display:none;background:#fef2f2;border:1px solid #fca5a5;color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;align-items:center;gap:8px}
+.err-msg.show{display:flex}
+.login-footer{text-align:center;margin-top:24px;font-size:12px;color:var(--muted)}
+.spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.bg-pattern{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.bg-pattern span{position:absolute;border-radius:50%;background:rgba(255,255,255,.03)}
+.bg-pattern span:nth-child(1){width:400px;height:400px;top:-100px;right:-100px}
+.bg-pattern span:nth-child(2){width:300px;height:300px;bottom:-80px;left:-80px}
+.bg-pattern span:nth-child(3){width:200px;height:200px;top:40%;left:10%}
+.login-wrap{position:relative;z-index:1}
+</style>
+</head>
+<body>
+<div class="bg-pattern"><span></span><span></span><span></span></div>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <img src="/images/logo.png" alt="WealthMetre"/>
+      <div class="badge-cmd"><i class="fas fa-shield-alt"></i> Command Center</div>
+      <h1>Owner Dashboard</h1>
+      <p>Sign in to access your command center</p>
+    </div>
+    <div class="err-msg" id="errMsg"><i class="fas fa-exclamation-circle"></i><span id="errText">Invalid credentials</span></div>
+    <div class="field">
+      <label>Email Address</label>
+      <div class="input-wrap">
+        <i class="fas fa-envelope icon"></i>
+        <input type="email" class="inp" id="email" placeholder="owner@wealthmetre.com" autocomplete="email"/>
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="input-wrap">
+        <i class="fas fa-lock icon"></i>
+        <input type="password" class="inp" id="password" placeholder="Enter your password" autocomplete="current-password"/>
+        <button class="toggle-pw" type="button" onclick="togglePw()" id="eyeBtn"><i class="fas fa-eye" id="eyeIcon"></i></button>
+      </div>
+    </div>
+    <button class="btn-login" id="loginBtn" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> Sign In to Command Center
+    </button>
+    <div class="login-footer">
+      WealthMetre © 2025 &nbsp;·&nbsp; All rights reserved<br/>
+      <span style="color:#ef4444;font-size:11px"><i class="fas fa-lock"></i> Restricted access — authorized personnel only</span>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('email').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('password').focus()});
+function togglePw(){
+  const inp=document.getElementById('password');
+  const icon=document.getElementById('eyeIcon');
+  if(inp.type==='password'){inp.type='text';icon.className='fas fa-eye-slash';}
+  else{inp.type='password';icon.className='fas fa-eye';}
+}
+async function doLogin(){
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  const btn=document.getElementById('loginBtn');
+  const err=document.getElementById('errMsg');
+  err.classList.remove('show');
+  if(!email||!password){showErr('Please enter email and password.');return;}
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner"></div> Signing in...';
+  try{
+    const res=await fetch('/api/admin/auth.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'login',email,password}),credentials:'include'});
+    const data=await res.json();
+    if(data.success){if(data.token)localStorage.setItem('wm_admin_token',data.token);window.location.href='/admin/owner_dashboard.html';}
+    else{showErr(data.message||'Invalid credentials. Please try again.');}
+  }catch(e){showErr('Connection error. Please try again.');}
+  btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-sign-in-alt"></i> Sign In to Command Center';
+}
+function showErr(msg){
+  document.getElementById('errText').textContent=msg;
+  document.getElementById('errMsg').classList.add('show');
+}
+</script>
+</body>
+</html>

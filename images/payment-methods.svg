@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="40" viewBox="0 0 300 40" fill="none">
+  <!-- Visa -->
+  <rect x="10" y="5" width="50" height="30" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <path d="M20,20 L25,12 L30,20 M35,12 L32,20 M40,12 L37,20 M27,16 L33,16" stroke="#1434CB" stroke-width="2" fill="none"/>
+  
+  <!-- Mastercard -->
+  <rect x="70" y="5" width="50" height="30" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <circle cx="85" cy="20" r="10" fill="#EB001B" opacity="0.8"/>
+  <circle cx="95" cy="20" r="10" fill="#F79E1B" opacity="0.8"/>
+  <circle cx="90" cy="20" r="5" fill="#FF5F00" opacity="0.8"/>
+  
+  <!-- Rupay -->
+  <rect x="130" y="5" width="50" height="30" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="140" y="12" width="30" height="5" rx="2" fill="#097A44"/>
+  <rect x="140" y="19" width="30" height="5" rx="2" fill="#F7B600"/>
+  <rect x="140" y="26" width="30" height="2" rx="1" fill="#000080"/>
+  
+  <!-- UPI -->
+  <rect x="190" y="5" width="50" height="30" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <path d="M200,12 L210,28 M220,12 L210,28 M230,12 L220,28" stroke="#097A44" stroke-width="2" fill="none"/>
+  
+  <!-- Net Banking -->
+  <rect x="250" y="5" width="40" height="30" rx="5" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="1"/>
+  <rect x="255" y="12" width="30" height="5" rx="2" fill="#1E3A8A"/>
+  <rect x="255" y="19" width="20" height="2" rx="1" fill="#1E3A8A"/>
+  <rect x="255" y="23" width="25" height="2" rx="1" fill="#1E3A8A"/>
+  <rect x="255" y="27" width="15" height="2" rx="1" fill="#1E3A8A"/>
+</svg>

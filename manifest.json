@@ -1,0 +1,26 @@
+{
+  "name": "WealthMetre Telecaller",
+  "short_name": "TC Portal",
+  "description": "WealthMetre Telecaller App — Leads, Calls, Follow-ups",
+  "start_url": "/telecaller.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f2060",
+  "theme_color": "#1e3a8a",
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "business"],
+  "lang": "hi-IN"
+}

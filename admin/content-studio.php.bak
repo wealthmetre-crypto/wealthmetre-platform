@@ -1,0 +1,1639 @@
+<?php
+/**
+ * WealthMetre — Content Studio
+ * File: public_html/admin/content-studio.php
+ */
+
+require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/social_config.php';
+
+$pdo = getDB();
+
+function e($v): string {
+    return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+}
+
+function shortText($v, int $limit = 180): string {
+    $v = trim((string)$v);
+    if ($v === '') return '—';
+    return mb_strlen($v) > $limit ? mb_substr($v, 0, $limit) . '...' : $v;
+}
+
+function badgeClass($status): string {
+    return match ($status) {
+        'approved' => 'badge green',
+        'published' => 'badge blue',
+        'rejected', 'failed' => 'badge red',
+        'needs_review' => 'badge orange',
+        default => 'badge gray',
+    };
+}
+
+function typeLabel($type): string {
+    return match ($type) {
+        'blog' => 'Blog',
+        'instagram' => 'Instagram',
+        'facebook' => 'Facebook',
+        'linkedin' => 'LinkedIn',
+        'gbp_post' => 'GBP',
+        'local_seo_page' => 'Local SEO',
+        default => ucfirst((string)$type),
+    };
+}
+
+function typeIcon($type): string {
+    return match ($type) {
+        'blog' => '📝',
+        'instagram' => '📸',
+        'facebook' => '📘',
+        'linkedin' => '💼',
+        'gbp_post' => '📍',
+        'local_seo_page' => '🌐',
+        default => '📄',
+    };
+}
+
+function pomelliBrief(array $row): string {
+    $type = typeLabel($row['content_type'] ?? '');
+    $topic = $row['topic'] ?: $row['title'];
+    $title = $row['title'] ?: $row['topic'];
+    $cta = $row['cta'] ?: 'Use Diva AI Loan Advisor on WealthMetre to compare suitable loan options.';
+    $content = $row['content_short'] ?: $row['meta_description'] ?: $row['content_long'];
+
+    return trim("Create a {$type} creative for WealthMetre.
+
+Brand:
+WealthMetre is an AI-powered loan advisory platform in Jaipur/Rajasthan.
+It helps users compare 140+ banks and NBFCs for Home Loan, LAP, Business Loan, Personal Loan and Working Capital.
+
+Topic:
+{$topic}
+
+Creative title/message:
+{$title}
+
+Main content angle:
+" . shortText($content, 650) . "
+
+CTA:
+{$cta}
+
+Visual direction:
+Clean, modern finance + property + AI advisory theme.
+Use blue, orange, white and dark navy style.
+Make it suitable for Indian borrowers, especially Jaipur/Rajasthan audience.
+
+Compliance:
+Do not promise guaranteed approval.
+Do not say lowest rate guaranteed.
+Do not show fake lender approval.
+Mention that eligibility depends on lender policy, CIBIL, income, property/legal/technical checks and documentation.
+
+Output needed:
+1. One strong creative headline
+2. One short subheading
+3. Suggested visual layout
+4. Caption idea
+5. Hashtag ideas");
+}
+
+
+function publishToFacebookPage(string $message): array {
+    $configPath = __DIR__ . '/../config/social_config.php';
+
+    if (!file_exists($configPath)) {
+        return ['ok' => false, 'error' => 'Facebook config file missing.'];
+    }
+
+    require_once $configPath;
+
+    if (!defined('FB_PAGE_ID') || !defined('FB_PAGE_ACCESS_TOKEN') || !defined('FB_GRAPH_VERSION')) {
+        return ['ok' => false, 'error' => 'Facebook config constants missing.'];
+    }
+
+    $message = trim($message);
+    if ($message === '') {
+        return ['ok' => false, 'error' => 'Facebook post message is empty.'];
+    }
+
+    $url = 'https://graph.facebook.com/' . FB_GRAPH_VERSION . '/' . FB_PAGE_ID . '/feed';
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query([
+            'message' => $message,
+            'access_token' => FB_PAGE_ACCESS_TOKEN
+        ]),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 30,
+    ]);
+
+    $response = curl_exec($ch);
+    $curlError = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($curlError) {
+        return ['ok' => false, 'error' => $curlError];
+    }
+
+    $data = json_decode($response, true);
+
+    if ($httpCode < 200 || $httpCode >= 300 || empty($data['id'])) {
+        return [
+            'ok' => false,
+            'error' => $data['error']['message'] ?? 'Facebook publish failed.',
+            'raw' => $data
+        ];
+    }
+
+    $postId = $data['id'];
+    $permalink = '';
+
+    $readUrl = 'https://graph.facebook.com/' . FB_GRAPH_VERSION . '/' . rawurlencode($postId)
+        . '?fields=id,permalink_url,is_published'
+        . '&access_token=' . rawurlencode(FB_PAGE_ACCESS_TOKEN);
+
+    $ch = curl_init($readUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 20,
+    ]);
+
+    $readResponse = curl_exec($ch);
+    $readHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($readHttpCode >= 200 && $readHttpCode < 300) {
+        $readData = json_decode($readResponse, true);
+        $permalink = $readData['permalink_url'] ?? '';
+    }
+
+    return [
+        'ok' => true,
+        'post_id' => $postId,
+        'permalink_url' => $permalink
+    ];
+}
+
+
+function publishToInstagram(string $caption, string $imageUrl = ''): array {
+    $configPath = __DIR__ . '/../config/social_config.php';
+
+    if (!file_exists($configPath)) {
+        return ['ok' => false, 'error' => 'Instagram config file missing.'];
+    }
+
+    require_once $configPath;
+
+    if (!defined('IG_USER_ID') || !defined('FB_PAGE_ACCESS_TOKEN') || !defined('FB_GRAPH_VERSION')) {
+        return ['ok' => false, 'error' => 'Instagram config constants missing.'];
+    }
+
+    $caption = trim($caption);
+    if ($caption === '') {
+        return ['ok' => false, 'error' => 'Instagram caption is empty.'];
+    }
+
+    $imageUrl = trim($imageUrl);
+    if ($imageUrl === '') {
+        return ['ok' => false, 'error' => 'No uploaded media found. Use Universal Media Upload or add creative_media_url.'];
+    }
+
+    if (!filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+        return ['ok' => false, 'error' => 'Invalid Instagram image URL.'];
+    }
+
+    $graphBase = 'https://graph.facebook.com/' . FB_GRAPH_VERSION;
+
+    // Step 1: Create Instagram media container
+    $createUrl = $graphBase . '/' . IG_USER_ID . '/media';
+
+    $ch = curl_init($createUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => http_build_query([
+            'image_url' => $imageUrl,
+            'caption' => $caption,
+            'access_token' => FB_PAGE_ACCESS_TOKEN
+        ]),
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => 45,
+    ]);
+
+    $createResponse = curl_exec($ch);
+    $createError = curl_error($ch);
+    $createHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($createError) {
+        return ['ok' => false, 'error' => $createError];
+    }
+
+    $createData = json_decode($createResponse, true);
+
+    if ($createHttpCode < 200 || $createHttpCode >= 300 || empty($createData['id'])) {
+        return [
+            'ok' => false,
+            'error' => $createData['error']['message'] ?? 'Instagram media container creation failed.',
+            'raw' => $createData
+        ];
+    }
+
+    $creationId = $createData['id'];
+
+    // Step 2: Poll media container until FINISHED
+    $lastStatus = '';
+    $lastPollRaw = null;
+
+    for ($i = 1; $i <= 12; $i++) {
+        $statusUrl = $graphBase . '/' . rawurlencode($creationId)
+            . '?fields=id,status_code,status'
+            . '&access_token=' . rawurlencode(FB_PAGE_ACCESS_TOKEN);
+
+        $ch = curl_init($statusUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 20,
+        ]);
+
+        $statusResponse = curl_exec($ch);
+        $statusHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $statusData = json_decode((string)$statusResponse, true);
+        $lastPollRaw = $statusData;
+
+        if ($statusHttpCode >= 200 && $statusHttpCode < 300) {
+            $lastStatus = (string)($statusData['status_code'] ?? $statusData['status'] ?? '');
+
+            if (strtoupper($lastStatus) === 'FINISHED') {
+                break;
+            }
+
+            if (in_array(strtoupper($lastStatus), ['ERROR', 'EXPIRED'], true)) {
+                return [
+                    'ok' => false,
+                    'error' => 'Instagram media container failed with status: ' . $lastStatus,
+                    'creation_id' => $creationId,
+                    'raw' => $statusData
+                ];
+            }
+        }
+
+        sleep(3);
+    }
+
+    // Step 3: Publish Instagram media container with retries
+    $publishUrl = $graphBase . '/' . IG_USER_ID . '/media_publish';
+    $publishData = null;
+    $lastPublishError = '';
+
+    for ($i = 1; $i <= 10; $i++) {
+        $ch = curl_init($publishUrl);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => http_build_query([
+                'creation_id' => $creationId,
+                'access_token' => FB_PAGE_ACCESS_TOKEN
+            ]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 45,
+        ]);
+
+        $publishResponse = curl_exec($ch);
+        $publishError = curl_error($ch);
+        $publishHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($publishError) {
+            $lastPublishError = $publishError;
+            sleep(3);
+            continue;
+        }
+
+        $publishData = json_decode((string)$publishResponse, true);
+
+        if ($publishHttpCode >= 200 && $publishHttpCode < 300 && !empty($publishData['id'])) {
+            $mediaId = $publishData['id'];
+
+            // Step 4: Fetch permalink
+            $permalink = '';
+            $readUrl = $graphBase . '/' . rawurlencode($mediaId)
+                . '?fields=id,permalink'
+                . '&access_token=' . rawurlencode(FB_PAGE_ACCESS_TOKEN);
+
+            $ch = curl_init($readUrl);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_TIMEOUT => 20,
+            ]);
+
+            $readResponse = curl_exec($ch);
+            $readHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($readHttpCode >= 200 && $readHttpCode < 300) {
+                $readData = json_decode((string)$readResponse, true);
+                $permalink = $readData['permalink'] ?? '';
+            }
+
+            return [
+                'ok' => true,
+                'creation_id' => $creationId,
+                'media_id' => $mediaId,
+                'permalink_url' => $permalink,
+                'image_url' => $imageUrl
+            ];
+        }
+
+        $lastPublishError = $publishData['error']['message'] ?? 'Instagram publish failed.';
+
+        // Meta often returns "Media ID is not available" while container is still processing.
+        if (
+            stripos($lastPublishError, 'media id is not available') !== false ||
+            stripos($lastPublishError, 'not ready') !== false ||
+            stripos($lastPublishError, 'temporarily') !== false
+        ) {
+            sleep(4);
+            continue;
+        }
+
+        // For other real errors, fail fast.
+        return [
+            'ok' => false,
+            'error' => $lastPublishError,
+            'creation_id' => $creationId,
+            'last_status' => $lastStatus,
+            'raw' => $publishData
+        ];
+    }
+
+    return [
+        'ok' => false,
+        'error' => $lastPublishError ?: 'Instagram publish failed after retries.',
+        'creation_id' => $creationId,
+        'last_status' => $lastStatus,
+        'last_poll_raw' => $lastPollRaw,
+        'raw' => $publishData
+    ];
+}
+
+
+/* WM_MANUAL_SOCIAL_MEDIA_FIX */
+if (!function_exists('wm_cs_abs_url')) {
+    function wm_cs_abs_url($url) {
+        $url = trim((string)$url);
+        if ($url === '') return '';
+        if (stripos($url, 'https://') === 0) return $url;
+        if (strpos($url, '/') === 0) return 'https://wealthmetre.com' . $url;
+        return $url;
+    }
+}
+
+if (!function_exists('wm_cs_media_url')) {
+    function wm_cs_media_url(array $row): string {
+        $media = trim((string)($row['creative_media_url'] ?? ''));
+        if ($media === '') $media = trim((string)($row['creative_image_url'] ?? ''));
+        return wm_cs_abs_url($media);
+    }
+}
+
+if (!function_exists('wm_cs_is_video_url')) {
+    function wm_cs_is_video_url(string $url): bool {
+        return (bool)preg_match('/\.(mp4|mov|webm|m4v)(\?.*)?$/i', $url);
+    }
+}
+
+if (!function_exists('wm_cs_graph_post')) {
+    function wm_cs_graph_post(string $url, array $params): array {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $params,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 60,
+        ]);
+
+        $raw = curl_exec($ch);
+        $err = curl_error($ch);
+        $http = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $json = json_decode((string)$raw, true);
+        if (!is_array($json)) $json = [];
+
+        if ($raw === false || $http >= 400) {
+            return [
+                'ok' => false,
+                'http_code' => $http,
+                'error' => $json['error']['message'] ?? $err ?: $raw ?: 'Graph API failed',
+                'raw' => $raw
+            ];
+        }
+
+        return ['ok' => true, 'http_code' => $http, 'json' => $json, 'raw' => $raw];
+    }
+}
+
+$allowedTypes = ['all','blog','instagram','facebook','linkedin','gbp_post','local_seo_page'];
+$allowedStatuses = ['all','draft','needs_review','approved','published','rejected','failed'];
+
+$type = $_GET['type'] ?? 'all';
+$status = $_GET['status'] ?? 'all';
+$q = trim($_GET['q'] ?? '');
+$viewId = (int)($_GET['view'] ?? ($_GET['id'] ?? 0));
+
+if (!in_array($type, $allowedTypes, true)) $type = 'all';
+if (!in_array($status, $allowedStatuses, true)) $status = 'all';
+
+$message = '';
+$error = '';
+
+try {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $id = (int)($_POST['id'] ?? 0);
+        $action = $_POST['action'] ?? '';
+
+        if ($id <= 0) throw new Exception('Invalid content ID.');
+
+        if ($action === 'approve') {
+            $stmt = $pdo->prepare("UPDATE content_queue SET status='approved', approved_by = 1, approved_at = NOW(), updated_at=NOW() WHERE id=? LIMIT 1");
+            $stmt->execute([$id]);
+            $message = "Content #{$id} approved.";
+        } elseif ($action === 'reject') {
+            $stmt = $pdo->prepare("UPDATE content_queue SET status='rejected', updated_at=NOW() WHERE id=? LIMIT 1");
+            $stmt->execute([$id]);
+            $message = "Content #{$id} rejected.";
+        } elseif ($action === 'review') {
+            $stmt = $pdo->prepare("UPDATE content_queue SET status='needs_review', updated_at=NOW() WHERE id=? LIMIT 1");
+            $stmt->execute([$id]);
+            $message = "Content #{$id} moved to review.";
+        } elseif ($action === 'publish_facebook') {
+            $stmt = $pdo->prepare("SELECT * FROM content_queue WHERE id=? LIMIT 1");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                throw new Exception('Content not found.');
+            }
+
+            if (($row['content_type'] ?? '') !== 'facebook') {
+                throw new Exception('Manual Facebook publish is allowed only for facebook rows.');
+            }
+
+            if (($row['status'] ?? '') === 'published' || ($row['facebook_publish_status'] ?? '') === 'published' || !empty($row['facebook_post_id'])) {
+                throw new Exception('This Facebook row is already published. Duplicate publish blocked.');
+            }
+            // WM_EMPTY_CAPTION_GUARD_FB
+            $wmRealCaption = trim((string)($row['content_long'] ?? '') ?: (string)($row['content_short'] ?? '') ?: (string)($row['meta_description'] ?? ''));
+            if ($wmRealCaption === '') {
+                throw new Exception('This post has no caption. Add content_short before publishing to Facebook.');
+            }
+
+            $caption = trim($row['content_long'] ?: $row['content_short'] ?: $row['meta_description'] ?: $row['title'] ?: $row['topic']);
+            $hashtags = trim((string)($row['hashtags'] ?? ''));
+
+            if ($hashtags !== '' && strpos($caption, $hashtags) === false) {
+                $caption .= "\n\n" . $hashtags;
+            }
+
+            $mediaUrl = wm_cs_media_url($row);
+
+            if ($mediaUrl === '') {
+                throw new Exception('No uploaded media found. Use Universal Media Upload or add creative_media_url.');
+            }
+
+            if (stripos($mediaUrl, 'https://') !== 0) {
+                throw new Exception('Media URL must start with https://');
+            }
+
+            if (wm_cs_is_video_url($mediaUrl) || strtolower((string)($row['creative_media_type'] ?? '')) === 'video') {
+                $upd = $pdo->prepare("
+                    UPDATE content_queue
+                    SET facebook_publish_status='needs_video_support',
+                        facebook_publish_error='Video publishing support pending.',
+                        updated_at=NOW()
+                    WHERE id=? LIMIT 1
+                ");
+                $upd->execute([$id]);
+
+                throw new Exception('Video support pending. Facebook video publishing is not enabled yet.');
+            }
+
+            if (!defined('FB_GRAPH_VERSION') || !defined('FB_PAGE_ID') || !defined('FB_PAGE_ACCESS_TOKEN')) {
+                throw new Exception('Facebook config missing.');
+            }
+
+            $fbPhotoUrl = 'https://graph.facebook.com/' . FB_GRAPH_VERSION . '/' . FB_PAGE_ID . '/photos';
+
+            $fb = wm_cs_graph_post($fbPhotoUrl, [
+                'url' => $mediaUrl,
+                'caption' => $caption,
+                'published' => 'true',
+                'access_token' => FB_PAGE_ACCESS_TOKEN
+            ]);
+
+            if (!($fb['ok'] ?? false)) {
+                $err = $fb['error'] ?? 'Facebook photo publish failed.';
+
+                $upd = $pdo->prepare("
+                    UPDATE content_queue
+                    SET facebook_publish_status='failed',
+                        facebook_publish_error=?,
+                        updated_at=NOW()
+                    WHERE id=? LIMIT 1
+                ");
+                $upd->execute([$err, $id]);
+
+                throw new Exception($err);
+            }
+
+            $postId = $fb['json']['post_id'] ?? $fb['json']['id'] ?? '';
+            if ($postId === '') {
+                throw new Exception('Facebook photo published but post_id missing.');
+            }
+
+            $publishedUrl = 'https://www.facebook.com/' . $postId;
+
+            $upd = $pdo->prepare("
+                UPDATE content_queue
+                SET status='published',
+                    published_url=?,
+                    published_at=NOW(),
+                    facebook_post_id=?,
+                    facebook_published_at=NOW(),
+                    facebook_publish_status='published',
+                    facebook_publish_error=NULL,
+                    updated_at=NOW()
+                WHERE id=? LIMIT 1
+            ");
+            $upd->execute([$publishedUrl, $postId, $id]);
+
+            $message = "Content #{$id} published to Facebook with image. Post ID: {$postId}";
+
+        } elseif ($action === 'publish_instagram') {
+            $stmt = $pdo->prepare("SELECT * FROM content_queue WHERE id=? LIMIT 1");
+            $stmt->execute([$id]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$row) {
+                throw new Exception('Content not found.');
+            }
+
+            if (($row['content_type'] ?? '') !== 'instagram') {
+                throw new Exception('Manual Instagram publish is allowed only for instagram rows.');
+            }
+
+            if (($row['status'] ?? '') === 'published' || ($row['instagram_publish_status'] ?? '') === 'published' || !empty($row['instagram_media_id'])) {
+                throw new Exception('This Instagram row is already published. Duplicate publish blocked.');
+            }
+            // WM_EMPTY_CAPTION_GUARD_IG
+            $wmRealCaption = trim((string)($row['content_long'] ?? '') ?: (string)($row['content_short'] ?? '') ?: (string)($row['meta_description'] ?? ''));
+            if ($wmRealCaption === '') {
+                throw new Exception('This post has no caption. Add content_short before publishing to Instagram.');
+            }
+
+            $caption = trim($row['content_long'] ?: $row['content_short'] ?: $row['meta_description'] ?: $row['title'] ?: $row['topic']);
+            $hashtags = trim((string)($row['hashtags'] ?? ''));
+
+            if ($hashtags !== '' && strpos($caption, $hashtags) === false) {
+                $caption .= "\n\n" . $hashtags;
+            }
+
+            $imageUrl = wm_cs_media_url($row);
+
+            if ($imageUrl === '') {
+                throw new Exception('No uploaded media found. Use Universal Media Upload or add creative_media_url.');
+            }
+
+            if (stripos($imageUrl, 'https://') !== 0) {
+                throw new Exception('Media URL must start with https://');
+            }
+
+            if (wm_cs_is_video_url($imageUrl) || strtolower((string)($row['creative_media_type'] ?? '')) === 'video') {
+                $upd = $pdo->prepare("
+                    UPDATE content_queue
+                    SET instagram_publish_status='needs_video_support',
+                        instagram_publish_error='Video publishing support pending.',
+                        updated_at=NOW()
+                    WHERE id=? LIMIT 1
+                ");
+                $upd->execute([$id]);
+
+                throw new Exception('Video support pending. Instagram video publishing is not enabled yet.');
+            }
+
+            $ig = publishToInstagram($caption, $imageUrl);
+
+            if (!($ig['ok'] ?? false)) {
+                $err = $ig['error'] ?? 'Instagram publish failed.';
+
+                $upd = $pdo->prepare("
+                    UPDATE content_queue
+                    SET instagram_publish_status='failed',
+                        instagram_publish_error=?,
+                        updated_at=NOW()
+                    WHERE id=? LIMIT 1
+                ");
+                $upd->execute([$err, $id]);
+
+                throw new Exception($err);
+            }
+
+            $mediaId = $ig['media_id'] ?? '';
+            $permalink = $ig['permalink_url'] ?? '';
+            $usedImageUrl = $ig['image_url'] ?? $imageUrl;
+
+            $upd = $pdo->prepare("
+                UPDATE content_queue
+                SET status='published',
+                    published_url = COALESCE(NULLIF(published_url, ''), NULLIF(?, '')),
+                    published_at=COALESCE(published_at, NOW()),
+                    instagram_media_id=?,
+                    instagram_image_url=?,
+                    instagram_published_at=NOW(),
+                    instagram_publish_status='published',
+                    instagram_publish_error=NULL,
+                    updated_at=NOW()
+                WHERE id=? LIMIT 1
+            ");
+            $upd->execute([$permalink, $mediaId, $usedImageUrl, $id]);
+
+            $message = "Content #{$id} published to Instagram with uploaded image. Media ID: {$mediaId}";
+
+        } elseif ($action === 'published') {
+            $publishedUrl = trim($_POST['published_url'] ?? '');
+
+            if ($publishedUrl !== '' && !filter_var($publishedUrl, FILTER_VALIDATE_URL)) {
+                throw new Exception('Invalid published URL. Please enter a valid URL starting with https://');
+            }
+
+            $stmt = $pdo->prepare("
+                UPDATE content_queue
+                SET status='published',
+                    published_url = NULLIF(?, ''),
+                    published_at=NOW(),
+                    updated_at=NOW()
+                WHERE id=? LIMIT 1
+            ");
+            $stmt->execute([$publishedUrl, $id]);
+            $message = "Content #{$id} marked as published.";
+        } else {
+            throw new Exception('Invalid action.');
+        }
+    }
+} catch (Throwable $ex) {
+    $error = $ex->getMessage();
+}
+
+$where = [];
+$params = [];
+
+if ($type !== 'all') {
+    $where[] = 'content_type = ?';
+    $params[] = $type;
+}
+if ($status !== 'all') {
+    $where[] = 'status = ?';
+    $params[] = $status;
+} else {
+    $where[] = "status != 'rejected'";
+}
+if ($q !== '') {
+    $where[] = '(topic LIKE ? OR title LIKE ? OR slug LIKE ? OR target_keyword LIKE ? OR city LIKE ? OR loan_product LIKE ?)';
+    for ($i=0; $i<6; $i++) $params[] = "%{$q}%";
+}
+
+$whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+$rows = [];
+$selected = null;
+$stats = [
+    'total' => 0,
+    'blog' => 0,
+    'instagram' => 0,
+    'facebook' => 0,
+    'linkedin' => 0,
+    'gbp_post' => 0,
+    'needs_review' => 0,
+    'approved' => 0,
+    'published' => 0,
+];
+
+try {
+    $stmt = $pdo->prepare("
+        SELECT id, content_type, topic, target_keyword, city, loan_product, title, meta_title,
+               meta_description, slug, content_short, cta, status, created_at, updated_at, published_at,
+               creative_image_url, creative_media_url, published_url, facebook_post_id,
+               facebook_publish_status, instagram_publish_status
+          FROM content_queue
+        $whereSql
+        ORDER BY
+          CASE status
+            WHEN 'needs_review' THEN 1
+            WHEN 'approved'     THEN 2
+            WHEN 'draft'        THEN 3
+            WHEN 'failed'       THEN 4
+            WHEN 'published'    THEN 5
+            ELSE 6
+          END ASC,
+          created_at DESC, id DESC
+        LIMIT 150
+    ");
+    $stmt->execute($params);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $typeStats = $pdo->query("SELECT content_type, COUNT(*) total FROM content_queue GROUP BY content_type")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($typeStats as $r) {
+        $stats['total'] += (int)$r['total'];
+        if (isset($stats[$r['content_type']])) $stats[$r['content_type']] = (int)$r['total'];
+    }
+
+    $statusStats = $pdo->query("SELECT status, COUNT(*) total FROM content_queue GROUP BY status")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($statusStats as $r) {
+        if (isset($stats[$r['status']])) $stats[$r['status']] = (int)$r['total'];
+    }
+
+    if ($viewId > 0) {
+        $detail = $pdo->prepare("SELECT * FROM content_queue WHERE id=? LIMIT 1");
+        $detail->execute([$viewId]);
+        $selected = $detail->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+} catch (Throwable $ex) {
+    $error = $ex->getMessage();
+}
+
+$baseUrl = '/admin/content-studio.php?type=' . urlencode($type) . '&status=' . urlencode($status) . '&q=' . urlencode($q);
+
+/* WM_CONTENT_STUDIO_UI_HELPERS */
+if (!function_exists('wm_media_url')) {
+  function wm_media_url($r) {
+    return trim((string)($r['creative_media_url'] ?? $r['creative_image_url'] ?? ''));
+  }
+}
+if (!function_exists('wm_is_video_media')) {
+  function wm_is_video_media($url) {
+    return (bool)preg_match('/\.(mp4|mov|webm|m4v)(\?.*)?$/i', (string)$url);
+  }
+}
+if (!function_exists('wm_is_image_media')) {
+  function wm_is_image_media($url) {
+    return (bool)preg_match('/\.(png|jpe?g|webp|gif)(\?.*)?$/i', (string)$url);
+  }
+}
+if (!function_exists('wm_view_post_url')) {
+  function wm_view_post_url($r) {
+    $published = trim((string)($r['published_url'] ?? ''));
+    if ($published !== '') return $published;
+
+    $fbid = trim((string)($r['facebook_post_id'] ?? ''));
+    if ($fbid !== '') return 'https://www.facebook.com/' . $fbid;
+
+    return '';
+  }
+}
+if (!function_exists('wm_badge_class')) {
+  function wm_badge_class($status) {
+    $status = strtolower(trim((string)$status));
+
+    if ($status === 'published') return 'wm-badge wm-badge-green';
+    if ($status === 'approved') return 'wm-badge wm-badge-blue';
+    if ($status === 'needs_review') return 'wm-badge wm-badge-orange';
+    if ($status === 'rejected' || $status === 'failed') return 'wm-badge wm-badge-red';
+    if ($status === 'not_published') return 'wm-badge wm-badge-muted';
+
+    return 'wm-badge wm-badge-muted';
+  }
+}
+if (!function_exists('wm_render_social_badges')) {
+  function wm_render_social_badges($r) {
+    $out = [];
+
+    $status = (string)($r['status'] ?? '');
+    if ($status !== '') {
+      $out[] = '<span class="' . e(wm_badge_class($status)) . '">' . e($status) . '</span>';
+    }
+
+    $media = wm_media_url($r);
+    if ($media !== '') {
+      if (wm_is_video_media($media)) {
+        $out[] = '<span class="wm-badge wm-badge-purple">video support pending</span>';
+      } elseif (wm_is_image_media($media)) {
+        $out[] = '<span class="wm-badge wm-badge-teal">image attached</span>';
+      } else {
+        $out[] = '<span class="wm-badge wm-badge-muted">media attached</span>';
+      }
+    }
+
+    $fb = (string)($r['facebook_publish_status'] ?? '');
+    if ($fb !== '') {
+      $out[] = '<span class="' . e(wm_badge_class($fb)) . '">facebook ' . e($fb) . '</span>';
+    }
+
+    $ig = (string)($r['instagram_publish_status'] ?? '');
+    if ($ig !== '') {
+      $out[] = '<span class="' . e(wm_badge_class($ig)) . '">instagram ' . e($ig) . '</span>';
+    }
+
+    return implode(' ', $out);
+  }
+}
+
+?>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Content Studio | WealthMetre</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#f6f8fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e5e7eb;
+  --blue:#2563eb;--orange:#f97316;--green:#16a34a;--red:#dc2626;--navy:#07111f;
+  --shadow:0 10px 24px rgba(15,23,42,.07);--r:16px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{padding:18px}
+.top{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.top h1{font-size:21px;margin:0}.top p{font-size:12px;color:var(--muted);margin:3px 0 0}
+.stats{display:grid;grid-template-columns:repeat(8,minmax(100px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:13px;box-shadow:var(--shadow)}
+.stat small{display:block;color:var(--muted);font-size:11px;font-weight:800}.stat b{font-size:22px;display:block;margin-top:4px}
+.toolbar{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow);margin-bottom:14px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+select,input{border:1px solid var(--line);border-radius:11px;background:#fff;padding:10px;min-height:40px}
+input{flex:1;min-width:240px}
+.btn,button{border:0;border-radius:11px;padding:10px 12px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-flex;gap:6px;align-items:center}
+.primary{background:var(--blue);color:white}.muted{background:#e5e7eb;color:#111827}.greenbtn{background:var(--green);color:#fff}.redbtn{background:var(--red);color:#fff}.orangebtn{background:var(--orange);color:#fff}
+.grid{display:grid;grid-template-columns:430px 1fr;gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.card-head{padding:13px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+.card-head h2{font-size:15px;margin:0}
+.list{max-height:620px;overflow:auto}
+.item{display:block;color:inherit;text-decoration:none;border-bottom:1px solid var(--line);padding:14px;background:#fff}
+.item:hover{background:#f8fafc}.item.active{background:#eff6ff;border-left:4px solid var(--blue)}
+.item h3{font-size:14px;line-height:1.35;margin:0 0 8px}
+.meta{font-size:12px;color:var(--muted);line-height:1.5}
+.badge{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.gray{background:#f1f5f9;color:#334155}.orange{background:#fff7ed;color:#c2410c}.green{background:#ecfdf5;color:#15803d}.blue{background:#eff6ff;color:#1d4ed8}.red{background:#fef2f2;color:#b91c1c}
+.detail{padding:17px}.detail h2{font-size:23px;margin:0 0 6px;line-height:1.25}
+.actions{display:flex;gap:8px;flex-wrap:wrap;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:12px;margin:14px 0}
+.box{border:1px solid var(--line);border-radius:14px;padding:13px;background:#fff;margin:12px 0}
+.box h3{margin:0 0 8px;font-size:14px}
+.content{white-space:pre-wrap;line-height:1.65;font-size:14px}
+.slug{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0;overflow:auto}
+.alert{padding:11px 13px;border-radius:13px;margin-bottom:12px;font-weight:800}.ok{background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+textarea{width:100%;min-height:180px;border:1px solid var(--line);border-radius:12px;padding:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* WM_CONTENT_STUDIO_SCOPED_UI */
+.wm-qrow{display:flex;gap:12px;align-items:flex-start}
+.wm-qthumb{width:82px;height:82px;flex:0 0 82px;border-radius:14px;overflow:hidden;background:#f8fafc;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.wm-qthumb img,.wm-qthumb video{width:100%;height:100%;object-fit:cover;display:block}
+.wm-qthumb-empty{font-size:24px;color:#94a3b8}
+.wm-qbody{min-width:0;flex:1}
+.wm-qbody h3{margin-top:0}
+.wm-badges{display:flex;flex-wrap:wrap;gap:6px;margin:7px 0}
+.wm-badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;font-size:10.5px;line-height:1.2;font-weight:900;border:1px solid transparent;text-transform:lowercase;letter-spacing:.01em;white-space:nowrap}
+.wm-badge-green{background:#ecfdf5;color:#047857;border-color:#a7f3d0}
+.wm-badge-blue{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+.wm-badge-red{background:#fef2f2;color:#b91c1c;border-color:#fecaca}
+.wm-badge-orange{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+.wm-badge-purple{background:#faf5ff;color:#7e22ce;border-color:#e9d5ff}
+.wm-badge-teal{background:#f0fdfa;color:#0f766e;border-color:#99f6e4}
+.wm-badge-muted{background:#f8fafc;color:#64748b;border-color:#e2e8f0}
+.wm-row-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.wm-mini-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:10px;border:1px solid #dbe3ef;background:#fff;color:#0f172a;font-size:12px;font-weight:800;text-decoration:none}
+.wm-mini-btn:hover{background:#f8fafc}
+.wm-preview-media{width:100%;max-height:380px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#f8fafc;margin:14px 0}
+.wm-preview-media img,.wm-preview-media video{width:100%;max-height:380px;object-fit:contain;display:block}
+.wm-video-note{padding:10px 12px;border-radius:12px;background:#faf5ff;color:#7e22ce;border:1px solid #e9d5ff;font-size:13px;font-weight:800;margin:10px 0}
+.wm-selected-badges{margin-top:10px}
+
+</style>
+<script>
+function copyText(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.select();
+  document.execCommand('copy');
+  alert('Copied');
+}
+
+async function generateSocialPack(blogId){
+  if (!blogId) {
+    alert('Blog ID missing.');
+    return;
+  }
+
+  const ok = confirm('Generate social pack for this blog?');
+  if (!ok) return;
+
+  try {
+    const res = await fetch('/api/social/generate_social_pack.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ id: blogId, blog_id: blogId })
+    });
+
+    let data = {};
+    try { data = await res.json(); } catch(e) {}
+
+    if (!res.ok) {
+      alert('Social pack generation failed. HTTP ' + res.status);
+      return;
+    }
+
+    alert('Social pack generation started successfully.');
+    setTimeout(() => window.location.reload(), 1500);
+  } catch (err) {
+    alert('Social pack generation error: ' + err.message);
+  }
+}
+
+</script>
+  <!-- disabled broken polish css -->
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1>Content Studio</h1>
+      <p>Blogs, social posts, GBP updates, approval queue and Pomelli creative briefs.</p>
+    </div>
+    <a class="btn muted" href="/admin/owner_dashboard.html" target="_top">← Back to Command Center</a>
+  </div>
+
+  <?php if ($message): ?><div class="alert ok"><?= e($message) ?></div><?php endif; ?>
+  <?php if ($error): ?><div class="alert err"><?= e($error) ?></div><?php endif; ?>
+
+  <div class="stats">
+    <div class="stat"><small>Total</small><b><?= (int)$stats['total'] ?></b></div>
+    <div class="stat"><small>Blogs</small><b><?= (int)$stats['blog'] ?></b></div>
+    <div class="stat"><small>Instagram</small><b><?= (int)$stats['instagram'] ?></b></div>
+    <div class="stat"><small>Facebook</small><b><?= (int)$stats['facebook'] ?></b></div>
+    <div class="stat"><small>LinkedIn</small><b><?= (int)$stats['linkedin'] ?></b></div>
+    <div class="stat"><small>GBP</small><b><?= (int)$stats['gbp_post'] ?></b></div>
+    <div class="stat"><small>Review</small><b><?= (int)$stats['needs_review'] ?></b></div>
+    <div class="stat"><small>Approved</small><b><?= (int)$stats['approved'] ?></b></div>
+  </div>
+
+  <div class="toolbar">
+    <form class="filters" method="get">
+      <select name="type">
+        <?php foreach ($allowedTypes as $t): ?>
+          <option value="<?= e($t) ?>" <?= $type===$t?'selected':'' ?>><?= e($t==='all'?'All Types':typeLabel($t)) ?></option>
+        <?php endforeach; ?>
+      </select>
+      <select name="status">
+        <?php foreach ($allowedStatuses as $s): ?>
+          <option value="<?= e($s) ?>" <?= $status===$s?'selected':'' ?>><?= e($s==='all'?'All Status':ucwords(str_replace('_',' ',$s))) ?></option>
+        <?php endforeach; ?>
+      </select>
+      <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search title, topic, slug, keyword, city...">
+      <button class="primary" type="submit">Search</button>
+      <a class="btn muted" href="/admin/content-studio.php">Reset</a>
+    </form>
+  </div>
+
+  <main class="grid">
+    <section class="card">
+      <div class="card-head">
+        <h2>Preview & Actions</h2>
+        <?php if ($selected): ?><span class="<?= e(badgeClass($selected['status'])) ?>"><?= e($selected['status']) ?></span><?php endif; ?>
+      </div>
+
+      <?php if (!$selected): ?>
+        <div style="padding:28px;text-align:center;color:var(--muted)">Select content from queue.</div>
+      <?php else: ?>
+                  <?php
+            $mainContent = $selected['content_long'] ?: $selected['content_short'] ?: $selected['meta_description'];
+            $brief = pomelliBrief($selected);
+            $wmSelectedMediaUrl = wm_media_url($selected);
+            $wmSelectedViewUrl = wm_view_post_url($selected);
+            $wmSelectedIsVideo = wm_is_video_media($wmSelectedMediaUrl);
+            $wmSelectedIsImage = wm_is_image_media($wmSelectedMediaUrl);
+          ?>
+        <div class="detail">
+          <h2><?= e(typeIcon($selected['content_type']) . ' ' . ($selected['title'] ?: $selected['topic'])) ?></h2>
+          <div class="meta">
+              ID #<?= (int)$selected['id'] ?> · <?= e(typeLabel($selected['content_type'])) ?> · <?= e($selected['city'] ?: '—') ?> · <?= e($selected['loan_product'] ?: '—') ?>
+            </div>
+
+            <div class="wm-badges wm-selected-badges">
+              <?= wm_render_social_badges($selected) ?>
+            </div>
+
+            <?php if ($wmSelectedMediaUrl): ?>
+              <div class="wm-preview-media">
+                <?php if ($wmSelectedIsImage): ?>
+                  <img src="<?= e($wmSelectedMediaUrl) ?>" alt="Selected media preview">
+                <?php elseif ($wmSelectedIsVideo): ?>
+                  <video src="<?= e($wmSelectedMediaUrl) ?>" controls preload="metadata"></video>
+                <?php endif; ?>
+              </div>
+
+              <div class="wm-row-actions">
+                <a class="wm-mini-btn" href="<?= e($wmSelectedMediaUrl) ?>" target="_blank" rel="noopener">Open Media</a>
+                <?php if ($wmSelectedViewUrl): ?>
+                  <a class="wm-mini-btn" href="<?= e($wmSelectedViewUrl) ?>" target="_blank" rel="noopener">View Post</a>
+                <?php endif; ?>
+              </div>
+
+              <?php if ($wmSelectedIsVideo): ?>
+                <div class="wm-video-note">Video support pending — this media is saved, but video publishing is intentionally disabled for now.</div>
+              <?php endif; ?>
+            <?php endif; ?>
+
+          <?php if ($selected['slug']): ?>
+            <div class="slug"><?= $selected['content_type']==='blog' ? '/blog/' . e($selected['slug']) . '.html' : e($selected['slug']) ?></div>
+          <?php endif; ?>
+
+          <!-- WM_ATTACH_FINAL_CREATIVE_TO_EXISTING_ROW -->
+          <?php
+            $wmPrompt = trim((string)($selected['image_prompt'] ?? ''));
+            $wmCaption = trim((string)($selected['content_short'] ?: $selected['meta_description'] ?: $selected['content_long'] ?: ''));
+          ?>
+
+          <section class="card" style="margin:16px 0;padding:16px;border:1px solid #e5e7eb;border-radius:16px;background:#fff;">
+            <h3 style="margin:0 0 8px;font-size:18px;">Final Creative</h3>
+            <p style="margin:0 0 12px;color:#64748b;font-size:13px;">
+              Use the image prompt in Canva/Pomelli, then upload the final creative here. This image/video will attach to this same post. Title/caption will not be replaced.
+            </p>
+
+            <?php if ($wmPrompt !== ''): ?>
+              <div style="margin:12px 0;">
+                <label style="font-weight:800;display:block;margin-bottom:6px;">Image Prompt for Canva / Pomelli</label>
+                <textarea id="wmImagePromptBox" readonly style="width:100%;min-height:110px;border:1px solid #e5e7eb;border-radius:12px;padding:10px;"><?= e($wmPrompt) ?></textarea>
+                <button type="button" class="muted" style="margin-top:8px;" onclick="navigator.clipboard.writeText(document.getElementById('wmImagePromptBox').value);this.textContent='Copied';setTimeout(()=>this.textContent='Copy Image Prompt',1200);">Copy Image Prompt</button>
+              </div>
+            <?php else: ?>
+              <div style="margin:12px 0;padding:10px;border-radius:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;">
+                No image prompt found for this row. Once n8n starts inserting image_prompt, it will appear here.
+              </div>
+            <?php endif; ?>
+
+            <?php if ($wmCaption !== ''): ?>
+              <div style="margin:12px 0;">
+                <label style="font-weight:800;display:block;margin-bottom:6px;">Post Caption Preview</label>
+                <div style="white-space:pre-wrap;border:1px solid #e5e7eb;border-radius:12px;padding:10px;background:#f8fafc;color:#334155;max-height:180px;overflow:auto;"><?= e($wmCaption) ?></div>
+              </div>
+            <?php endif; ?>
+
+            <?php if (!empty($wmSelectedMediaUrl)): ?>
+              <div style="margin:12px 0;">
+                <label style="font-weight:800;display:block;margin-bottom:6px;">Current Uploaded Creative</label>
+                <?php if (preg_match('/\.(mp4|mov|webm)(\?|$)/i', $wmSelectedMediaUrl)): ?>
+                  <video src="<?= e($wmSelectedMediaUrl) ?>" controls style="max-width:260px;width:100%;border-radius:14px;border:1px solid #e5e7eb;"></video>
+                <?php else: ?>
+                  <img src="<?= e($wmSelectedMediaUrl) ?>" alt="Uploaded creative" style="max-width:260px;width:100%;border-radius:14px;border:1px solid #e5e7eb;">
+                <?php endif; ?>
+                <div style="margin-top:6px;"><a href="<?= e($wmSelectedMediaUrl) ?>" target="_blank" rel="noopener">Open Media</a></div>
+              </div>
+            <?php endif; ?>
+
+            <form id="attachFinalCreativeForm" method="post" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <input type="hidden" name="existing_queue_id" value="<?= (int)$selected['id'] ?>">
+              <input type="file" name="media" accept="image/*,video/mp4,video/quicktime,video/webm" required>
+              <button type="submit" class="primary">Upload Final Creative for This Post</button>
+              <span id="attachFinalCreativeStatus" style="color:#64748b;font-size:13px;"></span>
+            </form>
+          </section>
+
+          <script>
+          (function(){
+            const form = document.getElementById('attachFinalCreativeForm');
+            const status = document.getElementById('attachFinalCreativeStatus');
+            if (!form || !status) return;
+
+            form.addEventListener('submit', async function(e){
+              e.preventDefault();
+              status.textContent = 'Uploading...';
+
+              try {
+                const fd = new FormData(form);
+                const res = await fetch('/api/social/universal_media_upload.php', {
+                  method: 'POST',
+                  body: fd,
+                  credentials: 'same-origin'
+                });
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok || !data.ok) {
+                  throw new Error(data.error || 'Upload failed');
+                }
+
+                status.textContent = 'Creative attached. Reloading...';
+                setTimeout(() => window.location.reload(), 700);
+              } catch (err) {
+                status.textContent = err.message || 'Upload failed';
+              }
+            });
+          })();
+          </script>
+
+          <div class="actions">
+            <?php
+              /* WM_HIDE_PUBLISHED_ACTION_BUTTONS */
+              $selectedType = (string)($selected['content_type'] ?? '');
+              $selectedStatus = (string)($selected['status'] ?? '');
+              $isSocialPost = in_array($selectedType, ['instagram','facebook','linkedin','gbp_post'], true);
+
+              $alreadyPublished =
+                  $selectedStatus === 'published'
+                  || (($selected['facebook_publish_status'] ?? '') === 'published')
+                  || (($selected['instagram_publish_status'] ?? '') === 'published')
+                  || !empty($selected['facebook_post_id'])
+                  || !empty($selected['instagram_media_id']);
+
+              $canPublishFacebook =
+                  !$alreadyPublished
+                  && !$wmSelectedIsVideo
+                  && $selectedType === 'facebook'
+                  && (($selected['facebook_publish_status'] ?? '') !== 'published')
+                  && empty($selected['facebook_post_id']);
+
+              $canPublishInstagram =
+                  !$alreadyPublished
+                  && !$wmSelectedIsVideo
+                  && $selectedType === 'instagram'
+                  && (($selected['instagram_publish_status'] ?? '') !== 'published')
+                  && empty($selected['instagram_media_id']);
+            ?>
+
+            <?php if (!$alreadyPublished): ?>
+              <form method="post"><input type="hidden" name="id" value="<?= (int)$selected['id'] ?>"><input type="hidden" name="action" value="approve"><button class="greenbtn">Approve</button></form>
+              <form method="post"><input type="hidden" name="id" value="<?= (int)$selected['id'] ?>"><input type="hidden" name="action" value="reject"><button class="redbtn">Reject</button></form>
+              <form method="post"><input type="hidden" name="id" value="<?= (int)$selected['id'] ?>"><input type="hidden" name="action" value="review"><button class="muted">Move to Review</button></form>
+
+              <form method="post" style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input type="hidden" name="id" value="<?= (int)$selected['id'] ?>">
+                <input type="hidden" name="action" value="published">
+                <?php if ($isSocialPost): ?>
+                  <input
+                    type="url"
+                    name="published_url"
+                    placeholder="Published URL optional"
+                    value="<?= e($selected['published_url'] ?? '') ?>"
+                    style="min-width:240px;padding:10px 12px;border:1px solid #d5dce8;border-radius:11px"
+                  >
+                <?php endif; ?>
+                <button class="primary">Mark Published</button>
+              </form>
+            <?php else: ?>
+              <span class="badge green">Already Published</span>
+              <?php if (!empty($selected['published_url'])): ?>
+                <a class="primary" href="<?= e($selected['published_url']) ?>" target="_blank" rel="noopener">View Published Post</a>
+              <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if ($canPublishFacebook): ?>
+              <form method="post" style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap" onsubmit="return confirm('Publish this Facebook row now?');">
+                <input type="hidden" name="id" value="<?= (int)$selected['id'] ?>">
+                <input type="hidden" name="action" value="publish_facebook">
+                <button class="primary" style="background:#1877f2">Publish to Facebook</button>
+              </form>
+            <?php endif; ?>
+
+            <?php if ($canPublishInstagram): ?>
+              <form method="post" style="display:inline-flex;gap:8px;align-items:center;flex-wrap:wrap" onsubmit="return confirm('Publish this Instagram row now?');">
+                <input type="hidden" name="id" value="<?= (int)$selected['id'] ?>">
+                <input type="hidden" name="action" value="publish_instagram">
+                <button class="primary" style="background:#c13584">Publish to Instagram</button>
+              </form>
+            <?php endif; ?>
+
+              <?php if (($selected['content_type'] ?? '') === 'blog'): ?>
+                <button type="button" class="primary" onclick="generateSocialPack(<?= (int)$selected['id'] ?>)">Generate Social Pack</button>
+              <?php endif; ?>
+          </div>
+
+          <?php if (($selected['status'] ?? '') === 'published'): ?>
+            <div class="box" style="border-left:4px solid #16a34a">
+              <h3>Publishing Status</h3>
+              <p><b>Status:</b> Published</p>
+              <?php if (!empty($selected['published_at'])): ?>
+                <p><b>Published At:</b> <?= e($selected['published_at']) ?></p>
+              <?php endif; ?>
+              <?php if (!empty($selected['published_url'])): ?>
+                <p><b>Published URL:</b> <a href="<?= e($selected['published_url']) ?>" target="_blank" rel="noopener">Open published post</a></p>
+              <?php endif; ?>
+            </div>
+            <?php endif; ?>
+
+            <div class="box">
+            <h3>Meta / Caption Summary</h3>
+            <div class="content"><?= e($selected['meta_description'] ?: $selected['content_short'] ?: '—') ?></div>
+          </div>
+
+          <div class="box">
+            <h3>Copy-ready Content</h3>
+            <textarea id="copyContent" readonly><?= e($mainContent ?: '') ?></textarea>
+            <div style="margin-top:8px"><button class="orangebtn" onclick="copyText('copyContent')">
+                  <?= in_array(($selected['content_type'] ?? ''), ['instagram','facebook','linkedin','gbp_post'], true) ? 'Copy Post' : 'Copy Content' ?>
+                </button></div>
+          </div>
+
+          <div class="box">
+            <h3>Pomelli Creative Brief</h3>
+            <textarea id="pomelliBrief" readonly><?= e($brief) ?></textarea>
+            <div style="margin-top:8px"><button class="orangebtn" onclick="copyText('pomelliBrief')">Copy Pomelli Brief</button></div>
+          </div>
+
+          <div class="box">
+            <h3>Full Preview</h3>
+            <div class="content"><?= e($mainContent ?: 'No content available.') ?></div>
+          </div>
+        </div>
+      <?php endif; ?>
+    </section>
+
+    <section class="card" style="grid-row: span 2; overflow-y: auto; max-height: calc(100vh - 160px); position: sticky; top: 14px;">
+      <div class="card-head" style="position:sticky;top:0;background:#fff;z-index:2;">
+        <h2>Queue</h2>
+        <span class="badge gray"><?= count($rows) ?> shown</span>
+      </div>
+      <div style="padding:8px 12px;border-bottom:1px solid var(--line);background:#fff;display:flex;gap:6px;flex-wrap:wrap;">
+        <button id="wmQf-all"       onclick="wmQFilter('all')"       style="padding:4px 12px;border-radius:20px;border:1px solid #2563eb;background:#2563eb;color:#fff;font-size:11px;font-weight:600;cursor:pointer;">All</button>
+        <button id="wmQf-today"     onclick="wmQFilter('today')"     style="padding:4px 12px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:11px;font-weight:600;cursor:pointer;">📅 Today</button>
+        <button id="wmQf-yesterday" onclick="wmQFilter('yesterday')" style="padding:4px 12px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:11px;font-weight:600;cursor:pointer;">📅 Yesterday</button>
+        <button id="wmQf-earlier"   onclick="wmQFilter('earlier')"   style="padding:4px 12px;border-radius:20px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:11px;font-weight:600;cursor:pointer;">📅 Earlier</button>
+      </div>
+      <div class="list">
+        <?php if (!$rows): ?>
+          <div style="padding:28px;text-align:center;color:var(--muted)">No content found.</div>
+        <?php else: ?>
+        <?php
+          $wmToday     = date('Y-m-d');
+          $wmYesterday = date('Y-m-d', strtotime('-1 day'));
+          $wmGroups    = ['today' => [], 'yesterday' => [], 'earlier' => []];
+          foreach ($rows as $wmR) {
+              $wmDate = substr((string)($wmR['created_at'] ?? ''), 0, 10);
+              if ($wmDate === $wmToday)         $wmGroups['today'][]     = $wmR;
+              elseif ($wmDate === $wmYesterday) $wmGroups['yesterday'][] = $wmR;
+              else                              $wmGroups['earlier'][]   = $wmR;
+          }
+          $wmDateLabels = [
+              'today'     => '📅 Today — '     . date('d M Y'),
+              'yesterday' => '📅 Yesterday — ' . date('d M Y', strtotime('-1 day')),
+              'earlier'   => '📅 Earlier',
+          ];
+          $wmPs = function($type) {
+              return match($type) {
+                  'instagram' => ['color'=>'#833AB4','bg'=>'#fce4ec','icon'=>'📸','label'=>'Instagram'],
+                  'facebook'  => ['color'=>'#1877F2','bg'=>'#e3f2fd','icon'=>'📘','label'=>'Facebook'],
+                  'linkedin'  => ['color'=>'#0A66C2','bg'=>'#e8eaf6','icon'=>'💼','label'=>'LinkedIn'],
+                  'gbp_post'  => ['color'=>'#34A853','bg'=>'#e8f5e9','icon'=>'📍','label'=>'GBP'],
+                  'blog'      => ['color'=>'#6B7280','bg'=>'#f3f4f6','icon'=>'📝','label'=>'Blog'],
+                  default     => ['color'=>'#6B7280','bg'=>'#f3f4f6','icon'=>'📄','label'=>ucfirst((string)$type)],
+              };
+          };
+        ?>
+        <?php foreach (['today','yesterday','earlier'] as $wmPeriod): ?>
+          <?php if (empty($wmGroups[$wmPeriod])) continue; ?>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);padding:7px 14px;background:#f8fafc;border-top:1px solid var(--line);border-bottom:1px solid var(--line);text-transform:uppercase;letter-spacing:.6px;position:sticky;top:44px;z-index:1;">
+            <?= $wmDateLabels[$wmPeriod] ?>
+          </div>
+          <?php
+            $wmTG = [];
+            foreach ($wmGroups[$wmPeriod] as $wmR) {
+                $wmKey = trim((string)($wmR['topic'] ?: $wmR['title'] ?: 'Untitled'));
+                $wmTG[$wmKey][] = $wmR;
+            }
+          ?>
+          <?php foreach ($wmTG as $wmTopic => $wmTRows): ?>
+            <div style="margin:8px 10px;border:0.5px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+              <div style="padding:6px 12px;background:#f8fafc;font-size:11px;font-weight:600;color:#374151;border-bottom:0.5px solid #e5e7eb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                📝 <?= e(mb_substr($wmTopic,0,55)) ?><?= mb_strlen($wmTopic)>55?'…':'' ?>
+              </div>
+              <?php foreach ($wmTRows as $wmR): ?>
+                <?php
+                  $link   = $baseUrl . '&view=' . (int)$wmR['id'];
+                  $active = $selected && (int)$selected['id'] === (int)$wmR['id'];
+                  $wmMUrl = wm_media_url($wmR);
+                  $wmVUrl = wm_view_post_url($wmR);
+                  $wmP    = $wmPs($wmR['content_type']);
+                  $wmCap  = trim((string)($wmR['content_short'] ?? ''));
+                  $wmBg   = $active ? '#eff6ff' : '#fff';
+                ?>
+                <a href="<?= e($link) ?>"
+                   style="display:block;text-decoration:none;border-left:3px solid <?= $wmP['color'] ?>;border-bottom:0.5px solid #e5e7eb;background:<?= $wmBg ?>;">
+                  <div style="display:flex;gap:10px;align-items:flex-start;padding:9px 12px;">
+                    <div style="width:34px;height:34px;border-radius:8px;background:<?= $wmP['bg'] ?>;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;"><?= $wmP['icon'] ?></div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;gap:5px;margin-bottom:3px;flex-wrap:wrap;align-items:center;">
+                        <span style="background:<?= $wmP['bg'] ?>;color:<?= $wmP['color'] ?>;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;"><?= $wmP['label'] ?></span>
+                        <span class="<?= badgeClass($wmR['status']) ?>" style="font-size:9px;"><?= e($wmR['status']) ?></span>
+                      </div>
+                      <?php if ($wmCap === ''): ?>
+                        <p style="font-size:11px;color:#c0392b;margin:2px 0 3px;">⚠ No caption</p>
+                      <?php else: ?>
+                        <p style="font-size:11px;color:#555;margin:2px 0 3px;line-height:1.4;"><?= e(mb_substr($wmCap,0,80)) ?><?= mb_strlen($wmCap)>80?'…':'' ?></p>
+                      <?php endif; ?>
+                      <?php if ($wmVUrl): ?>
+                        <span class="wm-mini-btn" onclick="event.preventDefault();window.open('<?= e($wmVUrl) ?>','_blank');" style="margin-top:2px;font-size:10px;">View Post ↗</span>
+                      <?php endif; ?>
+                    </div>
+                  </div>
+                </a>
+              <?php endforeach; ?>
+            </div>
+          <?php endforeach; ?>
+          </div>
+        <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </section>
+
+
+<!-- Universal Media Upload Panel - Added safely, old generator remains untouched -->
+<section class="card" id="universalMediaUploadPanel" style="margin:18px 0;padding:18px;border:1px solid #e5e7eb;border-radius:16px;background:#fff;">
+  <h2 style="margin:0 0 8px;font-size:20px;">Universal Media Upload</h2>
+  <p style="margin:0 0 14px;color:#6b7280;">
+    Upload one image/video, add caption, then create separate Facebook/Instagram posts in review queue.
+  </p>
+
+  <form id="universalMediaUploadForm" method="post" enctype="multipart/form-data">
+    <div style="display:grid;grid-template-columns:1fr;gap:12px;max-width:900px;">
+      <div>
+        <label style="font-weight:600;display:block;margin-bottom:6px;">Upload Image / Video</label>
+        <input type="file" name="media" id="universalMediaInput" accept="image/*,video/mp4,video/quicktime,video/webm" required
+               style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:10px;background:#f9fafb;">
+      </div>
+
+      <div id="universalMediaPreviewWrap" style="display:none;padding:10px;border:1px dashed #cbd5e1;border-radius:12px;background:#f8fafc;">
+        <div style="font-weight:600;margin-bottom:8px;">Preview</div>
+        <div id="universalMediaPreview"></div>
+      </div>
+
+      <div>
+        <label style="font-weight:600;display:block;margin-bottom:6px;">Caption / Meta Text</label>
+        <textarea name="caption" id="universalCaption" rows="5" placeholder="Write caption/meta text here..."
+                  style="width:100%;padding:12px;border:1px solid #d1d5db;border-radius:10px;"></textarea>
+      </div>
+
+      <div>
+        <label style="font-weight:600;display:block;margin-bottom:8px;">Select Platforms</label>
+
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:18px;">
+          <input type="checkbox" name="platforms[]" value="facebook" checked>
+          Facebook
+        </label>
+
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:18px;">
+          <input type="checkbox" name="platforms[]" value="instagram" checked>
+          Instagram
+        </label>
+
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:18px;color:#9ca3af;">
+          <input type="checkbox" disabled>
+          LinkedIn later
+        </label>
+
+        <label style="display:inline-flex;align-items:center;gap:8px;margin-right:18px;color:#9ca3af;">
+          <input type="checkbox" disabled>
+          YouTube later
+        </label>
+
+        <label style="display:inline-flex;align-items:center;gap:8px;color:#9ca3af;">
+          <input type="checkbox" disabled>
+          WhatsApp later
+        </label>
+      </div>
+
+      <div>
+        <button type="submit" id="universalCreateBtn"
+                style="padding:11px 16px;border:0;border-radius:10px;background:#2563eb;color:white;font-weight:700;cursor:pointer;">
+          Create Platform Posts
+        </button>
+        <span id="universalUploadStatus" style="margin-left:10px;color:#6b7280;"></span>
+      </div>
+    </div>
+  </form>
+</section>
+
+<script>
+(function(){
+  const form = document.getElementById('universalMediaUploadForm');
+  const input = document.getElementById('universalMediaInput');
+  const previewWrap = document.getElementById('universalMediaPreviewWrap');
+  const preview = document.getElementById('universalMediaPreview');
+  const status = document.getElementById('universalUploadStatus');
+  const btn = document.getElementById('universalCreateBtn');
+
+  if (!form || !input) return;
+
+  input.addEventListener('change', function(){
+    preview.innerHTML = '';
+    const file = input.files && input.files[0] ? input.files[0] : null;
+    if (!file) {
+      previewWrap.style.display = 'none';
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    previewWrap.style.display = 'block';
+
+    if (file.type.startsWith('image/')) {
+      const img = document.createElement('img');
+      img.src = url;
+      img.style.maxWidth = '320px';
+      img.style.width = '100%';
+      img.style.borderRadius = '12px';
+      img.style.display = 'block';
+      preview.appendChild(img);
+    } else if (file.type.startsWith('video/')) {
+      const video = document.createElement('video');
+      video.src = url;
+      video.controls = true;
+      video.style.maxWidth = '420px';
+      video.style.width = '100%';
+      video.style.borderRadius = '12px';
+      video.style.display = 'block';
+      preview.appendChild(video);
+      const note = document.createElement('div');
+      note.style.marginTop = '8px';
+      note.style.color = '#92400e';
+      note.textContent = 'Video upload will create review rows. Publishing support can be added later.';
+      preview.appendChild(note);
+    } else {
+      preview.textContent = file.name;
+    }
+  });
+
+  form.addEventListener('submit', async function(e){
+    e.preventDefault();
+
+    status.textContent = 'Uploading...';
+    btn.disabled = true;
+    btn.style.opacity = '0.65';
+
+    try {
+      const file = input.files && input.files[0] ? input.files[0] : null;
+      if (!file) {
+        throw new Error('Media file required');
+      }
+
+      const fd = new FormData(form);
+      fd.set('media', file, file.name);
+
+      const res = await fetch('/api/social/universal_media_upload.php', {
+        method: 'POST',
+        body: fd
+      });
+      const data = await res.json();
+
+      if (!data.ok) {
+        throw new Error(data.error || 'Upload failed');
+      }
+
+      const made = (data.created || []).map(x => x.platform + ' #' + x.id).join(', ');
+      status.style.color = '#047857';
+      status.textContent = 'Created review posts: ' + made + '. Reloading...';
+
+      setTimeout(() => window.location.reload(), 1200);
+    } catch (err) {
+      status.style.color = '#b91c1c';
+      status.textContent = err.message || 'Upload failed';
+    } finally {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    }
+  });
+})();
+</script>
+
+
+  </main>
+<script>
+function wmQFilter(period) {
+  // Update button styles
+  ['all','today','yesterday','earlier'].forEach(function(p) {
+    var btn = document.getElementById('wmQf-' + p);
+    if (p === period) {
+      btn.style.background = '#2563eb';
+      btn.style.color = '#fff';
+      btn.style.borderColor = '#2563eb';
+    } else {
+      btn.style.background = '#fff';
+      btn.style.color = '#374151';
+      btn.style.borderColor = '#d1d5db';
+    }
+  });
+  // Show/hide period divs
+  document.querySelectorAll('[data-wm-period]').forEach(function(div) {
+    if (period === 'all' || div.getAttribute('data-wm-period') === period) {
+      div.style.display = '';
+    } else {
+      div.style.display = 'none';
+    }
+  });
+}
+</script>
+</div>
+
+<script>
+(function(){
+  function getContentId(){
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id') || params.get('content_id') || params.get('edit') || '';
+  }
+
+  const contentId = getContentId();
+  if (!contentId) return;
+
+  if (document.getElementById('wmCreativeImageUrlBox')) return;
+
+  const box = document.createElement('section');
+  box.id = 'wmCreativeImageUrlBox';
+  box.className = 'card';
+  box.style.marginBottom = '16px';
+  box.innerHTML = `
+    <h3 style="margin-top:0">Instagram Creative Image</h3>
+    <div style="font-size:13px;color:#667085;margin-bottom:10px">
+      Paste public HTTPS image URL for this post. Instagram will use this instead of fallback logo.
+    </div>
+    <input
+      type="url"
+      id="wmCreativeImageUrlInput"
+      placeholder="https://wealthmetre.com/images/your-creative.png"
+      style="width:100%;padding:11px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:14px;margin-bottom:10px"
+    />
+    <button
+      type="button"
+      id="wmSaveCreativeImageUrlBtn"
+      style="padding:10px 14px;border:0;border-radius:10px;background:#0b5fff;color:white;font-weight:700;cursor:pointer"
+    >
+      Save Creative URL
+    </button>
+    <span id="wmCreativeImageUrlMsg" style="margin-left:10px;font-size:13px"></span>
+  `;
+
+  const target =
+    document.querySelector('main') ||
+    document.querySelector('.main') ||
+    document.querySelector('.content') ||
+    document.querySelector('.container') ||
+    document.body;
+
+  target.insertBefore(box, target.firstChild);
+
+  const input = document.getElementById('wmCreativeImageUrlInput');
+  const btn = document.getElementById('wmSaveCreativeImageUrlBtn');
+  const msg = document.getElementById('wmCreativeImageUrlMsg');
+
+  fetch('/api/social/creative_image_url.php?id=' + encodeURIComponent(contentId))
+    .then(r => r.json())
+    .then(j => {
+      if (j.ok && j.creative_image_url) input.value = j.creative_image_url;
+    })
+    .catch(() => {});
+
+  btn.addEventListener('click', function(){
+    const url = input.value.trim();
+
+    if (url && !url.startsWith('https://')) {
+      msg.style.color = '#b42318';
+      msg.textContent = 'URL must start with https://';
+      return;
+    }
+
+    btn.disabled = true;
+    msg.style.color = '#667085';
+    msg.textContent = 'Saving...';
+
+    const fd = new FormData();
+    fd.append('id', contentId);
+    fd.append('creative_image_url', url);
+
+    fetch('/api/social/creative_image_url.php', {
+      method: 'POST',
+      body: fd
+    })
+    .then(r => r.json())
+    .then(j => {
+      if (j.ok) {
+        msg.style.color = '#027a48';
+        msg.textContent = 'Saved';
+      } else {
+        msg.style.color = '#b42318';
+        msg.textContent = j.error || 'Save failed';
+      }
+    })
+    .catch(() => {
+      msg.style.color = '#b42318';
+      msg.textContent = 'Save failed';
+    })
+    .finally(() => {
+      btn.disabled = false;
+    });
+  });
+})();
+</script>
+
+  <!-- disabled broken polish js -->
+</body>
+</html>

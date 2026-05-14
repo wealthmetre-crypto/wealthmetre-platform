@@ -1,0 +1,1004 @@
+{
+  "lenders": [
+    {
+      "id": "bank-name",
+      "displayName": "Bank Name",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "aadhar-housing-finance-limited",
+      "displayName": "Aadhar Housing Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "aavas-financiers-limited",
+      "displayName": "Aavas Financiers Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "aditya-birla-finance-limited",
+      "displayName": "Aditya Birla Finance Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "aditya-birla-housing-finance-limited",
+      "displayName": "Aditya Birla Housing Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "agrim-housing-finance-pvt-ltd",
+      "displayName": "Agrim Housing Finance Pvt Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "anand-rathi-global-finance-limited",
+      "displayName": "Anand Rathi Global Finance Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "arka-fincap-ltd",
+      "displayName": "Arka Fincap Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "art-housing-finance-i-ltd",
+      "displayName": "Art Housing Finance (I) Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "ashv-finance-ltd",
+      "displayName": "Ashv Finance Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "au-small-finance-bank-limited",
+      "displayName": "AU Small Finance Bank Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "avanse-financial-services-ltd",
+      "displayName": "Avanse Financial Services Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "axis-bank",
+      "displayName": "Axis Bank",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "axis-finance-limited",
+      "displayName": "Axis Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "bajaj-finance-ltd",
+      "displayName": "Bajaj Finance Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "bajaj-housing-finance-ltd",
+      "displayName": "Bajaj Housing Finance Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "bandhan-bank-limited",
+      "displayName": "Bandhan Bank Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "bank-of-baroda",
+      "displayName": "Bank of Baroda",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "bhanix-finance-and-investment-limited-cashe",
+      "displayName": "Bhanix Finance and Investment Limited (Cashe)",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "bank-of-india",
+      "displayName": "Bank of India",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "bluebear-technologies-private-ltd-propelld",
+      "displayName": "Bluebear technologies Private Ltd (Propelld)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "capital-india-home-loans-limited",
+      "displayName": "Capital India Home Loans Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "capri-global-capital-limited-and-capri-global-housing-finance-limited",
+      "displayName": "Capri Global Capital Limited and Capri Global Housing Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "central-bank-of-india",
+      "displayName": "Central Bank of India",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "clix-capital-services-private-limited",
+      "displayName": "Clix Capital Services Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "cholamandalam-investment-and-finance-company-limited",
+      "displayName": "Cholamandalam Investment and Finance Company Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "centrum-housing-finance-ltd",
+      "displayName": "Centrum Housing Finance Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "csb-bank-limited",
+      "displayName": "CSB Bank Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "capital-india-finance-ltd",
+      "displayName": "Capital India Finance Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "dbs-bank-india-ltd",
+      "displayName": "DBS Bank India Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "deutsche-bank",
+      "displayName": "Deutsche Bank",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "ditya-finance-private-limited-m-capital",
+      "displayName": "Ditya Finance Private Limited (M Capital)",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "dmi-housing-finance-private-limited",
+      "displayName": "DMI Housing Finance Private Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "easy-home-finance-limited",
+      "displayName": "Easy Home Finance Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "ecl-finance-limited",
+      "displayName": "ECL Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "edelweiss-retail-finance-limited",
+      "displayName": "EDELWEISS Retail Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "epimoney-private-limited-flexiloans",
+      "displayName": "Epimoney Private Limited (Flexiloans)",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "finnable-technologies-private-limited",
+      "displayName": "Finnable Technologies Private Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "finnovation-tech-solutions-private-limited-kreditbee",
+      "displayName": "Finnovation Tech Solutions Private Limited (Kreditbee)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "fintree-finance-pvt-ltd",
+      "displayName": "Fintree Finance Pvt Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "smfg-india-home-finance-company-ltd-previously-known-as-fulletron-india-home-finance-company-ltd",
+      "displayName": "SMFG India Home Finance Company Ltd (Previously known as Fulletron India Home Finance Company Ltd)",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "smfg-india-credit-co-ltd-previously-fulletron-india-credit-co-ltd",
+      "displayName": "SMFG India Credit Co. Ltd. (previously Fulletron India Credit Co. Ltd.)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "geojit-credits-private-limited",
+      "displayName": "Geojit Credits Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "godrej-housing-finance-limited-godrej-finance-limited",
+      "displayName": "Godrej Housing Finance Limited/ Godrej Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "gl-finstock-pvt-ltd-fintree",
+      "displayName": "GL Finstock Pvt Ltd (Fintree)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "hdb-financial-services-limited",
+      "displayName": "HDB Financial Services Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "hdfc-bank-ltd",
+      "displayName": "HDFC BANK LTD",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "credila-financial-services-limited-previously-hdfc-credila-financial-services-limited",
+      "displayName": "Credila Financial Services Limited( previously HDFC Credila Financial Services Limited)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "hero-fincorp-limited",
+      "displayName": "Hero Fincorp Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "hero-housing-finance-limited",
+      "displayName": "Hero Housing Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "hinduja-housing-finance-limited",
+      "displayName": "Hinduja Housing Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "the-hongkong-and-shanghai-bank-corporation-limited-hsbc",
+      "displayName": "The Hongkong and Shanghai Bank Corporation Limited (HSBC)",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "homeville-consulting-pvt-ltd",
+      "displayName": "Homeville Consulting Pvt Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "icici-bank-ltd",
+      "displayName": "ICICI Bank Ltd.",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "icici-home-finance-company-ltd",
+      "displayName": "ICICI Home Finance Company Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "idfc-first-bank-ltd",
+      "displayName": "IDFC First Bank Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "idbi-bank-ltd",
+      "displayName": "IDBI Bank Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "incred-financial-services-ltd",
+      "displayName": "INCRED Financial Services Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "india-infoline-finance-limited",
+      "displayName": "India Infoline Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "indian-bank",
+      "displayName": "Indian Bank",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "indifi-technologies-private-limited",
+      "displayName": "Indifi Technologies Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "indostar-home-finance-pvt-ltd",
+      "displayName": "Indostar Home Finance Pvt Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "indusind-bank",
+      "displayName": "Indusind Bank",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "infina-finance-private-limited",
+      "displayName": "Infina Finance Private limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "ikf-finance-ltd",
+      "displayName": "IKF Finance Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "dreamplug-technologies-pvt-ltd-prefr-creditvidya",
+      "displayName": "Dreamplug Technologies Pvt Ltd (Prefr / Creditvidya)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "jana-small-finance-pvt-ltd",
+      "displayName": "Jana Small Finance Pvt Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "jm-financial-home-loans-limited",
+      "displayName": "JM Financial Home Loans Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "kisetsu-saison-finance-india-private-limited-creditsaison",
+      "displayName": "Kisetsu Saison Finance (India) Private Limited (Creditsaison)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "knab-finance-advisors-private-limited-abhiloans",
+      "displayName": "KNAB FINANCE ADVISORS PRIVATE LIMITED (Abhiloans)",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "kotak-mahindra-bank-ltd",
+      "displayName": "Kotak Mahindra Bank Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "kotak-mahindra-prime-limited",
+      "displayName": "Kotak Mahindra Prime Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "krazybee-services-pvt-ltd",
+      "displayName": "Krazybee Services Pvt LTD",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "lendingkart-finance-limited",
+      "displayName": "LENDINGKART Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "lendingkart-technologies-private-limited",
+      "displayName": "Lendingkart Technologies Private Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "loantap-credit-products-private-limited",
+      "displayName": "Loantap Credit Products Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "loanwired-fintech-private-limited",
+      "displayName": "Loanwired Fintech Private Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "l-t-finance-holdings-ltd",
+      "displayName": "L & T Finance Holdings Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "l-t-housing-finance-ltd",
+      "displayName": "L & T Housing Finance Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "mahindra-and-mahindra-financial-services-limited",
+      "displayName": "Mahindra and Mahindra Financial Services Limited",
+      "rawText": "*Loan amount 10 Lakhs to 500 Lakhs* \n\nROI 11% to 12%\n\nPF 1% \n\n *PROGRAMS* \nCash Profit Program \nGross Margin program\nABB Program \nGST Program \nBT RTR Program \nLow LTV / LIP Program \nSalaried Program \n\n *Property Titles**\nSociety Patta up to 1999\nPanchayat patta registered\nJDA / Nagar Nigam Approved \nConverted properties \n\n *LTV* \nResidential property - 80%\nMix uses property - 75%\nCommercial - 75%\nIndustrial Property - 60%\nPlot - 55%\n\n *Higher Payout* \n\n *Fast process & decisioning also*"
+    },
+    {
+      "id": "mahindra-rural-housing-finance-limited",
+      "displayName": "Mahindra Rural Housing Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "mangal-credit-and-fincorp-ltd",
+      "displayName": "Mangal Credit and Fincorp Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "mas-financial-services-limited",
+      "displayName": "MAS Financial Services Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "mas-rural-housing-and-mortgage-finance-ltd",
+      "displayName": "MAS Rural Housing and Mortgage Finance Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "moneywise-financial-services-private-limited-smc-finance",
+      "displayName": "Moneywise Financial Services Private Limited (SMC Finance)",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "motilal-oswal-home-finance-limited",
+      "displayName": "Motilal Oswal Home Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "muthoot-finance-limited",
+      "displayName": "Muthoot Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "muthoot-homefin-india-limited",
+      "displayName": "Muthoot Homefin (India) Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "muthoot-housing-finance-company-limited",
+      "displayName": "Muthoot Housing Finance Company Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "mwyn-tech-pvt-ltd-moneytap",
+      "displayName": "MWYN TECH PVT LTD (Moneytap)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "manba-finance-limited",
+      "displayName": "Manba Finance Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "mirae-asset-financial-services-india-private-limited",
+      "displayName": "Mirae Asset Financial Services (India) Private Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "navi-finserv-private-limited",
+      "displayName": "Navi Finserv Private Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "neogrowth-credit-pvt-ltd",
+      "displayName": "Neogrowth Credit Pvt Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "nido-home-finance-limited",
+      "displayName": "Nido Home Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "nomisma-mobile-solutions-private-limited-ftcash",
+      "displayName": "Nomisma Mobile Solutions Private Limited (Ftcash)",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "orix-leasing-and-financial-services-pvt-ltd",
+      "displayName": "Orix Leasing and Financial Services Pvt Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "paysense-services-india-pvt-ltd",
+      "displayName": "PaySense Services India Pvt. Ltd.",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "piramal-finance-limited",
+      "displayName": "Piramal Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "piramal-enterprises-limited",
+      "displayName": "Piramal Enterprises Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "pnb-housing-finance-ltd",
+      "displayName": "PNB Housing Finance Ltd",
+      "rawText": "*We are funding till the age of 70\n\n*30 Years of Tenure For Salaried profiles\n\n*Loan against Property tenure up to 20 Years\n\n*200% Funding On the Document Cost ( Ragistry Amount)\n\n*3 Days TAT for Salaried and 5 Days for self Employed Cases.\n\n*For LAP cases FIXED ROI Options are Available \n\n*Socity Patta till 2018 are accepted \n\n#Hassle Free Disbursement \n#Online login options\n#Dedicated Experienced sales Manager \n#Customer centric Approach \n#Better Payout Options\n#Lower Login Fees\n#Flexible Credit Policy\n#Competative ROI\n#Brand Value\n#Market Presence.\n\nAnd much More..\n\nWhat else is required?\n\nSo Now please Don't lose your chance to Grow Together 💫\n\nPNB HOUSING FINANCE LTD"
+    },
+    {
+      "id": "phfl-home-loans-services-ltd",
+      "displayName": "PHFL Home Loans & Services Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "poonawala-fincorp-limited",
+      "displayName": "Poonawala Fincorp Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "purple-finance-ltd",
+      "displayName": "Purple Finance Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "grihum-housing-finance-ltd",
+      "displayName": "Grihum Housing Finance Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "profectus-capital-private-limited",
+      "displayName": "Profectus Capital Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "protium-finance-limited-previously-known-as-growth-source-financial-services",
+      "displayName": "Protium Finance Limited (previously known as Growth Source Financial Services)",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "punjab-national-bank",
+      "displayName": "Punjab National Bank",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "rbl-bank-ltd",
+      "displayName": "RBL Bank Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "sbi",
+      "displayName": "SBI",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "sbicap-securities-ltd",
+      "displayName": "SBICap Securities Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "sbi-cards-and-payment-services-limited",
+      "displayName": "SBI Cards and payment Services Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "sbm-state-bank-of-mariutius-bank-india-limited",
+      "displayName": "SBM (State Bank of Mariutius) Bank India Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "scb",
+      "displayName": "SCB",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "shinhan-bank",
+      "displayName": "Shinhan Bank",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "shriram-city-union-finance-limited",
+      "displayName": "Shriram City Union Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "shriram-finance-ltd",
+      "displayName": "Shriram Finance Ltd",
+      "rawText": "🏡मॉर्गेज लोन  2022 society patta\n\nआगरा रोड इकोलॉजिकल जोन पर लोन उपलब्ध\n\nJai Singh pura khor pe bhi loan available \n\n खाली जमीन पर लोन सोसायटी पट्टा , ।। \n\nConverted property commercial residential plus open plot pe bhi loan \n\nPrivate colonizer ke patte if 90b we can also find buildup property \n\nOpen lend on society patta loan available\n\nTen shaded property on society patta\n\n black listed society patte per bhi  Lap loan\n\n\nMultiple rented income in cash 100% considered in loan structured \n\n\nतुरंत सम्पर्क करें\n👉 बिना आय /Income proof \n👉 बिना रिटर्न / ITR के लोन\n\nHotel restaurant pe bhi loan provide  1 cr tak\n Ecological zone pe bhi loan only buildup property \n\nRestaurant dhaba on society patta loan available\n\n Agriculture land se registry only builds up property \n\nRegistered Panchayat Patna \nLoan 10 lakh to 1 Cr\n\nAll converted property\n\nBuilder  inventory pe bhi 1 cr tak loan available \n\nLocation: Jaipur se 90 km \nBaharod kotputli Shahpura pavta chandwaji dudu nivai chaksu and nearby location thanagazi mahua Balaji manpur sikandra rings Khatu Shyam Ji viratnagar bagru jobner manoharpura \n\nDSA ke liye sampark kre\n\nAdvocate ko bhi loan avilable \n\nRegards \n\nShri Ram Housing finance"
+    },
+    {
+      "id": "shubham-housing-development-finance-company-ltd",
+      "displayName": "Shubham Housing Development Finance Company Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "standard-chartered-capital-limited",
+      "displayName": "Standard Chartered Capital Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "sundaram-home-finance-limited",
+      "displayName": "Sundaram Home Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "suryoday-small-finance-bank-limited",
+      "displayName": "Suryoday Small Finance Bank Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "suvakarma-finance-pvt-ltd",
+      "displayName": "Suvakarma Finance Pvt Ltd",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "social-worth-technologies-pvt-ltd-fibe",
+      "displayName": "Social Worth Technologies Pvt Ltd. – Fibe",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "tata-capital-ltd",
+      "displayName": "Tata capital Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "tata-capital-financial-services-limited",
+      "displayName": "Tata Capital Financial Services Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "tata-capital-housing-finance-limited",
+      "displayName": "Tata Capital Housing Finance Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "the-fedbank-financial-services-limited",
+      "displayName": "The Fedbank Financial Services Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "the-federal-bank-limited",
+      "displayName": "The Federal Bank Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "the-karur-vysya-bank-limited",
+      "displayName": "The Karur Vysya Bank Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "the-south-indian-bank-ltd",
+      "displayName": "The South Indian Bank Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "trucap-finance-limited",
+      "displayName": "TruCap Finance Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "ugrow-capital-limited",
+      "displayName": "Ugrow Capital Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "ujivan-small-finance-bank-limited",
+      "displayName": "Ujivan Small Finance Bank Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "union-bank-of-india-for-hydrebad-maharashtra",
+      "displayName": "Union Bank of India (For Hydrebad & Maharashtra)",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "unity-small-finance-bank-limited",
+      "displayName": "Unity Small Finance Bank Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "utkarsh-small-finance-bank-ltd",
+      "displayName": "Utkarsh Small Finance Bank Ltd",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "vastu-housing-finance-corporation-ltd",
+      "displayName": "Vastu Housing Finance Corporation Ltd.",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "vastu-finserve-india-private-limited",
+      "displayName": "Vastu Finserve India Private Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "vistaar-financial-services-pvt-limited",
+      "displayName": "Vistaar Financial Services Pvt Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "whizdm-innovations-pvt-ltd-moneyview",
+      "displayName": "Whizdm Innovations Pvt Ltd (Moneyview)",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "yes-bank-limited",
+      "displayName": "Yes Bank Limited",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "dmi-finance-private-limited",
+      "displayName": "DMI Finance Private Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "ajt-technologies-pvt-ltd-salarynext",
+      "displayName": "AJT technologies Pvt Ltd – salarynext",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "ambit-finvest-pvt-ltd",
+      "displayName": "Ambit Finvest Pvt Ltd",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "doha-bank-qpsc",
+      "displayName": "Doha Bank QPSC",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "livlong-protection-and-wellness-solution-limited",
+      "displayName": "LivLong Protection and Wellness Solution Limited",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "niwas-housing-finance-pvt-ltd-previously-indostar-home-finance-pvt-ltd",
+      "displayName": "Niwas Housing Finance Pvt Ltd (Previously Indostar Home Finance Pvt Ltd )",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "vodafone-idea-limited",
+      "displayName": "Vodafone Idea Limited",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "useful-links",
+      "displayName": "Useful Links",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-aadharhousing-com",
+      "displayName": "https://aadharhousing.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-aavas-in",
+      "displayName": "https://www.aavas.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-finance-adityabirlacapital-com",
+      "displayName": "https://finance.adityabirlacapital.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-homefinance-adityabirlacapital-com",
+      "displayName": "https://homefinance.adityabirlacapital.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-agrimhfc-com",
+      "displayName": "https://agrimhfc.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-anandrathiglobal-com",
+      "displayName": "https://anandrathiglobal.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-arkaholdings-com",
+      "displayName": "https://www.arkaholdings.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-arthfc-com",
+      "displayName": "https://www.arthfc.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-ashvfinance-com",
+      "displayName": "https://www.ashvfinance.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-aubank-in",
+      "displayName": "https://www.aubank.in/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-avanse-com",
+      "displayName": "https://www.avanse.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-axisbank-com",
+      "displayName": "https://www.axisbank.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-axisfinance-in",
+      "displayName": "https://www.axisfinance.in/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-bajajfinserv-in",
+      "displayName": "https://www.bajajfinserv.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-bajajhousingfinance-in",
+      "displayName": "https://www.bajajhousingfinance.in/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-bandhanbank-com",
+      "displayName": "https://bandhanbank.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-bankofbaroda-in",
+      "displayName": "https://www.bankofbaroda.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-bhanixfinance-com-ourpartners-html",
+      "displayName": "https://bhanixfinance.com/ourpartners.html",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-bankofindia-co-in",
+      "displayName": "https://bankofindia.co.in/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-propelld-com",
+      "displayName": "https://propelld.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-capitalindiahomeloans-com",
+      "displayName": "https://capitalindiahomeloans.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-caprihomeloans-com",
+      "displayName": "https://www.caprihomeloans.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-centralbankofindia-co-in-en",
+      "displayName": "https://www.centralbankofindia.co.in/en",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-clix-capital",
+      "displayName": "https://www.clix.capital/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-cholamandalam-com",
+      "displayName": "https://www.cholamandalam.com/",
+      "rawText": "💫💫*CHOLA MANDALAM*💫💫\n                PERSONAL LOAN\n\n\n*CIBIL* retail score - Minimum Score of *685* \n\n*Minimum age*- 21 To 56 Years\nAge-21 To 23 Co applicant Mandatory \n\n*Minimum salary*- 20K\n\n **Nbfc & Bank Employee Without incentive-20K\n+Coplicant Mandatory** \nS.E & S.O Not Allowed \n\n*ROI*~~ 15% -21% \n\n*PF* ~~ 2% \n\n *F* - Company *Cat-A,B* -65% To 75%\nCompany *Cat-C,D-* 55% To 65% & *OHP Required* \n *Government* -55% To 75%\n\n\nLength of bureau history-- \n\nMinimum 6 months of bureau history required\nCIBIL score 0 and -1 allowed for *Govt Emp.*\nLoan Amount -1 Lakh to 20 L\nNo Physical Document required.\nCrunt Address Proof Required\n\nMaximum Enquiry in Crunt Month-4\n\nMaximum of 4 PL and 2 Credit Card Can be done B.T.\nTotal -B.T. - 6\n\nLoan amount Upto 20 Lakh"
+    },
+    {
+      "id": "https-chfl-co-in",
+      "displayName": "https://chfl.co.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-csb-co-in",
+      "displayName": "https://www.csb.co.in/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-capitalindia-com",
+      "displayName": "https://capitalindia.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-dbs-com-in-index-default-page",
+      "displayName": "https://www.dbs.com/in/index/default.page",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-deutschebank-co-in",
+      "displayName": "https://www.deutschebank.co.in/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-mcapital-group-com",
+      "displayName": "https://www.mcapital-group.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-dmihousingfinance-in",
+      "displayName": "https://www.dmihousingfinance.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-easyhomefinance-in",
+      "displayName": "https://www.easyhomefinance.in/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-eclfinance-edelweissfin-com",
+      "displayName": "https://eclfinance.edelweissfin.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-edelweissretailfin-com",
+      "displayName": "https://www.edelweissretailfin.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-epimoney-in",
+      "displayName": "https://epimoney.in/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-finnable-com",
+      "displayName": "https://www.finnable.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-kreditbee-in",
+      "displayName": "https://www.kreditbee.in/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-fintreefinance-com",
+      "displayName": "https://fintreefinance.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-smfgindiacredit-com",
+      "displayName": "https://www.smfgindiacredit.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-geojitcredits-com",
+      "displayName": "https://www.geojitcredits.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-godrejcapital-com",
+      "displayName": "https://www.godrejcapital.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-hdbfs-com",
+      "displayName": "https://www.hdbfs.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-www-hdfcbank-com-hdfc-bank-important-links",
+      "displayName": "https://www.hdfcbank.com/ HDFC Bank Important Links",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-credila-com",
+      "displayName": "https://credila.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-herofincorp-com",
+      "displayName": "https://www.herofincorp.com/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-herohousingfinance-com",
+      "displayName": "https://herohousingfinance.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-hindujahousingfinance-com",
+      "displayName": "https://hindujahousingfinance.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    },
+    {
+      "id": "https-www-hsbc-co-in",
+      "displayName": "https://www.hsbc.co.in/",
+      "rawText": "Fast approval, attractive pricing, big-ticket capability.\nEligible: HL/LAP, BT/BTTP, Plot + Construction, Resale/Fresh Purchase.\nTitles: JDA, Nagar Nigam, RHB, Society & Panchayati Patta, Collector Approved, Non-approved/90B.\nProfiles: Salaried & SE. Indicative range 5L–4Cr; LTV norms as per policy (HL ~90%, LAP ~75–80%)."
+    },
+    {
+      "id": "https-homevillegroup-com",
+      "displayName": "https://homevillegroup.com/",
+      "rawText": "We offer faster processing, competitive interest rates, and high loan eligibility.\nProducts: Home Loan (HL), Loan Against Property (LAP), Balance Transfer (BT/BTTP).\nProperty: JDA, Nagar Nigam Patta, RHB, Society Patta, Panchayati Patta (Reg./Unreg.), Collector Approved, 90B/Non-Approved.\nProfiles: Salaried & Self-Employed. Ticket size: 5L to 5Cr. LTV up to 90% (HL) and 80% (LAP)."
+    },
+    {
+      "id": "https-www-icicibank-com",
+      "displayName": "https://www.icicibank.com/",
+      "rawText": "Quick TAT, low interest options, flexible documentation.\nCovers HL, LAP, BT & Top-Up.\nAcceptable titles include JDA, RHB, Society Patta, Gram Panchayat, Collector Approved, and technical 90B (approved/non-approved).\nWorks with Salaried and Self-employed. Typical range 10L to 3Cr. LTV per policy up to 90% in HL."
+    }
+  ]
+}

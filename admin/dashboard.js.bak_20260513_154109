@@ -1,0 +1,1607 @@
+
+// ═══ STATE ═══
+const API = '/api/admin/dashboard.php';
+const AUTH = '/api/admin/auth.php';
+let currentPage = 'dashboard';
+let charts = {};
+let user = {};
+
+// ═══ INIT ═══
+document.addEventListener('DOMContentLoaded', async () => {
+  await checkAuth();
+  setGreeting();
+  loadDashboard();
+  loadOverdueBadge();
+});
+
+async function checkAuth() {
+  try {
+    const r = await fetch(AUTH + '?action=check', {credentials:'include'});
+    const d = await r.json();
+    if (!d.success) { window.location.href = '/admin/owner_login.html'; return; }
+    let user = d.data;
+    document.getElementById('sbName').textContent = user.name;
+    document.getElementById('sbRole').textContent = user.role;
+    document.getElementById('sbAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('tbName').textContent = user.name.split(' ')[0];
+    document.getElementById('tbAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('ownerName').value = user.name;
+    document.getElementById('ownerEmail').value = user.email;
+  } catch(e) { window.location.href = '/admin/owner_login.html'; }
+}
+
+async function doLogout() {
+  await fetch(AUTH, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});
+  window.location.href = '/admin/owner_login.html';
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('dashGreeting').textContent = g + " — here's your business overview";
+}
+
+// ═══ NAVIGATION ═══
+const pageTitles = {
+  dashboard:'Dashboard', partners:'Partner Management', telecallers:'Telecaller Management',
+  batches:'Lead Sheets', leads:'CRM Leads', followups:'Follow-ups',
+  diva:'Diva AI Monitor', lenders:'Lender Intelligence', parser:'AI Policy Parser',
+  dataquality:'Data Quality', testmatch:'Test Matching', smsharing:'SM Sharing',
+  whatsapp:'WhatsApp Monitor', reports:'Reports', auditlogs:'Audit Logs',
+  notifications:'Notifications', settings:'Settings', deploy:'Deploy'
+};
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  const lk = document.querySelector('.sb-link[onclick*="' + id + '"]');
+  if (lk) lk.classList.add('active');
+  document.getElementById('tbTitle').textContent = pageTitles[id] || id;
+  let currentPage = id;
+  closeSidebar();
+  // Lazy load
+  if (id === 'partners') loadPartners();
+  if (id === 'telecallers') loadTelecallers();
+  if (id === 'batches') loadBatches();
+  if (id === 'leads') { loadLeads(); populatePartnerFilter(); }
+  if (id === 'lenders') loadLenders();
+  if (id === 'diva') loadDiva();
+  if (id === 'dataquality') loadDataQuality();
+  if (id === 'auditlogs') loadAuditLogs();
+  if (id === 'smsharing') loadSMDirectory();
+}
+
+// ═══ SIDEBAR MOBILE ═══
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sbOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sbOverlay').classList.remove('show');
+}
+
+// ═══ DASHBOARD ═══
+async function loadDashboard() {
+  renderStatSkeletons();
+  try {
+    const [sumRes, chartRes, actRes] = await Promise.all([
+      fetch(API + '?action=summary', {credentials:'include'}).then(r=>r.json()),
+      fetch(API + '?action=charts', {credentials:'include'}).then(r=>r.json()),
+      fetch(API + '?action=activity', {credentials:'include'}).then(r=>r.json())
+    ]);
+    if (sumRes.success) renderStats(sumRes.data);
+    if (chartRes.success) renderCharts(chartRes.data);
+    if (actRes.success) renderActivity(actRes.data);
+  } catch(e) { toast('Failed to load dashboard', 'error'); }
+}
+
+function renderStatSkeletons() {
+  const s1 = document.getElementById('statsRow1');
+  const s2 = document.getElementById('statsRow2');
+  s1.innerHTML = Array(5).fill('<div class="stat-card skeleton" style="height:95px"></div>').join('');
+  s2.innerHTML = Array(5).fill('<div class="stat-card skeleton" style="height:95px"></div>').join('');
+}
+
+function renderStats(d) {
+  const cards1 = [
+    {icon:'fa-handshake',ic:'ic-navy',val:d.total_partners,lbl:'Total Partners',sub:d.active_partners+' active'},
+    {icon:'fa-headset',ic:'ic-teal',val:d.total_telecallers,lbl:'Total Telecallers',sub:d.active_telecallers+' active'},
+    {icon:'fa-users',ic:'ic-green',val:fmtNum(d.total_leads),lbl:'Total Leads',sub:'All time'},
+    {icon:'fa-file-lines',ic:'ic-purple',val:d.total_batches,lbl:'Lead Batches',sub:d.active_batches+' active'},
+    {icon:'fa-building-columns',ic:'ic-orange',val:d.active_lenders,lbl:'Active Lenders',sub:d.total_lenders+' total'},
+  ];
+  const cards2 = [
+    {icon:'fa-phone',ic:'ic-navy',val:fmtNum(d.calls_today),lbl:'Calls Today',sub:'Updated leads'},
+    {icon:'fa-thumbs-up',ic:'ic-green',val:fmtNum(d.interested_leads),lbl:'Interested (All)',sub:'Qualified leads'},
+    {icon:'fa-calendar-day',ic:'ic-orange',val:d.followups_today,lbl:'Follow-ups Today',sub:'Due today'},
+    {icon:'fa-triangle-exclamation',ic:'ic-red',val:d.followups_overdue,lbl:'Overdue',sub:'Need attention',alert:d.followups_overdue>0},
+    {icon:'fa-robot',ic:'ic-purple',val:fmtNum(d.diva_today),lbl:'Diva Sessions Today',sub:fmtNum(d.diva_total)+' total'},
+  ];
+  document.getElementById('statsRow1').innerHTML = cards1.map(c => statCard(c)).join('');
+  document.getElementById('statsRow2').innerHTML = cards2.map(c => statCard(c)).join('');
+  // Update sidebar overdue badge
+  const ob = document.getElementById('sbOverdueCount');
+  if (d.followups_overdue > 0) { ob.textContent = d.followups_overdue; ob.style.display='inline'; }
+  else ob.style.display='none';
+  // Followups page stats
+  if (document.getElementById('fupToday')) {
+    document.getElementById('fupToday').textContent = d.followups_today || 0;
+    document.getElementById('fupOverdue').textContent = d.followups_overdue || 0;
+  }
+}
+
+function statCard(c) {
+  return `<div class="stat-card" style="cursor:default">
+    <div class="ic ${c.ic}" ${c.alert?'style="background:#fef2f2;color:#dc2626"':''}><i class="fa ${c.icon}"></i></div>
+    <div class="val">${c.val ?? '—'}</div>
+    <div class="lbl">${c.lbl}</div>
+    ${c.sub ? `<div class="delta" style="color:var(--muted)">${c.sub}</div>` : ''}
+  </div>`;
+}
+
+function renderCharts(d) {
+  const colors = {
+    navy:'rgba(30,58,138,.8)', navy2:'rgba(30,77,183,.8)',
+    orange:'rgba(255,152,0,.8)', green:'rgba(22,163,74,.8)',
+    teal:'rgba(13,148,136,.8)', purple:'rgba(124,58,237,.8)',
+    red:'rgba(220,38,38,.8)', amber:'rgba(217,119,6,.8)',
+    pink:'rgba(219,39,119,.8)'
+  };
+  const cArr = [colors.navy,colors.teal,colors.orange,colors.green,colors.purple,colors.red,colors.amber,colors.pink];
+
+  // Daily calls
+  if (d.dailyCalls && d.dailyCalls.length) {
+    destroyChart('chartDailyCalls');
+    charts.dailyCalls = new Chart(document.getElementById('chartDailyCalls'), {
+      type: 'line',
+      data: {
+        labels: d.dailyCalls.map(r => fmtDate(r.date)),
+        datasets: [{label:'Calls',data:d.dailyCalls.map(r=>r.count),borderColor:colors.navy,backgroundColor:'rgba(30,58,138,.08)',fill:true,tension:.4,pointBackgroundColor:colors.navy,pointRadius:4}]
+      },
+      options: chartOpts('Calls per day')
+    });
+  }
+
+  // Funnel
+  if (d.funnel && d.funnel.length) {
+    destroyChart('chartFunnel');
+    charts.funnel = new Chart(document.getElementById('chartFunnel'), {
+      type: 'doughnut',
+      data: {
+        labels: d.funnel.map(r=>r.status),
+        datasets: [{data:d.funnel.map(r=>r.count),backgroundColor:cArr,borderWidth:2}]
+      },
+      options: {...doughnutOpts()}
+    });
+  }
+
+  // Lender types
+  if (d.lenderTypes && d.lenderTypes.length) {
+    destroyChart('chartLenders');
+    charts.lenders = new Chart(document.getElementById('chartLenders'), {
+      type: 'bar',
+      data: {
+        labels: d.lenderTypes.map(r=>r.lender_type.toUpperCase()),
+        datasets: [{label:'Lenders',data:d.lenderTypes.map(r=>r.count),backgroundColor:[colors.navy,colors.orange,colors.teal,colors.purple]}]
+      },
+      options: chartOpts('Active lenders by type')
+    });
+  }
+
+  // CIBIL
+  if (d.cibilDist && d.cibilDist.length) {
+    destroyChart('chartCibil');
+    charts.cibil = new Chart(document.getElementById('chartCibil'), {
+      type: 'bar',
+      data: {
+        labels: d.cibilDist.map(r=>r.range),
+        datasets: [{label:'Leads',data:d.cibilDist.map(r=>r.count),backgroundColor:[colors.green,colors.navy,colors.amber,colors.orange,colors.red]}]
+      },
+      options: chartOpts('CIBIL score distribution')
+    });
+  }
+
+  // Partner leads
+  if (d.byPartner && d.byPartner.length) {
+    destroyChart('chartPartnerLeads');
+    charts.partnerLeads = new Chart(document.getElementById('chartPartnerLeads'), {
+      type: 'bar',
+      data: {
+        labels: d.byPartner.map(r=>r.partner),
+        datasets: [{label:'Leads',data:d.byPartner.map(r=>r.count),backgroundColor:colors.navy}]
+      },
+      options: {...chartOpts('Leads by partner'),indexAxis:'y'}
+    });
+  }
+}
+
+function chartOpts(title) {
+  return {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{size:10}}}}};
+}
+function doughnutOpts() {
+  return {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{font:{size:10},boxWidth:10}}}};
+}
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+function renderActivity(feed) {
+  const el = document.getElementById('activityFeed');
+  if (!feed.length) { el.innerHTML = '<li style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No recent activity</li>'; return; }
+  const icColors = {blue:'ic-navy',purple:'ic-purple',green:'ic-green',orange:'ic-orange',red:'ic-red'};
+  el.innerHTML = feed.slice(0,12).map(f => `
+    <li class="feed-item">
+      <div class="feed-ic ${icColors[f.color]||'ic-navy'}"><i class="fa ${f.icon}"></i></div>
+      <div>
+        <div class="feed-text">${f.text}</div>
+        <div class="feed-time"><i class="fa fa-clock" style="margin-right:3px"></i>${timeAgo(f.time)}</div>
+      </div>
+    </li>`).join('');
+}
+
+async function loadActivity() {
+  try {
+    let r = await fetch(API + '?action=activity', {credentials:'include'}).then(d=>d.json());
+    if (r.success) renderActivity(r.data);
+  } catch(e){}
+}
+
+// ═══ PARTNERS ═══
+async function loadPartners(page=1) {
+  const tbody = document.getElementById('partnersTable');
+  tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  const search = document.getElementById('partnerSearch')?.value||'';
+  const status = document.getElementById('partnerStatus')?.value||'';
+  try {
+    let r = await fetch(`${API}?action=partners_list&page=${page}&search=${encodeURIComponent(search)}&status=${status}`, {credentials:'include'}).then(d=>d.json());
+    if (!r.success) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--red)">Failed to load partners</td></tr>'; return; }
+    const rows = r.data;
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--muted)">No partners found</td></tr>'; return; }
+    tbody.innerHTML = rows.map((p,i) => {
+      const tier = p.lead_count > 200 ? 'Gold' : p.lead_count > 50 ? 'Silver' : 'Bronze';
+      const tierBadge = tier==='Gold'?'b-gold':tier==='Silver'?'b-navy':'b-orange';
+      const conv = p.lead_count > 0 ? Math.round((p.interested_count/p.lead_count)*100) : 0;
+      const pname = p.name || p.partner_name || (p.first_name+' '+p.last_name) || '—';
+      const pcity = p.city || p.branch_city || '—';
+      const pmobile = p.display_mobile || p.mobile || p.phone || '—';
+      return `<tr>
+        <td style="color:var(--muted);font-size:11px">${(page-1)*25+i+1}</td>
+        <td><div class="name-cell">${pname}</div><div class="sub-cell">${p.email||''}</div></td>
+        <td>${pcity}</td>
+        <td>${maskMobile(pmobile)}</td>
+        <td style="text-align:center">${p.telecaller_count||0}</td>
+        <td style="text-align:center">${fmtNum(p.lead_count||0)}</td>
+        <td style="text-align:center"><span style="color:var(--green);font-weight:700">${p.interested_count||0}</span></td>
+        <td style="text-align:center"><span style="color:${conv>10?'var(--green)':'var(--muted)'};font-weight:700">${conv}%</span></td>
+        <td><span class="badge ${tierBadge}">${tier}</span></td>
+        <td><span class="badge ${p.status==='active'?'b-active':'b-inactive'}">${p.status||'active'}</span></td>
+        <td style="font-size:11px;color:var(--muted)">${p.last_login_at ? timeAgo(p.last_login_at) : 'Never'}</td>
+        <td><div class="td-actions">
+          <button class="btn btn-outline btn-xs" title="View Leads" onclick="viewPartnerLeads('${p.id}','${(p.partner_name||p.name||'').replace(/'/g,'')}')"><i class="fa fa-eye"></i></button>
+          ${p.mobile||p.phone ? `<a href="https://wa.me/91${(p.mobile||p.phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-ghost btn-xs"><i class="fab fa-whatsapp"></i></a>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('');
+    // Pagination
+    let pg = r.pagination;
+    document.getElementById('partnersInfo').textContent = `Showing ${(pg.page-1)*pg.per_page+1}–${Math.min(pg.page*pg.per_page,pg.total)} of ${pg.total} partners`;
+    renderPagination('partnerPages', pg, loadPartners);
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--red)">Error loading partners</td></tr>'; }
+}
+
+// ═══ TELECALLERS ═══
+async function loadTelecallers() {
+  let tbody = document.getElementById('telecallersTable');
+  try {
+    let r = await fetch(API + '?action=telecallers_list', {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--muted)">No telecallers found</td></tr>'; return; }
+    tbody.innerHTML = r.data.map((t,i) => {
+      const prod = t.assigned_leads > 0 ? Math.min(100,Math.round((t.interested/t.assigned_leads)*100)) : 0;
+      return `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><div class="name-cell">${t.name||'—'}</div><div class="sub-cell">${t.username||''}</div></td>
+        <td><span style="font-size:12px">${t.partner_name||'—'}</span></td>
+        <td>${maskMobile(t.mobile)}</td>
+        <td style="text-align:center">${t.assigned_leads||0}</td>
+        <td style="text-align:center;color:var(--green);font-weight:700">${t.interested||0}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="quality-bar" style="min-width:60px"><div class="quality-fill ${prod>60?'qf-high':prod>30?'qf-mid':'qf-low'}" style="width:${prod}%"></div></div>
+            <span style="font-size:11px;font-weight:700">${prod}%</span>
+          </div>
+        </td>
+        <td><span class="badge ${t.status==='active'?'b-active':'b-inactive'}">${t.status||'active'}</span></td>
+        <td style="font-size:11px;color:var(--muted)">${t.last_login ? timeAgo(t.last_login) : 'Never'}</td>
+        <td><div class="td-actions">
+          <button class="btn btn-outline btn-xs" title="View Leads" onclick="viewTelecallerLeads(${t.id},'${(t.name||'').replace(/'/g,'')}')"><i class="fa fa-eye"></i></button>
+          ${t.mobile ? `<a href="https://wa.me/91${(t.mobile||'').replace(/\D/g,'')}" target="_blank" class="btn btn-ghost btn-xs"><i class="fab fa-whatsapp"></i></a>` : ''}
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+
+// ═══ BATCHES ═══
+async function loadBatches() {
+  let tbody = document.getElementById('batchesTable');
+  try {
+    let r = await fetch(API + '?action=batches_list', {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)">No batches found</td></tr>'; return; }
+    tbody.innerHTML = r.data.map((b,i) => {
+      let conv = b.total_leads > 0 ? Math.round((b.interested/b.total_leads)*100) : 0;
+      return `<tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><div class="name-cell">${b.name||'Batch #'+b.id}</div></td>
+        <td style="font-size:12px">${b.partner_name||'—'}</td>
+        <td style="font-size:11px;color:var(--muted)">${fmtDate(b.created_at)}</td>
+        <td style="text-align:center;font-weight:700">${fmtNum(b.total_leads||0)}</td>
+        <td style="text-align:center">${fmtNum(b.assigned||0)}</td>
+        <td style="text-align:center">${fmtNum(b.called||0)}</td>
+        <td style="text-align:center;color:var(--green);font-weight:700">${b.interested||0}</td>
+        <td style="text-align:center;font-weight:700;color:${conv>5?'var(--green)':'var(--muted)'}">${conv}%</td>
+        <td><span class="badge ${b.status==='active'?'b-active':'b-pending'}">${b.status||'active'}</span></td>
+        <td><div class="td-actions">
+          <button class="btn btn-outline btn-xs"><i class="fa fa-eye"></i> View</button>
+          <button class="btn btn-ghost btn-xs"><i class="fa fa-download"></i></button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+
+// ═══ LEADS ═══
+async function loadLeads(page=1) {
+  let tbody = document.getElementById('leadsTable');
+  tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  let search = document.getElementById('leadSearch')?.value||'';
+  let status = document.getElementById('leadStatus')?.value||'';
+  const partner = document.getElementById('leadPartner')?.value||'';
+  try {
+    let r = await fetch(`${API}?action=leads_list&page=${page}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}&partner=${partner}`, {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)">No leads found</td></tr>'; return; }
+    const statusColors = {'Interested':'b-active','Not Interested':'b-inactive','Follow-up':'b-orange','New':'b-navy','No Answer':'b-pending','Wrong Number':'b-inactive'};
+    tbody.innerHTML = r.data.map((l,i) => `<tr style='cursor:pointer' onclick='openCrmLead(JSON.parse(this.dataset.l))' data-l='${JSON.stringify(l).replace(/'/g,"&apos;")}'>
+      <td style="color:var(--muted);font-size:11px">${(page-1)*25+i+1}</td>
+      <td><div class="name-cell">${l.name||'—'}</div></td>
+      <td><span style="font-family:monospace;font-size:12px">${maskMobile(l.mobile)}</span></td>
+      <td style="font-size:12px">${l.city||'—'}</td>
+      <td><span class="badge b-navy" style="font-size:10px">${l.loan_type||'—'}</span></td>
+      <td style="font-size:12px;font-weight:600">${l.loan_amount ? '₹'+fmtNum(parseInt(l.loan_amount)/100000)+'L' : '—'}</td>
+      <td style="font-size:11.5px">${l.partner_name||'—'}</td>
+      <td><span class="badge ${statusColors[l.status]||'b-pending'}">${l.status||'New'}</span></td>
+      <td style="font-size:11px;color:${l.followup_date && new Date(l.followup_date)<new Date()?'var(--red)':'var(--muted)'}">${l.followup_date ? fmtDate(l.followup_date) : '—'}</td>
+      <td><span class="badge b-purple" style="font-size:9.5px">${l.source||'Upload'}</span></td>
+      <td><div class="td-actions">
+        <button class="btn btn-outline btn-xs" title="View" onclick="openCrmLead(JSON.parse(this.closest('tr').dataset.l))"><i class="fa fa-eye"></i></button>
+        <button class="btn btn-primary btn-xs" title="Match" onclick="showPage('testmatch')"><i class="fa fa-flask"></i></button>
+      </div></td>
+    </tr>`).join('');
+    let pg = r.pagination;
+    document.getElementById('leadsInfo').textContent = `Showing ${(pg.page-1)*pg.per_page+1}–${Math.min(pg.page*pg.per_page,pg.total)} of ${fmtNum(pg.total)} leads`;
+    renderPagination('leadPages', pg, loadLeads);
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+
+// ═══ FOLLOW-UPS ═══
+async function filterFollowups(type) {
+  let tbody = document.getElementById('followupsTable');
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    let r = await fetch(`${API}?action=followups_list&type=${type}`, {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">No follow-ups found</td></tr>'; return; }
+    const today = new Date(); today.setHours(0,0,0,0);
+    tbody.innerHTML = r.data.map(f => {
+      const fdate = new Date(f.followup_date);
+      const overdue = fdate < today;
+      const daysDiff = Math.round((today-fdate)/(1000*60*60*24));
+      return `<tr>
+        <td><div class="name-cell">${f.name||'—'}</div></td>
+        <td><span style="font-family:monospace;font-size:12px">${maskMobile(f.mobile)}</span></td>
+        <td style="font-size:12px">${f.partner_name||'—'}</td>
+        <td style="font-size:12px">${f.telecaller_name||'—'}</td>
+        <td><span class="badge b-navy" style="font-size:10px">${f.loan_type||'—'}</span></td>
+        <td><span class="badge ${f.status==='Interested'?'b-active':'b-pending'}">${f.status||'—'}</span></td>
+        <td style="font-size:12px;color:${overdue?'var(--red)':'var(--text)'};font-weight:${overdue?'700':'400'}">${fmtDate(f.followup_date)}</td>
+        <td style="font-size:11px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.notes||'—'}</td>
+        <td><div class="td-actions">
+          <button class="btn btn-green btn-xs" onclick="markFollowupDone(${f.id},this)"><i class="fa fa-check"></i> Done</button>
+          ${f.mobile?`<a href="https://wa.me/91${(f.mobile||'').replace(/\D/g,'')}" target="_blank" class="btn btn-ghost btn-xs"><i class="fab fa-whatsapp"></i></a>`:''}
+        </div></td>
+      </tr>`;
+    }).join('');
+    if (type==='today') document.getElementById('fupToday').textContent = r.data.length;
+    if (type==='overdue') document.getElementById('fupOverdue').textContent = r.data.length;
+    if (type==='upcoming') document.getElementById('fupWeek').textContent = r.data.length;
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+
+// ═══ DIVA MONITOR ═══
+async function loadDiva() {
+  try {
+    let r = await fetch(API + '?action=diva_list', {credentials:'include'}).then(d=>d.json());
+    if (!r.success) return;
+    const data = r.data;
+    document.getElementById('divaSessions').textContent = data.filter(d => isToday(d.created_at)).length;
+    document.getElementById('divaTotal').textContent = fmtNum(data.length);
+    document.getElementById('divaLeads').textContent = data.filter(d=>d.status&&d.status!='').length;
+    document.getElementById('divaMatched').textContent = data.filter(d=>d.loan_type).length;
+    const drop = data.length > 0 ? Math.round((data.filter(d=>!d.loan_amount).length/data.length)*100) : 0;
+    document.getElementById('divaDropoff').textContent = drop + '%';
+    // Chart - loan type distribution
+    const loanTypes = {};
+    data.forEach(d => { const t = d.product_type||d.loan_type||'Unknown'; loanTypes[t] = (loanTypes[t]||0)+1; });
+    let cArr = ['rgba(30,58,138,.8)','rgba(255,152,0,.8)','rgba(22,163,74,.8)','rgba(124,58,237,.8)','rgba(13,148,136,.8)'];
+    destroyChart('chartDivaLoans');
+    charts.divaLoans = new Chart(document.getElementById('chartDivaLoans'), {
+      type: 'doughnut',
+      data: {labels:Object.keys(loanTypes),datasets:[{data:Object.values(loanTypes),backgroundColor:cArr,borderWidth:2}]},
+      options: doughnutOpts()
+    });
+    // Table
+    let tbody = document.getElementById('divaTable');
+    const loanLabels = {'lap':'LAP','home':'Home Loan','business':'Business Loan','personal':'Personal Loan','car':'Car Loan'};
+    const sColors = {'qualified':'b-active','partial':'b-teal','new':'b-pending','no_results':'b-high'};
+    tbody.innerHTML = data.slice(0,50).map((d,i) => {
+      const cibil = d.cibil_score||0;
+      const cColor = cibil>=700?'var(--green)':cibil>=600?'var(--amber)':'var(--red)';
+      const loanLabel = loanLabels[d.product_type]||d.product_type||'—';
+      const sBadge = sColors[d.lead_status]||'b-pending';
+      const dStr = JSON.stringify(d).replace(/"/g,'&quot;');
+      const waLink = d.mobile ? `https://wa.me/91${d.mobile}` : '#';
+      return `<tr style="cursor:pointer" onclick="openDivaLead(JSON.parse(this.dataset.d))" data-d="${dStr}">
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><div style="font-size:13px;font-weight:700">${d.name||'<span style="color:var(--muted)">—</span>'}</div>
+            <div style="font-size:11px;color:var(--muted)">${d.mobile?'••••••'+d.mobile.slice(-4):'No contact yet'}</div></td>
+        <td style="font-size:12px">${d.city||'—'}</td>
+        <td><span class="badge b-navy" style="font-size:10.5px">${loanLabel}</span></td>
+        <td style="font-size:12px;font-weight:600">${d.loan_amount?'₹'+fmtNum(parseInt(d.loan_amount)/100000)+'L':'—'}</td>
+        <td style="font-weight:700;color:${cColor}">${cibil||'—'}</td>
+        <td style="font-size:12px">${d.monthly_income?'₹'+fmtNum(parseInt(d.monthly_income)/1000)+'K':'—'}</td>
+        <td><span class="badge ${sBadge}">${(d.lead_status||'new').replace(/_/g,' ')}</span></td>
+        <td style="font-size:11px;color:var(--muted)">${timeAgo(d.created_at)}</td>
+        <td onclick="event.stopPropagation()">
+          <button class="btn btn-outline btn-xs" onclick="openDivaLead(JSON.parse(this.closest('tr').dataset.d))"><i class="fa fa-eye"></i></button>
+          ${d.mobile?`<a href="${waLink}" target="_blank" class="btn btn-ghost btn-xs" style="margin-left:3px"><i class="fab fa-whatsapp"></i></a>`:''}
+        </td>
+      </tr>`;
+    }).join('');
+  } catch(e) {}
+}
+
+// ═══ LENDERS ═══
+async function loadLenders(reset=false) {
+  if (reset) { document.getElementById('lenderSearch').value=''; document.getElementById('lenderTypeFilter').value=''; }
+  let tbody = document.getElementById('lendersTable');
+  tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading lenders...</td></tr>';
+  try {
+    let r = await fetch(API + '?action=lenders_list', {credentials:'include'}).then(d=>d.json());
+    if (!r.success) return;
+    let search = (document.getElementById('lenderSearch')?.value||'').toLowerCase();
+    const typeF = document.getElementById('lenderTypeFilter')?.value||'';
+    let data = r.data;
+    if (search) data = data.filter(l => l.lender_name.toLowerCase().includes(search));
+    if (typeF) data = data.filter(l => l.lender_type===typeF);
+    const catF = document.getElementById('lenderCatFilter')?.value||'';
+    if (catF) data = data.filter(l => {
+      const pt = (l.product_type||'').toLowerCase();
+      let prod = (l.product||'').toLowerCase();
+      if (catF==='home') return pt.includes('home') || prod.includes('home');
+      if (catF==='lap') return pt.includes('lap') || prod.includes('lap') || pt.includes('loan against');
+      if (catF==='business') return pt.includes('business') || pt.includes('msme') || prod.includes('business');
+      if (catF==='personal') return pt.includes('personal') || prod.includes('personal');
+      return true;
+    });
+    const typeBadge = {bank:'b-navy',nbfc:'b-orange',hfc:'b-teal',sfb:'b-purple'};
+    const surCount = l => [l.surrogate_banking,l.surrogate_gst,l.surrogate_itr,l.surrogate_rtr].filter(Boolean).length;
+    const quality = l => {
+      let s=0;
+      if(l.roi_min>0) s+=20; if(l.max_ltv>0) s+=20; if(l.min_cibil>0) s+=20;
+      if(l.city_coverage) s+=20; if(l.sales_manager_name) s+=20;
+      return s;
+    };
+    tbody.innerHTML = data.map((l,i) => {
+      const q = quality(l);
+      const sur = surCount(l);
+      const age = l.updated_at ? Math.floor((Date.now()-new Date(l.updated_at))/(1000*60*60*24)) : 999;
+      return `<tr style="cursor:pointer" onclick="openLenderDetail(${l.id})">
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><div class="name-cell" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.lender_name}</div></td>
+        <td><span class="badge ${typeBadge[l.lender_type]||'b-pending'}">${(l.lender_type||'nbfc').toUpperCase()}</span></td>
+        <td style="font-size:11.5px;color:var(--muted)">${l.product_type||'—'}</td>
+        <td style="font-size:12px;font-weight:600;color:var(--green)">${l.roi_min>0?l.roi_min+'%':'—'} ${l.roi_max>0?'– '+l.roi_max+'%':''}</td>
+        <td style="font-size:12px;font-weight:600">${l.max_ltv>0?l.max_ltv+'%':'—'}</td>
+        <td style="font-size:12px;font-weight:700;color:${l.min_cibil>=700?'var(--navy)':'var(--amber)'}">${l.min_cibil||'—'}</td>
+        <td style="font-size:11.5px">${l.city||l.city_coverage||'—'}</td>
+        <td style="text-align:center">
+          ${sur > 0 ? `<span class="badge b-green" style="background:var(--green-lt);color:var(--green);border:1px solid #bbf7d0">${sur} prog</span>` : '<span style="font-size:11px;color:var(--muted)">—</span>'}
+        </td>
+        <td>
+          <div style="min-width:70px">
+            <div style="font-size:11px;font-weight:700;color:${q>70?'var(--green)':q>40?'var(--amber)':'var(--red)'}">${q}%</div>
+            <div class="quality-bar"><div class="quality-fill ${q>70?'qf-high':q>40?'qf-mid':'qf-low'}" style="width:${q}%"></div></div>
+          </div>
+        </td>
+        <td style="font-size:11.5px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.sales_manager_name||'—'}</td>
+        <td style="font-size:11px;color:${age>60?'var(--red)':'var(--muted)'}">${age < 999 ? age+'d ago' : '—'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('lendersInfo').textContent = `Showing ${data.length} of ${r.data.length} lenders`;
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="13" style="text-align:center;padding:24px;color:var(--red)">Error loading lenders</td></tr>'; }
+}
+
+// ═══ DATA QUALITY ═══
+async function loadDataQuality() {
+  let tbody = document.getElementById('qualityTable');
+  tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Calculating scores...</td></tr>';
+  try {
+    let r = await fetch(API + '?action=data_quality', {credentials:'include'}).then(d=>d.json());
+    if (!r.success) return;
+    let data = r.data;
+    const avg = Math.round(data.reduce((s,d)=>s+d.score,0)/data.length);
+    const critical = data.filter(d=>d.score<50).length;
+    const stale = data.filter(d=>d.data_age_days>60).length;
+    document.getElementById('dqAvg').textContent = avg + '%';
+    document.getElementById('dqCritical').textContent = critical;
+    document.getElementById('dqStale').textContent = stale;
+    document.getElementById('dqTotal').textContent = data.length;
+    let typeBadge = {bank:'b-navy',nbfc:'b-orange',hfc:'b-teal',sfb:'b-purple'};
+    tbody.innerHTML = data.map((d,i) => `<tr>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td><div class="name-cell" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.lender_name}</div></td>
+      <td><span class="badge ${typeBadge[d.lender_type]||'b-pending'}">${(d.lender_type||'').toUpperCase()}</span></td>
+      <td>
+        <div style="min-width:90px">
+          <div style="font-size:12px;font-weight:800;color:${d.score>70?'var(--green)':d.score>40?'var(--amber)':'var(--red)'}">${d.score}%</div>
+          <div class="quality-bar"><div class="quality-fill ${d.score>70?'qf-high':d.score>40?'qf-mid':'qf-low'}" style="width:${d.score}%"></div></div>
+        </div>
+      </td>
+      <td style="font-size:11px;color:var(--red);max-width:200px">
+        ${d.missing && d.missing.length ? d.missing.slice(0,3).join(', ')+(d.missing.length>3?' +'+( d.missing.length-3)+' more':'') : '<span style="color:var(--green)"><i class="fa fa-check"></i> Complete</span>'}
+      </td>
+      <td style="font-size:11px;color:var(--muted)">${d.last_updated ? fmtDate(d.last_updated) : '—'}</td>
+      <td style="font-size:12px;font-weight:700;color:${d.data_age_days>60?'var(--red)':d.data_age_days>30?'var(--amber)':'var(--green)'}">${d.data_age_days < 999 ? d.data_age_days+'d' : '—'}</td>
+      <td><div data-missing='${JSON.stringify(d.missing||[])}' data-name='${d.lender_name}' data-id='${d.id}' onclick="event.stopPropagation();var el=this;showMissingFields(JSON.parse(el.dataset.missing),el.dataset.name);window._lastQualityId=el.dataset.id">${d.review_required ? '<button style="background:var(--red-lt);color:var(--red);border:1px solid #fca5a5;border-radius:50px;font-size:10.5px;font-weight:700;padding:3px 9px;cursor:pointer"><i class="fa fa-flag"></i> Fix '+(d.missing?d.missing.length:0)+' fields</button>' : '<span style="font-size:11px;color:var(--green);font-weight:700"><i class="fa fa-check"></i> OK</span>'}</div></td>
+      <td><div class="td-actions">
+      </div></td>
+    </tr>`).join('');
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+
+// ═══ TEST MATCHING ═══
+async function runTestMatch() {
+  const btn = document.getElementById('tmBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Matching...';
+  const profile = {
+    loan_type: document.getElementById('tm_loan').value,
+    loan_amount: parseInt(document.getElementById('tm_amount').value)||6000000,
+    property_value: parseInt(document.getElementById('tm_pval').value)||10000000,
+    property_type: document.getElementById('tm_prop').value,
+    city: document.getElementById('tm_city').value,
+    cibil_score: parseInt(document.getElementById('tm_cibil').value)||0,
+    monthly_income: parseInt(document.getElementById('tm_income').value)||0,
+    existing_emis: parseInt(document.getElementById('tm_emi').value)||0,
+    income_proof: document.getElementById('tm_proof').value,
+    occupation: document.getElementById('tm_occ').value,
+    income_source: document.getElementById('tm_occ').value
+  };
+  try {
+    let r = await fetch('/api/hybrid_query.php', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({profile}), credentials:'include'
+    }).then(d=>d.json());
+    renderMatchResults(r, document.getElementById('tm_debug').checked);
+    toast('Match complete — ' + (r.total_matches||0) + ' lenders found', 'success');
+  } catch(e) { toast('Matching failed: ' + e.message, 'error'); }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa fa-flask"></i> Run AI Matching';
+}
+
+function renderMatchResults(r, debug) {
+  let el = document.getElementById('tmResults');
+  if (!r.lenders || !r.lenders.length) {
+    el.innerHTML = '<div class="card"><div class="card-body"><div class="ph-section"><div class="ph-icon"><i class="fa fa-circle-xmark"></i></div><h3>No Matches Found</h3><p>Try adjusting the customer profile parameters</p></div></div></div>';
+    return;
+  }
+  const ps = r.profile_summary || {};
+  const riskColor = {low:'var(--green)',medium:'var(--amber)',high:'var(--red)'};
+  el.innerHTML = `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-body" style="padding:14px 18px">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <span style="font-size:13px;font-weight:800;color:var(--navy)"><i class="fa fa-chart-bar"></i> ${r.total_matches} matches</span>
+          ${Object.entries(ps).map(([k,v]) => `<span class="badge b-navy" style="font-size:10.5px"><b>${k.replace(/_/g,' ')}:</b> ${v}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+    ${r.lenders.slice(0,10).map((l,i) => {
+      const bd = l.score_breakdown || {};
+      return `<div class="card" style="margin-bottom:10px">
+        <div class="card-header" style="padding:12px 16px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:36px;height:36px;border-radius:9px;background:${i===0?'linear-gradient(135deg,var(--navy),var(--navy-2))':i===1?'linear-gradient(135deg,var(--teal),#0f766e)':'var(--navy-lt)'};color:${i<2?'#fff':'var(--navy)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0">#${l.rank}</div>
+            <div>
+              <div style="font-size:13.5px;font-weight:800">${l.lender_name}</div>
+              <div style="font-size:11px;color:var(--muted)">${l.product||''}</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="text-align:right">
+              <div style="font-size:20px;font-weight:800;color:var(--navy)">${l.score}</div>
+              <div style="font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Score</div>
+            </div>
+            <div style="padding:4px 10px;border-radius:8px;background:${riskColor[l.rejection_risk]||'var(--green)'};color:#fff;font-size:10px;font-weight:700;text-transform:uppercase">${l.rejection_risk||'low'}</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:12px 16px">
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+            ${(l.match_reasons||[]).map(r => `<span class="badge b-active" style="font-size:10px"><i class="fa fa-check" style="margin-right:3px"></i>${r}</span>`).join('')}
+            ${(l.warn_flags||[]).map(w => `<span class="badge b-high" style="font-size:10px"><i class="fa fa-triangle-exclamation" style="margin-right:3px"></i>${w}</span>`).join('')}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            ${Object.entries(bd).map(([k,v]) => `<div style="background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:5px 10px;font-size:11px"><span style="color:var(--muted)">${v.label||k}:</span> <span style="font-weight:700;color:var(--navy)">${v.points}</span> <span style="color:var(--muted);font-size:10px">${v.note||''}</span></div>`).join('')}
+          </div>
+          ${l.sales_manager_name ? `<div style="margin-top:10px;padding:8px 11px;background:var(--green-lt);border-radius:8px;font-size:12px;display:flex;align-items:center;gap:8px">
+            <i class="fa fa-user-tie" style="color:var(--green)"></i>
+            <span style="font-weight:700">${l.sales_manager_name}</span>
+            ${l.sales_manager_mobile ? `<span style="color:var(--muted)">${l.sales_manager_mobile}</span>
+            <a href="https://wa.me/91${l.sales_manager_mobile.replace(/\D/g,'')}" target="_blank" class="btn btn-green btn-xs" style="margin-left:auto"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
+          </div>` : ''}
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ═══ POLICY PARSER ═══
+async function parsePolicy() {
+  const text = document.getElementById('policyText').value.trim();
+  if (!text) { toast('Please paste policy text first', 'error'); return; }
+  let btn = document.getElementById('parseBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Parsing with AI...';
+  document.getElementById('parserPlaceholder').style.display = 'flex';
+  document.getElementById('parserFields').style.display = 'none';
+  document.getElementById('parserActions').style.display = 'none';
+  try {
+    let r = await fetch('/api/admin/policy_parser.php', {
+      method:'POST', headers:{'Content-Type':'application/json', 'X-Admin-Key':'WM_ADMIN_2025'},
+      body: JSON.stringify({action:'parse', raw_text: text, lender_type: document.getElementById('parserLenderType').value, product: document.getElementById('parserProduct').value})
+    }).then(d=>d.json());
+    if (r.type !== 'parsed' && !r.success) { toast(r.message||'Parse failed', 'error'); return; }
+    const result = r.result || r.data || r;
+    window._lastParsed = result; // Store for save functions
+    // Check for dual product
+    if (result.second_product && result.second_product.product) {
+      await renderDualProduct(result);
+    } else {
+      renderParserFields(result);
+      document.getElementById('parserActions').style.display = 'flex';
+    }
+    toast('Policy parsed successfully!', 'success');
+  } catch(e) { toast('Parse error: ' + e.message, 'error'); }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fa fa-wand-magic-sparkles"></i> Parse with AI';
+}
+
+async function renderDualProduct(data) {
+  // Auto-find correct DB match for each product
+  const lenderName = data.lender_name || '';
+  const prod1Type = data.product_type || data.product || '';
+  const sp = data.second_product || {};
+  const prod2Type = sp.product || '';
+  if (lenderName && prod1Type) {
+    try {
+      const r1 = await fetch(API+'?action=find_lender&name='+encodeURIComponent(lenderName)+'&product='+encodeURIComponent(prod1Type)).then(d=>d.json());
+      if (r1.success && r1.data) data.matched_lender_id = r1.data.id;
+    } catch(e){}
+  }
+  if (lenderName && prod2Type) {
+    try {
+      const r2 = await fetch(API+'?action=find_lender&name='+encodeURIComponent(lenderName)+'&product='+encodeURIComponent(prod2Type)).then(d=>d.json());
+      if (r2.success && r2.data) { data.second_product.matched_lender_id = r2.data.id; sp.matched_lender_id = r2.data.id; }
+    } catch(e){}
+  }
+  const pl = document.getElementById('parserPlaceholder');
+  const pf = document.getElementById('parserFields');
+  const pa = document.getElementById('parserActions');
+  pl.style.display = 'none';
+  pa.style.display = 'none';
+
+  // sp already declared above
+  // lenderName already declared above
+  const prod1Name = data.product_type || data.product || 'Product 1';
+
+  // Build product 2 data by merging base data with second_product overrides
+  const prod2 = Object.assign({}, data, {
+    product: sp.product,
+    product_type: sp.product,
+    matched_lender_id: sp.matched_lender_id || data.matched_lender_id,
+    roi_min: sp.roi_min || null,
+    roi_max: sp.roi_max || null,
+    loan_min_lakh: sp.loan_min_lakh || null,
+    loan_max_lakh: sp.loan_max_lakh || null,
+    max_ltv: sp.max_ltv || data.max_ltv,
+    second_product: null,
+    dual_product_note: null
+  });
+
+  const skip = ['confidence_score','missing_fields','raw_text','human_review_required',
+                'searchable_text','ltv_matrix','tenure_matrix','second_product','dual_product_note'];
+
+  function fieldRows(d) {
+    return Object.entries(d).filter(([k,v]) => !skip.includes(k) && v !== null && v !== undefined && v !== '')
+      .map(([k,v]) => `<div style="display:flex;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border);gap:8px">
+        <div style="font-size:11px;font-weight:700;color:var(--muted);min-width:130px;text-transform:capitalize">${k.replace(/_/g,' ')}</div>
+        <div style="font-size:12px;color:var(--text);flex:1">${typeof v === 'object' ? JSON.stringify(v) : v}</div>
+      </div>`).join('');
+  }
+
+  pf.style.display = 'block';
+  pf.innerHTML = `
+    <div style="background:var(--amber-lt);border:1px solid var(--amber);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:var(--amber-dk);font-weight:600">
+      <i class="fa fa-triangle-exclamation"></i> <strong>Dual Product Detected</strong> — ${lenderName} offers both
+      <strong>${data.product_type||'Product 1'}</strong> and <strong>${sp.product}</strong>.
+      Review and save each as a separate record below.
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card" style="padding:0">
+        <div style="padding:10px 14px;background:var(--navy-lt);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:800;color:var(--navy)">Product 1: ${prod1Name}</div>
+          <span class="badge b-navy">ROI: ${data.roi_min ? data.roi_min+'% – '+data.roi_max+'%' : 'On request'}</span>
+        </div>
+        <div style="padding:10px 14px;max-height:400px;overflow-y:auto">${fieldRows(data)}</div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-orange btn-sm" onclick="saveDualProduct(1)"><i class="fa fa-plus"></i> Save Product 1</button>
+          <button class="btn btn-primary btn-sm" onclick="updateDualProduct(1)"><i class="fa fa-floppy-disk"></i> Update Existing</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0">
+        <div style="padding:10px 14px;background:var(--green-lt);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:800;color:var(--green)">Product 2: ${sp.product}</div>
+          <span class="badge b-active">ROI: ${sp.roi_min ? sp.roi_min+'% – '+sp.roi_max+'%' : 'On request'}</span>
+        </div>
+        <div style="padding:10px 14px;max-height:400px;overflow-y:auto">${fieldRows(prod2)}</div>
+        <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-orange btn-sm" onclick="saveDualProduct(2)"><i class="fa fa-plus"></i> Save Product 2</button>
+          <button class="btn btn-primary btn-sm" onclick="updateDualProduct(2)"><i class="fa fa-floppy-disk"></i> Update Existing</button>
+        </div>
+      </div>
+    </div>`;
+
+  // Store for save functions
+  window._dualProd1 = data;
+  window._dualProd2 = prod2;
+}
+
+async function saveDualProduct(num) {
+  let data = num === 1 ? window._dualProd1 : window._dualProd2;
+  if (!data) { toast('No data to save', 'error'); return; }
+  const btn = document.querySelector('[onclick="saveDualProduct('+num+')"]');
+  const otherBtn = document.querySelector('[onclick="saveDualProduct('+(num===1?2:1)+')"]');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
+  let text = document.getElementById('policyText').value.trim();
+  try {
+    let r = await fetch('/api/admin/policy_parser.php', {
+      method:'POST', headers:{'Content-Type':'application/json','X-Admin-Key':'WM_ADMIN_2025'},
+      body: JSON.stringify({action:'save', fields:data, existing_id:0, raw_text:text})
+    }).then(d=>d.json());
+    if (r.type === 'created') {
+      toast('\u2705 Product ' + num + ' saved! ID: ' + r.id, 'success');
+      if (btn) { btn.innerHTML = '\u2705 Saved (ID: '+r.id+')'; btn.style.background = 'var(--green)'; }
+      if (num === 1) window._dualProd1 = null;
+      if (num === 2) window._dualProd2 = null;
+      if (!window._dualProd1 && !window._dualProd2) {
+        setTimeout(() => {
+          document.getElementById('policyText').value = '';
+          document.getElementById('parserFields').style.display = 'none';
+          document.getElementById('parserFields').innerHTML = '';
+          document.getElementById('parserPlaceholder').style.display = 'flex';
+          document.getElementById('parserActions').style.display = 'none';
+        }, 1500);
+      }
+    } else {
+      toast(r.message || 'Save failed', 'error');
+      if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-plus"></i> Save Product '+num; btn.style.background = ''; }
+    }
+  } catch(e) {
+    toast('Error: ' + e.message, 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-plus"></i> Save Product '+num; btn.style.background = ''; }
+  }
+}
+async function updateDualProduct(num) {
+  let data = num === 1 ? window._dualProd1 : window._dualProd2;
+  if (!data) { toast('No data to save', 'error'); return; }
+  const existingId = data.matched_lender_id || 0;
+  if (!existingId) { toast('No matched lender ID — use Save as New instead', 'warning'); return; }
+  await showDiffView(data, existingId);
+}
+
+function renderParserFields(data) {
+  let pl = document.getElementById('parserPlaceholder');
+  let pf = document.getElementById('parserFields');
+  pl.style.display = 'none';
+  const conf = data.confidence_score || 0;
+  document.getElementById('parserConfidence').textContent = conf ? `Confidence: ${conf}%` : '';
+  const fields = data.extracted || data;
+  let skip = ['confidence_score','missing_fields','raw_text','human_review_required'];
+  pf.innerHTML = Object.entries(fields).filter(([k])=>!skip.includes(k)).map(([k,v]) => {
+    if (!v) return '';
+    return `<div style="display:flex;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);gap:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);min-width:140px;text-transform:capitalize">${k.replace(/_/g,' ')}</div>
+      <div style="font-size:12.5px;color:var(--text);flex:1">${typeof v === 'object' ? JSON.stringify(v) : v}</div>
+    </div>`;
+  }).join('');
+  if (data.missing_fields && data.missing_fields.length) {
+    pf.innerHTML += `<div style="margin-top:12px;padding:10px;background:var(--amber-lt);border-radius:8px;font-size:12px;color:var(--amber)">
+      <i class="fa fa-triangle-exclamation"></i> <strong>Missing fields:</strong> ${data.missing_fields.join(', ')}
+    </div>`;
+  }
+  pf.style.display = 'block';
+}
+
+async function savePolicy(mode) {
+  let text = document.getElementById('policyText').value.trim();
+  if (!text) { toast('No parsed data to save', 'error'); return; }
+  const parsed = window._lastParsed;
+  if (!parsed) { toast('Please parse the policy first', 'error'); return; }
+  let existingId = mode === 'update' ? (parsed.matched_lender_id || 0) : 0;
+  // For update — show diff view first
+  if (mode === 'update' && existingId) {
+    await showDiffView(parsed, existingId);
+    return;
+  }
+  // For save as new — direct save
+  let btn = document.querySelector('[onclick="savePolicy(\'new\')"]');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
+  try {
+    let r = await fetch('/api/admin/policy_parser.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','X-Admin-Key':'WM_ADMIN_2025'},
+      body: JSON.stringify({action:'save', fields: parsed, existing_id: 0, raw_text: text})
+    }).then(d => d.json());
+    if (r.type === 'created') {
+      toast('✅ New lender saved! ID: ' + r.id + (r.qdrant_synced ? ' + Qdrant synced' : ''), 'success');
+    } else {
+      toast(r.message || 'Save failed', 'error');
+    }
+  } catch(e) { toast('Save error: ' + e.message, 'error'); }
+  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-plus"></i> Save as New'; }
+}
+
+// ═══ AUDIT LOGS ═══
+async function loadAuditLogs() {
+  let tbody = document.getElementById('auditTable');
+  try {
+    let r = await fetch(API + '?action=audit_list', {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--muted)">No logs found</td></tr>'; return; }
+    tbody.innerHTML = r.data.slice(0,100).map((l,i) => `<tr>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td style="font-size:12px;font-weight:600">${l.user_name||l.admin_id||'System'}</td>
+      <td><span class="badge b-navy" style="font-size:10px">${l.action||'—'}</span></td>
+      <td style="font-size:11.5px;color:var(--muted)">${l.entity_type||'—'}</td>
+      <td style="font-size:12px;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.description||l.details||'—'}</td>
+      <td style="font-family:monospace;font-size:11px;color:var(--muted)">${l.ip_address||'—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${timeAgo(l.created_at)}</td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+// ═══ OVERDUE BADGE ═══
+async function loadOverdueBadge() {
+  try {
+    let r = await fetch(API + '?action=summary', {credentials:'include'}).then(d=>d.json());
+    if (r.success && r.data.followups_overdue > 0) {
+      let el = document.getElementById('sbOverdueCount');
+      el.textContent = r.data.followups_overdue;
+      el.style.display = 'inline';
+      document.getElementById('tbNotifDot').style.display = 'block';
+    }
+  } catch(e){}
+}
+
+// ═══ DEPLOY ═══
+function confirmDeploy() {
+  const notes = document.getElementById('deployNotes').value;
+  if (!notes.trim()) { toast('Please add deploy notes before deploying', 'error'); return; }
+  showConfirm('Deploy to Production', 'Are you sure you want to deploy staging to production? This will update the live wealthmetre.com site.', () => {
+    toast('Deploy initiated — check server logs for progress', 'info');
+  });
+}
+
+// ═══ PAGINATION ═══
+function renderPagination(containerId, pg, loadFn) {
+  let el = document.getElementById(containerId);
+  if (!el || pg.total_pages <= 1) { if(el) el.innerHTML=''; return; }
+  let btns = '';
+  for (let i = 1; i <= Math.min(pg.total_pages, 7); i++) {
+    btns += `<button onclick="${loadFn.name}(${i})" class="btn btn-xs ${i===pg.page?'btn-primary':'btn-ghost'}">${i}</button>`;
+  }
+  if (pg.total_pages > 7) btns += `<span style="padding:0 4px;font-size:11px;color:var(--muted)">... ${pg.total_pages}</span>`;
+  el.innerHTML = btns;
+}
+
+// ═══ MODAL ═══
+function showConfirm(title, msg, onOk) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMsg').textContent = msg;
+  document.getElementById('confirmOkBtn').onclick = () => { closeModal('confirmModal'); onOk(); };
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ═══ TOAST ═══
+function toast(msg, type='info') {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  const icons = {success:'fa-check-circle',error:'fa-circle-xmark',info:'fa-circle-info',warning:'fa-triangle-exclamation'};
+  t.innerHTML = `<i class="fa ${icons[type]||'fa-circle-info'}"></i>${msg}`;
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ═══ UTILS ═══
+function fmtNum(n) { return n ? parseInt(n).toLocaleString('en-IN') : '0'; }
+function maskMobile(m) { if(!m) return '—'; const s=m.replace(/\D/g,''); return s.length>=10 ? s.slice(0,2)+'****'+s.slice(-4) : m; }
+function fmtDate(d) { if(!d) return '—'; try { return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}); } catch(e){return d;} }
+function isToday(d) { if(!d) return false; const t=new Date(); const dt=new Date(d); return t.toDateString()===dt.toDateString(); }
+function timeAgo(d) {
+  if(!d) return '—';
+  const diff = (Date.now()-new Date(d))/1000;
+  if(diff<60) return 'just now';
+  if(diff<3600) return Math.round(diff/60)+'m ago';
+  if(diff<86400) return Math.round(diff/3600)+'h ago';
+  if(diff<604800) return Math.round(diff/86400)+'d ago';
+  return fmtDate(d);
+}
+const spinner = '<div style="width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block"></div>';
+
+// ═══ TOKEN AUTH PATCH ═══
+let authToken = localStorage.getItem('wm_admin_token') || '';
+async function apiFetch(url, opts={}) {
+  const headers = {'Content-Type':'application/json', ...(opts.headers||{})};
+  if (authToken) headers['X-Auth-Token'] = authToken;
+  return fetch(url, {credentials:'include', ...opts, headers}).then(r=>r.json());
+}
+// Override checkAuth to use token
+const _origCheckAuth = checkAuth;
+checkAuth = async function() {
+  try {
+    let headers = {'Content-Type':'application/json'};
+    if (authToken) headers['X-Auth-Token'] = authToken;
+    let d = await fetch(AUTH+'?action=check',{credentials:'include',headers}).then(r=>r.json());
+    if (!d.success) { window.location.href='/admin/owner_login.html'; return; }
+    let user = d.data;
+    document.getElementById('sbName').textContent = user.name;
+    document.getElementById('sbRole').textContent = user.role;
+    document.getElementById('sbAvatar').textContent = user.name.charAt(0).toUpperCase();
+    document.getElementById('tbName').textContent = user.name.split(' ')[0];
+    document.getElementById('tbAvatar').textContent = user.name.charAt(0).toUpperCase();
+    if(document.getElementById('ownerName')) document.getElementById('ownerName').value = user.name;
+    if(document.getElementById('ownerEmail')) document.getElementById('ownerEmail').value = user.email;
+  } catch(e) { window.location.href='/admin/owner_login.html'; }
+};
+// Override all API fetches to include token header
+const _origLoadDashboard = loadDashboard;
+loadDashboard = async function() {
+  renderStatSkeletons();
+  try {
+    let h = authToken ? {'X-Auth-Token':authToken} : {};
+    const [sumRes,chartRes,actRes] = await Promise.all([
+      fetch(API+'?action=summary',{credentials:'include',headers:h}).then(r=>r.json()),
+      fetch(API+'?action=charts',{credentials:'include',headers:h}).then(r=>r.json()),
+      fetch(API+'?action=activity',{credentials:'include',headers:h}).then(r=>r.json())
+    ]);
+    if(sumRes.success) renderStats(sumRes.data);
+    if(chartRes.success) renderCharts(chartRes.data);
+    if(actRes.success) renderActivity(actRes.data);
+  } catch(e) { toast('Failed to load dashboard','error'); }
+};
+
+// ═══ FETCH INTERCEPTOR — auto-inject auth token ═══
+const _origFetch = window.fetch;
+window.fetch = function(url, opts={}) {
+  if (typeof url === 'string' && url.includes('/api/')) {
+    const token = localStorage.getItem('wm_admin_token') || authToken || '';
+    if (token) {
+      opts.headers = opts.headers || {};
+      opts.headers['X-Auth-Token'] = token;
+      opts.credentials = opts.credentials || 'include';
+    }
+  }
+  return _origFetch(url, opts);
+};
+
+// ═══ LENDER EDIT ═══
+async function openLenderEdit(id) {
+  try {
+    let r = await fetch(API + '?action=get_lender&id=' + id).then(d=>d.json());
+    if (!r.success || !r.data) { toast('Failed to load lender', 'error'); return; }
+    const l = r.data;
+    document.getElementById('editLenderId').value = id;
+    document.getElementById('el_name').value = l.lender_name || '';
+    document.getElementById('el_type').value = l.lender_type || 'nbfc';
+    document.getElementById('el_roi_min').value = l.roi_min || '';
+    document.getElementById('el_roi_max').value = l.roi_max || '';
+    document.getElementById('el_ltv').value = l.max_ltv || '';
+    document.getElementById('el_cibil').value = l.min_cibil || '';
+    document.getElementById('el_foir').value = l.max_foir_pct || '';
+    document.getElementById('el_pf').value = l.processing_fee_pct || '';
+    document.getElementById('el_city_cov').value = l.city_coverage || 'rajasthan';
+    document.getElementById('el_status').value = l.status || 'active';
+    document.getElementById('el_sm_name').value = l.sales_manager_name || '';
+    document.getElementById('el_sm_mobile').value = l.sales_manager_mobile || '';
+    document.getElementById('el_notes').value = l.notes || '';
+    document.getElementById('el_programs').value = l.programs || '';
+    document.getElementById('lenderEditModal').classList.add('open');
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function saveLenderEdit() {
+  const id = document.getElementById('editLenderId').value;
+  let btn = document.getElementById('saveEditBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  let fields = {
+    lender_type: document.getElementById('el_type').value,
+    roi_min: document.getElementById('el_roi_min').value,
+    roi_max: document.getElementById('el_roi_max').value,
+    max_ltv: document.getElementById('el_ltv').value,
+    min_cibil: document.getElementById('el_cibil').value,
+    max_foir_pct: document.getElementById('el_foir').value,
+    processing_fee_pct: document.getElementById('el_pf').value,
+    city_coverage: document.getElementById('el_city_cov').value,
+    status: document.getElementById('el_status').value,
+    sales_manager_name: document.getElementById('el_sm_name').value,
+    sales_manager_mobile: document.getElementById('el_sm_mobile').value,
+    notes: document.getElementById('el_notes').value,
+    programs: document.getElementById('el_programs').value,
+  };
+  try {
+    let r = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'quick_update', id, fields})
+    }).then(d=>d.json());
+    if (r.success) {
+      toast('✅ Lender updated successfully', 'success');
+      closeModal('lenderEditModal');
+      loadLenders();
+    } else { toast(r.message || 'Update failed', 'error'); }
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fa fa-floppy-disk"></i> Save Changes';
+}
+
+// ═══ DIFF VIEW ═══
+let _diffData = null;
+let _diffExistingId = null;
+
+const DIFF_FIELDS = [
+  {k:'lender_name',l:'Lender Name'},{k:'product_type',l:'Product Type'},
+  {k:'lender_type',l:'Lender Type'},{k:'loan_category',l:'Loan Category'},
+  {k:'roi_min',l:'ROI Min %'},{k:'roi_max',l:'ROI Max %'},
+  {k:'max_ltv',l:'Max LTV %'},{k:'min_cibil',l:'Min CIBIL'},
+  {k:'max_foir_pct',l:'Max FOIR %'},{k:'city_coverage',l:'City Coverage'},
+  {k:'geo_limit_km',l:'Geo Limit KM'},{k:'loan_min_lakh',l:'Loan Min (L)'},
+  {k:'loan_max_lakh',l:'Loan Max (L)'},{k:'max_tenure_months',l:'Tenure (months)'},
+  {k:'processing_fee_pct',l:'Processing Fee %'},{k:'cibil_policy',l:'CIBIL Policy'},
+  {k:'surrogate_banking',l:'Surrogate: Banking'},{k:'surrogate_gst',l:'Surrogate: GST'},
+  {k:'surrogate_itr',l:'Surrogate: ITR'},{k:'surrogate_rtr',l:'Surrogate: RTR'},
+  {k:'surrogate_lip',l:'Surrogate: LIP'},{k:'surrogate_gross_profit',l:'Surrogate: Gross Profit'},
+  {k:'property_sorp_allowed',l:'Property: SORP'},{k:'property_socp_allowed',l:'Property: SOCP'},
+  {k:'property_rented_allowed',l:'Property: Rented'},{k:'property_land_allowed',l:'Property: Land'},
+  {k:'property_under_construction',l:'Property: UC'},
+  {k:'title_jda',l:'Title: JDA'},{k:'title_rhb',l:'Title: RHB'},
+  {k:'title_society_patta',l:'Title: Society Patta'},
+  {k:'title_gram_panchayat',l:'Title: Gram Panchayat'},
+  {k:'title_nagar_nigam',l:'Title: Nagar Nigam'},
+  {k:'title_riico',l:'Title: RIICO'},{k:'title_freehold',l:'Title: Freehold'},
+  {k:'cash_income_allowed',l:'Cash Income'},{k:'nip_allowed',l:'NIP Allowed'},
+  {k:'rental_income_considered',l:'Rental Income'},
+  {k:'sales_manager_name',l:'SM Name'},{k:'sales_manager_mobile',l:'SM Mobile'},
+  {k:'property_allowed',l:'Properties Allowed'},{k:'programs',l:'Programs'},
+  {k:'notes',l:'Notes'},{k:'special_profiles',l:'Special Profiles'},
+];
+
+async function showDiffView(newData, existingId) {
+  _diffData = newData;
+  _diffExistingId = existingId;
+  try {
+    let r = await fetch(API + '?action=get_lender&id=' + existingId).then(d=>d.json());
+    const current = r.data || {};
+    document.getElementById('diffLenderTitle').textContent =
+      (newData.lender_name||'?') + ' — ' + (newData.product_type||newData.product||'?') +
+      ' (DB ID: ' + existingId + ') — updating correct product record';
+    let currentHTML = '';
+    let newHTML = '';
+    let changedCount = 0;
+    // Normalize product_type using product as fallback
+    if (!newData.product_type && newData.product) newData.product_type = newData.product;
+    DIFF_FIELDS.forEach(f => {
+      const curVal = current[f.k];
+      const newVal = newData[f.k];
+      const curStr = (curVal === null || curVal === undefined || curVal === '') ? '—' : String(curVal);
+      const newStr = (newVal === null || newVal === undefined || newVal === '') ? '—' : String(newVal);
+      const isChanged = curStr !== newStr && newStr !== '—';
+      const isNew = (curStr === '—' || curStr === '0') && newStr !== '—' && newStr !== '0';
+      const rowBg = isNew ? 'background:rgba(22,163,74,.08)' : isChanged ? 'background:rgba(217,119,6,.08)' : '';
+      const icon = isNew ? '<i class="fa fa-plus-circle" style="color:var(--green);margin-right:4px"></i>' :
+                   isChanged ? '<i class="fa fa-arrow-right" style="color:var(--amber);margin-right:4px"></i>' : '';
+      if (isChanged || isNew) changedCount++;
+      const rowStyle = `display:flex;align-items:flex-start;padding:7px 12px;border-bottom:1px solid var(--border);gap:8px;${rowBg}`;
+      currentHTML += `<div style="${rowStyle}">
+        <span style="font-size:10.5px;font-weight:700;color:var(--muted);min-width:140px">${f.l}</span>
+        <span style="font-size:12px;color:${isChanged&&!isNew?'var(--red)':'var(--text-soft)'}">${curStr}</span>
+      </div>`;
+      newHTML += `<div style="${rowStyle}">
+        <span style="font-size:10.5px;font-weight:700;color:var(--muted);min-width:140px">${icon}${f.l}</span>
+        <span style="font-size:12px;font-weight:${isChanged||isNew?'700':'400'};color:${isNew?'var(--green)':isChanged?'var(--amber-dk)':'var(--text-soft)'}">${newStr}</span>
+      </div>`;
+    });
+    document.getElementById('diffCurrentCol').innerHTML = currentHTML;
+    document.getElementById('diffNewCol').innerHTML = newHTML;
+    document.getElementById('diffSaveBtn').innerHTML =
+      `<i class="fa fa-floppy-disk"></i> Confirm Update (${changedCount} changes)`;
+    document.getElementById('lenderDiffModal').classList.add('open');
+  } catch(e) { toast('Error loading diff: ' + e.message, 'error'); }
+}
+
+async function confirmDiffSave() {
+  if (!_diffData || !_diffExistingId) return;
+  let btn = document.getElementById('diffSaveBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+  try {
+    let r = await fetch('/api/admin/policy_parser.php', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Admin-Key':'WM_ADMIN_2025'},
+      body: JSON.stringify({action:'save', fields:_diffData, existing_id:_diffExistingId, raw_text:''})
+    }).then(d=>d.json());
+    if (r.type === 'updated') {
+      toast('✅ Lender updated! ID: ' + r.id + (r.qdrant_synced?' + Qdrant synced':''), 'success');
+      closeModal('lenderDiffModal');
+      loadLenders();
+    } else { toast(r.message||'Update failed','error'); }
+  } catch(e) { toast('Error: '+e.message,'error'); }
+  btn.disabled = false;
+}
+
+// SM MANAGEMENT
+var _currentSmLenderId = null;
+var _smCache = {};
+
+async function openSmModal(lenderId, lenderName) {
+  let _currentSmLenderId = lenderId;
+  document.getElementById('smLenderId').value = lenderId;
+  document.getElementById('smModalTitle').textContent = lenderName;
+  document.getElementById('smModal').classList.add('open');
+  await loadSmList(lenderId);
+}
+
+async function loadSmList(lenderId) {
+  let el = document.getElementById('smListContainer');
+  el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+  try {
+    let r = await fetch(API + '?action=get_sms&lender_id=' + lenderId).then(function(d){return d.json();});
+    // Cache SMs for edit lookup
+    if(r.success && r.data) { r.data.forEach(function(s){ _smCache[s.id] = s; }); }
+    if (!r.success || !r.data.length) {
+      el.innerHTML = '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px">No SMs found</div>';
+      return;
+    }
+    var desigColors = {'SM':'b-navy','ASM':'b-teal','RSM':'b-purple','RM':'b-orange','BM':'b-gold','ZM':'b-high','Senior SM':'b-purple','DSA':'b-pending','Partner':'b-active'};
+    el.innerHTML = r.data.map(function(sm) {
+      var badge = desigColors[sm.designation] || 'b-navy';
+      var initial = (sm.sm_name||'?').charAt(0).toUpperCase();
+      var waLink = sm.sm_mobile ? 'https://wa.me/91'+sm.sm_mobile.replace(/\D/g,'') : '#';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;margin-bottom:7px;background:'+(sm.is_active?'#fff':'#f5f5f5')+';opacity:'+(sm.is_active?1:0.65)+'">'
+        + '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;flex-shrink:0">'+initial+'</div>'
+        + '<div style="flex:1;min-width:0">'
+        +   '<div style="font-size:13px;font-weight:700">'+sm.sm_name+'</div>'
+        +   '<div style="font-size:11px;color:var(--muted);margin-top:2px">'+(sm.sm_mobile||'')+(sm.program_type?' &middot; '+sm.program_type:'')+(sm.territory?' &middot; '+sm.territory:'')+(sm.deactivation_reason?' &middot; <span style="color:var(--red)">'+sm.deactivation_reason+'</span>':'')+'</div>'
+        + '</div>'
+        + '<span class="badge '+badge+'">'+sm.designation+'</span>'
+        + '<div style="display:flex;gap:4px">'
+        +   '<button class="btn btn-outline btn-xs" onclick="editSmEntry('+sm.id+')" title="Edit"><i class="fa fa-pen"></i></button>'
+        +   '<button class="btn '+(sm.is_active?'btn-ghost':'btn-green')+' btn-xs" onclick="toggleSmAction('+sm.id+','+(sm.is_active?1:0)+')" title="'+(sm.is_active?'Deactivate':'Reactivate')+'"><i class="fa fa-'+(sm.is_active?'ban':'check')+'"></i></button>'
+        +   '<a href="'+waLink+'" target="_blank" class="btn btn-ghost btn-xs"><i class="fab fa-whatsapp"></i></a>'
+        + '</div>'
+        + '</div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<div style="color:var(--red);padding:12px">Error</div>'; }
+}
+
+function editSmEntry(id) {
+  var sm = _smCache[id] || {};
+  document.getElementById('editSmId').value = sm.id;
+  document.getElementById('sm_name').value = sm.sm_name || '';
+  document.getElementById('sm_mobile').value = sm.sm_mobile || '';
+  document.getElementById('sm_desig').value = sm.designation || 'SM';
+  document.getElementById('sm_program').value = sm.program_type || '';
+  document.getElementById('sm_territory').value = sm.territory || '';
+  document.getElementById('sm_notes').value = sm.notes || '';
+  document.getElementById('smSaveBtn').innerHTML = '<i class="fa fa-floppy-disk"></i> Update SM';
+}
+
+function clearSmForm() {
+  ['editSmId','sm_name','sm_mobile','sm_program','sm_territory','sm_notes'].forEach(function(i){ document.getElementById(i).value=''; });
+  document.getElementById('sm_desig').value = 'SM';
+  document.getElementById('smSaveBtn').innerHTML = '<i class="fa fa-floppy-disk"></i> Save SM';
+}
+
+async function saveSmEntry() {
+  var name = document.getElementById('sm_name').value.trim();
+  var editId = document.getElementById('editSmId').value;
+  if (!name) { toast('SM name required','error'); return; }
+  let btn = document.getElementById('smSaveBtn');
+  btn.disabled = true;
+  var payload = {
+    lender_id: _currentSmLenderId, id: editId||null,
+    sm_name: name, sm_mobile: document.getElementById('sm_mobile').value.trim(),
+    designation: document.getElementById('sm_desig').value,
+    program_type: document.getElementById('sm_program').value.trim(),
+    territory: document.getElementById('sm_territory').value.trim(),
+    notes: document.getElementById('sm_notes').value.trim()
+  };
+  var action = editId ? 'update_sm' : 'add_sm';
+  try {
+    let r = await fetch(API, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({action:action},payload))}).then(function(d){return d.json();});
+    if (r.success) { toast(editId?'SM updated':'SM added','success'); clearSmForm(); await loadSmList(_currentSmLenderId); }
+    else toast(r.message||'Failed','error');
+  } catch(e) { toast('Error','error'); }
+  btn.disabled = false;
+}
+
+async function toggleSmAction(id, isActive) {
+  if (isActive) {
+    var reasons = ['Resigned','Transferred','Promoted','Left industry','Wrong entry','Other'];
+    var html = '<div style="font-size:13px;margin-bottom:10px">Select deactivation reason:</div><div style="display:flex;flex-wrap:wrap;gap:4px">'
+      + reasons.map(function(r){ return '<button onclick="doDeactivateSm('+id+',this)" data-reason="'+r+'" class="btn btn-ghost btn-sm" style="font-size:11.5px">'+r+'</button>'; }).join('')
+      + '</div>';
+    document.getElementById('confirmTitle').textContent = 'Deactivate SM';
+    document.getElementById('confirmMsg').innerHTML = html;
+    document.getElementById('confirmOkBtn').style.display = 'none';
+    document.getElementById('confirmModal').classList.add('open');
+  } else {
+    let r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'toggle_sm',id:id,reason:''})}).then(function(d){return d.json();});
+    if(r.success){toast('SM reactivated','success');await loadSmList(_currentSmLenderId);}
+  }
+}
+
+async function doDeactivateSm(id, btn) {
+  var reason = btn.getAttribute('data-reason') || btn.dataset.reason || '';
+  btn.style.background='var(--navy)';btn.style.color='#fff';
+  let r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'toggle_sm',id:id,reason:reason})}).then(function(d){return d.json();});
+  if(r.success){toast('SM deactivated: '+reason,'info');closeModal('confirmModal');document.getElementById('confirmOkBtn').style.display='';await loadSmList(_currentSmLenderId);}
+}
+
+async function addSmFromDiff(name, mobile, designation, lenderId) {
+  let r = await fetch(API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'add_sm',lender_id:lenderId,sm_name:name,sm_mobile:mobile,designation:designation||'SM'})}).then(function(d){return d.json();});
+  toast(r.success?'SM added: '+name:(r.message||'Failed'),r.success?'success':'error');
+}
+
+// ═══ LENDER DETAIL (Full Policy View) ═══
+async function openLenderDetail(id) {
+  try {
+    const r = await fetch(API + '?action=get_lender&id=' + id).then(d=>d.json());
+    if (!r.success || !r.data) { toast('Failed to load lender', 'error'); return; }
+    const l = r.data;
+    document.getElementById('ldId').value = id;
+    document.getElementById('ldTitle').textContent = l.lender_name + ' — ' + (l.product_type||l.product||'');
+
+    // Fill all fields
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.value = val||''; };
+    set('ld_name', l.lender_name); set('ld_type', l.lender_type);
+    set('ld_product', l.product_type||l.product); set('ld_loan_cat', l.loan_category);
+    set('ld_roi_min', l.roi_min); set('ld_roi_max', l.roi_max);
+    set('ld_ltv', l.max_ltv); set('ld_cibil', l.min_cibil);
+    set('ld_foir', l.max_foir_pct); set('ld_pf', l.processing_fee_pct);
+    set('ld_loan_min', l.loan_min_lakh); set('ld_loan_max', l.loan_max_lakh);
+    set('ld_tenure', l.max_tenure_months); set('ld_geo_km', l.geo_limit_km);
+    set('ld_city_cov', l.city_coverage); set('ld_city', l.city||l.city_allowed);
+    set('ld_cibil_policy', l.cibil_policy); set('ld_status', l.status);
+    set('ld_sm_name', l.sales_manager_name); set('ld_sm_mobile', l.sales_manager_mobile);
+    setWcProducts(l.wc_products||'');
+    set('ld_property_allowed', l.property_allowed); set('ld_income_types', l.income_types);
+    set('ld_programs', l.programs); set('ld_notes', l.notes);
+    set('ld_special', l.special_profiles); set('ld_products_supported', l.products_supported);
+
+    // Checkboxes
+    const chk = (id, val) => { const el = document.getElementById(id); if(el) el.checked = !!parseInt(val||0); };
+    chk('ld_sur_banking', l.surrogate_banking); chk('ld_sur_gst', l.surrogate_gst);
+    chk('ld_sur_itr', l.surrogate_itr); chk('ld_sur_rtr', l.surrogate_rtr);
+    chk('ld_sur_lip', l.surrogate_lip); chk('ld_sur_gp', l.surrogate_gross_profit);
+    chk('ld_sur_lowltv', l.surrogate_low_ltv);
+    chk('ld_prop_sorp', l.property_sorp_allowed); chk('ld_prop_socp', l.property_socp_allowed);
+    chk('ld_prop_soip', l.property_soip_allowed); chk('ld_prop_rented', l.property_rented_allowed);
+    chk('ld_prop_land', l.property_land_allowed); chk('ld_prop_uc', l.property_under_construction);
+    chk('ld_title_jda', l.title_jda); chk('ld_title_rhb', l.title_rhb);
+    chk('ld_title_soc', l.title_society_patta); chk('ld_title_gp', l.title_gram_panchayat);
+    chk('ld_title_nn', l.title_nagar_nigam); chk('ld_title_riico', l.title_riico);
+    chk('ld_title_fh', l.title_freehold); chk('ld_cash', l.cash_income_allowed);
+    chk('ld_nip', l.nip_allowed); chk('ld_rental', l.rental_income_considered);
+    chk('ld_neg_bureau', l.negative_bureau_allowed);
+
+    document.getElementById('lenderDetailModal').classList.add('open');
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function saveLenderDetail() {
+  const id = document.getElementById('ldId').value;
+  const btn = document.getElementById('ldSaveBtn');
+  btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...';
+
+  const get = (id) => document.getElementById(id)?.value || '';
+  const chkVal = (id) => document.getElementById(id)?.checked ? 1 : 0;
+
+  const fields = {
+    lender_name: get('ld_name'), lender_type: get('ld_type'),
+    product_type: get('ld_product'), loan_category: get('ld_loan_cat'),
+    roi_min: get('ld_roi_min'), roi_max: get('ld_roi_max'),
+    max_ltv: get('ld_ltv'), min_cibil: get('ld_cibil'),
+    max_foir_pct: get('ld_foir'), processing_fee_pct: get('ld_pf'),
+    loan_min_lakh: get('ld_loan_min'), loan_max_lakh: get('ld_loan_max'),
+    max_tenure_months: get('ld_tenure'), geo_limit_km: get('ld_geo_km'),
+    city_coverage: get('ld_city_cov'), city: get('ld_city'),
+    cibil_policy: get('ld_cibil_policy'), status: get('ld_status'),
+    sales_manager_name: get('ld_sm_name'), sales_manager_mobile: get('ld_sm_mobile'),
+    property_allowed: get('ld_property_allowed'), income_types: get('ld_income_types'),
+    programs: get('ld_programs'), notes: get('ld_notes'),
+    special_profiles: get('ld_special'), products_supported: get('ld_products_supported'),
+    surrogate_banking: chkVal('ld_sur_banking'), surrogate_gst: chkVal('ld_sur_gst'),
+    surrogate_itr: chkVal('ld_sur_itr'), surrogate_rtr: chkVal('ld_sur_rtr'),
+    surrogate_lip: chkVal('ld_sur_lip'), surrogate_gross_profit: chkVal('ld_sur_gp'),
+    surrogate_low_ltv: chkVal('ld_sur_lowltv'),
+    property_sorp_allowed: chkVal('ld_prop_sorp'), property_socp_allowed: chkVal('ld_prop_socp'),
+    property_soip_allowed: chkVal('ld_prop_soip'), property_rented_allowed: chkVal('ld_prop_rented'),
+    property_land_allowed: chkVal('ld_prop_land'), property_under_construction: chkVal('ld_prop_uc'),
+    title_jda: chkVal('ld_title_jda'), title_rhb: chkVal('ld_title_rhb'),
+    title_society_patta: chkVal('ld_title_soc'), title_gram_panchayat: chkVal('ld_title_gp'),
+    title_nagar_nigam: chkVal('ld_title_nn'), title_riico: chkVal('ld_title_riico'),
+    title_freehold: chkVal('ld_title_fh'), cash_income_allowed: chkVal('ld_cash'),
+    nip_allowed: chkVal('ld_nip'), rental_income_considered: chkVal('ld_rental'),
+    negative_bureau_allowed: chkVal('ld_neg_bureau'),
+  };
+
+  try {
+    const r = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'full_update', id, fields})
+    }).then(d=>d.json());
+    if (r.success) {
+      toast('✅ Lender saved successfully', 'success');
+      closeModal('lenderDetailModal');
+      loadLenders();
+    } else toast(r.message||'Failed', 'error');
+  } catch(e) { toast('Error: '+e.message, 'error'); }
+  btn.disabled = false; btn.innerHTML = '<i class="fa fa-floppy-disk"></i> Save All Changes';
+}
+// Working Capital Products helpers
+function wcCheckChange() {
+  const othersChecked = document.getElementById('ld_wc_others')?.checked;
+  const wrap = document.getElementById('ld_wc_others_wrap');
+  if (wrap) wrap.style.display = othersChecked ? 'block' : 'none';
+}
+
+function getWcProducts() {
+  const map = {
+    'ld_wc_ccod':'cc_od', 'ld_wc_dlod':'dlod', 'ld_wc_term':'term_loan',
+    'ld_wc_bg':'bg', 'ld_wc_lc':'lc', 'ld_wc_epc':'epc',
+    'ld_wc_pcfc':'pcfc', 'ld_wc_others':'others'
+  };
+  const selected = [];
+  Object.entries(map).forEach(([id, val]) => {
+    if (document.getElementById(id)?.checked) {
+      if (val === 'others') {
+        const txt = document.getElementById('ld_wc_others_text')?.value?.trim();
+        if (txt) selected.push('others:' + txt);
+        else selected.push('others');
+      } else {
+        selected.push(val);
+      }
+    }
+  });
+  return selected.join(',');
+}
+
+function setWcProducts(val) {
+  const map = {
+    'cc_od':'ld_wc_ccod', 'dlod':'ld_wc_dlod', 'term_loan':'ld_wc_term',
+    'bg':'ld_wc_bg', 'lc':'ld_wc_lc', 'epc':'ld_wc_epc',
+    'pcfc':'ld_wc_pcfc'
+  };
+  // Reset all
+  Object.values(map).forEach(id => { const el = document.getElementById(id); if(el) el.checked = false; });
+  const othersEl = document.getElementById('ld_wc_others');
+  const othersWrap = document.getElementById('ld_wc_others_wrap');
+  const othersText = document.getElementById('ld_wc_others_text');
+  if(othersEl) othersEl.checked = false;
+  if(othersWrap) othersWrap.style.display = 'none';
+  if(!val) return;
+  val.split(',').forEach(v => {
+    v = v.trim();
+    if (map[v]) {
+      const el = document.getElementById(map[v]);
+      if(el) el.checked = true;
+    } else if (v.startsWith('others')) {
+      if(othersEl) othersEl.checked = true;
+      if(othersWrap) othersWrap.style.display = 'block';
+      const txt = v.includes(':') ? v.split(':').slice(1).join(':') : '';
+      if(othersText) othersText.value = txt;
+    }
+  });
+}
+// DIVA LEAD DETAIL
+function openDivaLead(d) {
+  const loanLabels = {'lap':'LAP','home':'Home Loan','business':'Business Loan','personal':'Personal Loan','car':'Car Loan'};
+  document.getElementById('divaLeadTitle').textContent = (d.name||'Anonymous') + ' — ' + (loanLabels[d.product_type]||d.product_type||'Unknown');
+  const body = document.getElementById('divaLeadBody');
+  const rows = [
+    ['Name', d.name||'—'],
+    ['Mobile', d.mobile ? '<a href="tel:+91'+d.mobile+'" style="color:var(--navy);font-weight:700">+91 '+d.mobile+'</a>' : '—'],
+    ['City', d.city||'—'],
+    ['Loan Type', loanLabels[d.product_type]||d.product_type||'—'],
+    ['Loan Amount', d.loan_amount ? '₹'+fmtNum(parseInt(d.loan_amount)/100000)+' Lakh' : '—'],
+    ['Property Value', d.property_value ? '₹'+fmtNum(parseInt(d.property_value)/100000)+' Lakh' : '—'],
+    ['Monthly Income', d.monthly_income ? '₹'+fmtNum(d.monthly_income) : '—'],
+    ['Existing EMI', d.existing_emi > 0 ? '₹'+fmtNum(d.existing_emi) : 'No EMI'],
+    ['CIBIL Score', d.cibil_score||'—'],
+    ['Occupation', d.occupation||'—'],
+    ['Property Type', d.property_type||'—'],
+    ['Lead Score', d.lead_score ? d.lead_score+'/100' : '—'],
+    ['Status', (d.lead_status||'new').replace(/_/g,' ')],
+    ['Session ID', '<span style="font-family:monospace;font-size:11px">'+(d.session_id||'—')+'</span>'],
+    ['Created', d.created_at ? new Date(d.created_at).toLocaleString('en-IN') : '—'],
+  ];
+  body.innerHTML = rows.map(([k,v]) =>
+    '<div style="display:flex;padding:8px 0;border-bottom:1px solid var(--border);gap:12px">'
+    + '<span style="font-size:11.5px;font-weight:700;color:var(--muted);min-width:130px">'+k+'</span>'
+    + '<span style="font-size:13px;color:var(--text)">'+v+'</span>'
+    + '</div>'
+  ).join('');
+
+  // WhatsApp button
+  const waBtn = document.getElementById('divaLeadWa');
+  if (d.mobile) {
+    waBtn.href = 'https://wa.me/91'+d.mobile+'?text='+encodeURIComponent('Namaste '+( d.name||'')+'! WealthMetre se Diva AI se aapne '+( loanLabels[d.product_type]||'loan')+' ke bare mein baat ki thi. Kya aap abhi baat kar sakte hain?');
+    waBtn.style.display = 'inline-flex';
+  } else {
+    waBtn.style.display = 'none';
+  }
+  document.getElementById('divaLeadModal').classList.add('open');
+}
+// CRM LEAD DETAIL
+function openCrmLead(l) {
+  document.getElementById('crmLeadTitle').textContent = (l.name||'Lead') + ' — ' + (l.loan_type||'');
+  const body = document.getElementById('crmLeadBody');
+  const rows = [
+    ['Name', l.name||'—'],
+    ['Mobile', l.mobile ? `<a href="tel:+91${l.mobile}" style="color:var(--navy);font-weight:700">+91 ${l.mobile}</a>` : '—'],
+    ['City', l.city||'—'],
+    ['Loan Type', l.loan_type||'—'],
+    ['Loan Amount', l.loan_amount ? '₹'+fmtNum(parseInt(l.loan_amount)/100000)+' Lakh' : '—'],
+    ['Partner', l.partner_name||'—'],
+    ['Telecaller', l.telecaller_name||'—'],
+    ['Status', l.status||'—'],
+    ['Follow-up', l.followup_date ? fmtDate(l.followup_date) : '—'],
+    ['Source', l.source||'Upload'],
+    ['Notes', l.notes||'—'],
+    ['Created', l.created_at ? new Date(l.created_at).toLocaleString('en-IN') : '—'],
+  ];
+  body.innerHTML = rows.map(([k,v]) =>
+    `<div style="display:flex;padding:8px 0;border-bottom:1px solid var(--border);gap:12px">
+      <span style="font-size:11.5px;font-weight:700;color:var(--muted);min-width:120px">${k}</span>
+      <span style="font-size:13px;color:var(--text)">${v}</span>
+    </div>`
+  ).join('');
+  const waBtn = document.getElementById('crmLeadWa');
+  if (l.mobile) {
+    waBtn.href = 'https://wa.me/91'+l.mobile.replace(/\D/g,'');
+    waBtn.style.display = 'inline-flex';
+  } else { waBtn.style.display = 'none'; }
+  document.getElementById('crmLeadModal').classList.add('open');
+}
+// VIEW PARTNER LEADS
+function viewPartnerLeads(partnerId, partnerName) {
+  showPage('leads');
+  setTimeout(() => {
+    const sel = document.getElementById('leadPartner');
+    if (sel) { sel.value = partnerId; }
+    loadLeads();
+    toast('Showing leads for: ' + partnerName, 'info');
+  }, 300);
+}
+// POPULATE PARTNER FILTER IN LEADS
+async function populatePartnerFilter() {
+  const sel = document.getElementById('leadPartner');
+  if (!sel || sel.options.length > 1) return;
+  try {
+    const r = await fetch(API + '?action=partners_list&search=&status=').then(d=>d.json());
+    if (!r.success) return;
+    r.data.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = p.partner_name || p.name || 'Partner ' + p.id;
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+}
+function viewTelecallerLeads(id, name) {
+  showPage('leads');
+  setTimeout(() => {
+    // Store telecaller filter globally
+    window._telecallerFilter = id;
+    loadLeadsByTelecaller(id, name);
+  }, 300);
+}
+
+async function loadLeadsByTelecaller(telecallerId, name) {
+  const tbody = document.getElementById('leadsTable');
+  tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    const r = await fetch(API + '?action=leads_list&telecaller_id=' + telecallerId).then(d=>d.json());
+    if (!r.success) return;
+    if (!r.data.length) {
+      tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-inbox" style="font-size:24px;display:block;margin-bottom:8px"></i>No leads assigned to ' + name + '</td></tr>';
+      document.getElementById('leadsInfo').textContent = '0 leads for ' + name;
+      return;
+    }
+    const statusColors = {'Interested':'b-active','Not Interested':'b-inactive','Follow-up':'b-orange','New':'b-navy','No Answer':'b-pending','Wrong Number':'b-inactive'};
+    tbody.innerHTML = r.data.map((l,i) => `<tr style='cursor:pointer' onclick='openCrmLead(JSON.parse(this.dataset.l))' data-l='${JSON.stringify(l).replace(/'/g,"&apos;")}'>
+      <td style="color:var(--muted);font-size:11px">${i+1}</td>
+      <td><div class="name-cell">${l.name||'—'}</div></td>
+      <td><span style="font-family:monospace;font-size:12px">${maskMobile(l.mobile)}</span></td>
+      <td style="font-size:12px">${l.city||'—'}</td>
+      <td><span class="badge b-navy" style="font-size:10px">${l.loan_type||'—'}</span></td>
+      <td style="font-size:12px;font-weight:600">${l.loan_amount ? '₹'+fmtNum(parseInt(l.loan_amount)/100000)+'L' : '—'}</td>
+      <td style="font-size:11.5px">${l.partner_name||'—'}</td>
+      <td><span class="badge ${statusColors[l.status]||'b-pending'}">${l.status||'New'}</span></td>
+      <td style="font-size:11px">${l.followup_date ? fmtDate(l.followup_date) : '—'}</td>
+      <td><span class="badge b-purple" style="font-size:9.5px">${l.source||'Upload'}</span></td>
+      <td><div class="td-actions">
+        <button class="btn btn-outline btn-xs" onclick="openCrmLead(JSON.parse(this.closest('tr').dataset.l))"><i class="fa fa-eye"></i></button>
+      </div></td>
+    </tr>`).join('');
+    document.getElementById('leadsInfo').textContent = r.data.length + ' leads for ' + name;
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:var(--red)">Error</td></tr>'; }
+}
+async function markFollowupDone(id, btn) {
+  btn.disabled = true; btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+  try {
+    const r = await fetch(API, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'update_lead_status', id, status:'Callback', followup_done:1})
+    }).then(d=>d.json());
+    if (r.success) {
+      toast('Follow-up marked as done', 'success');
+      btn.closest('tr').style.opacity = '0.4';
+    } else toast(r.message||'Failed', 'error');
+  } catch(e) { toast('Error','error'); }
+  btn.disabled = false;
+}
+function showMissingFields(missing, lenderName) {
+  const fieldLabels = {
+    'roi_min':'ROI Min %', 'max_ltv':'Max LTV %', 'min_cibil':'Min CIBIL',
+    'max_foir_pct':'Max FOIR %', 'property_types':'Property Types',
+    'city_coverage':'City Coverage', 'income_types':'Income Types',
+    'sales_manager_name':'Sales Manager', 'processing_fee_pct':'Processing Fee %',
+    'surrogate_programs':'Surrogate Programs'
+  };
+  showConfirm(
+    '📋 Missing Fields: ' + lenderName,
+    '',
+    () => openLenderDetail(0)
+  );
+  document.getElementById('confirmMsg').innerHTML =
+    '<div style="font-size:13px;color:var(--text-soft);margin-bottom:10px">These fields are missing or empty:</div>'
+    + missing.map(f => `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)">
+        <i class="fa fa-circle-xmark" style="color:var(--red)"></i>
+        <span style="font-size:13px;font-weight:600">${fieldLabels[f]||f.replace(/_/g,' ')}</span>
+      </div>`).join('')
+    + '<div style="margin-top:12px;font-size:12px;color:var(--muted)">Click "Fix Now" to open the lender editor</div>';
+  document.getElementById('confirmOkBtn').textContent = 'Fix Now';
+  document.getElementById('confirmOkBtn').onclick = () => {
+    closeModal('confirmModal');
+    openLenderDetail(window._lastQualityId);
+  };
+}

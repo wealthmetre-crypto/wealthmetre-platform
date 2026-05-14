@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WealthMetre Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#1e3a8a;--navy-2:#1e4db7;--navy-dk:#0f2060;--navy-lt:#eff4ff;--navy-mid:#dbeafe;
+  --orange:#ff9800;--orange-dk:#f57c00;--orange-lt:#fff7ed;
+  --green:#16a34a;--green-lt:#f0fdf4;--red:#dc2626;--red-lt:#fef2f2;
+  --amber:#d97706;--amber-lt:#fffbeb;--purple:#7c3aed;--purple-lt:#faf5ff;
+  --teal:#0d9488;--teal-lt:#f0fdfa;--pink:#db2777;--pink-lt:#fdf2f8;
+  --text:#1a1a2e;--text-soft:#4b5563;--muted:#6b7280;
+  --border:#e5e7eb;--border-blue:#dbeafe;
+  --bg:#f0f4ff;--card:#ffffff;
+  --shadow:0 2px 12px rgba(30,58,138,.07);
+  --shadow-md:0 8px 32px rgba(30,58,138,.12);
+  --shadow-lg:0 20px 60px rgba(30,58,138,.16);
+  --r:14px;--r-sm:10px;--r-xs:6px;
+  --sidebar-w:240px;--topbar-h:58px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:"Plus Jakarta Sans",sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+/* LAYOUT */
+.app{display:flex;min-height:100vh}
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:linear-gradient(180deg,#0a1a4e 0%,var(--navy) 60%,var(--navy-2) 100%);flex-shrink:0;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden;z-index:100;transition:transform .3s}
+.main{margin-left:0;flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:0}
+.topbar{height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:99;box-shadow:0 2px 8px rgba(30,58,138,.05);flex-shrink:0}
+.content{flex:1;padding:22px;overflow-y:auto}
+.page{display:none}
+.page.active{display:block}
+/* SIDEBAR */
+.sb-brand{padding:14px 14px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:9px;flex-shrink:0}
+.sb-brand img{height:32px;width:auto;object-fit:contain;filter:brightness(0) invert(1)}
+.sb-brand-text .name{font-size:12.5px;font-weight:800;color:#fff;line-height:1.2}
+.sb-brand-text .sub{font-size:9px;color:rgba(255,255,255,.4);font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.sb-user{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:9px}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--orange),var(--orange-dk));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.sb-user-info .uname{font-size:11.5px;font-weight:700;color:#fff}
+.sb-user-info .urole{font-size:9.5px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.04em}
+.sb-section{padding:10px 12px 3px;font-size:9px;font-weight:800;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase}
+.sb-menu{list-style:none;padding:0 6px}
+.sb-item{margin-bottom:1px}
+.sb-link{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;font-size:12px;font-weight:600;color:rgba(255,255,255,.6);transition:all .15s;cursor:pointer;border:none;background:transparent;width:100%;text-align:left}
+.sb-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.15);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.sb-link .icon{width:17px;text-align:center;font-size:12.5px;flex-shrink:0}
+.sb-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:50px;padding:1px 6px;font-size:9.5px;font-weight:800}
+.sb-badge-new{margin-left:auto;background:var(--orange);color:#fff;border-radius:50px;padding:1px 6px;font-size:9px;font-weight:800;text-transform:uppercase}
+.sb-bottom{margin-top:auto;padding:8px 6px 12px;border-top:1px solid rgba(255,255,255,.08)}
+/* TOPBAR */
+.tb-hamburger{background:none;border:none;font-size:17px;color:var(--text);cursor:pointer;display:none;padding:4px}
+.tb-title{font-size:14.5px;font-weight:800;color:var(--text);white-space:nowrap}
+.tb-search{flex:1;max-width:300px;display:flex;align-items:center;gap:7px;background:var(--bg);border:1.5px solid var(--border);border-radius:50px;padding:6px 14px;font-size:12.5px}
+.tb-search input{border:none;background:transparent;outline:none;font-family:inherit;font-size:12.5px;color:var(--text);width:100%}
+.tb-search input::placeholder{color:var(--muted)}
+.tb-actions{display:flex;align-items:center;gap:7px;margin-left:auto}
+.tb-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);background:#fff;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:13.5px;cursor:pointer;transition:all .15s;position:relative}
+.tb-btn:hover{border-color:var(--navy);color:var(--navy)}
+.tb-notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.tb-user{display:flex;align-items:center;gap:7px;padding:5px 11px;border-radius:50px;border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .15s}
+.tb-user:hover{border-color:var(--navy)}
+.tb-user .av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff}
+.tb-user .uname{font-size:12px;font-weight:700;color:var(--text)}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px 15px;border-radius:50px;font-size:12.5px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;line-height:1}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;box-shadow:0 4px 12px rgba(30,58,138,.2)}
+.btn-primary:hover{box-shadow:0 6px 18px rgba(30,58,138,.32)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),var(--orange-dk));color:#fff}
+.btn-green{background:linear-gradient(135deg,#16a34a,#15803d);color:#fff}
+.btn-red{background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff}
+.btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--border-blue)}
+.btn-outline:hover{background:var(--navy-lt)}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:#fff;color:var(--text)}
+.btn-sm{padding:5px 12px;font-size:11.5px}
+.btn-xs{padding:3px 9px;font-size:11px}
+.btn-lg{padding:11px 22px;font-size:13.5px}
+.btn-full{width:100%;justify-content:center}
+.btn-icon{width:30px;height:30px;padding:0;border-radius:8px;flex-shrink:0}
+/* CARDS */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow)}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-header h3{font-size:13.5px;font-weight:800;color:var(--text)}
+.card-body{padding:18px}
+.card-footer{padding:10px 18px;border-top:1px solid var(--border);background:#fafbff;border-radius:0 0 var(--r) var(--r)}
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:13px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);padding:15px 17px;box-shadow:var(--shadow);transition:all .2s;cursor:default}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.stat-card .ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;margin-bottom:11px;flex-shrink:0}
+.stat-card .val{font-size:24px;font-weight:800;color:var(--text);line-height:1}
+.stat-card .lbl{font-size:11px;color:var(--muted);font-weight:600;margin-top:4px}
+.stat-card .delta{font-size:10.5px;font-weight:700;margin-top:5px;display:flex;align-items:center;gap:3px}
+.ic-navy{background:var(--navy-lt);color:var(--navy)}
+.ic-green{background:var(--green-lt);color:var(--green)}
+.ic-orange{background:var(--orange-lt);color:var(--orange-dk)}
+.ic-red{background:var(--red-lt);color:var(--red)}
+.ic-purple{background:var(--purple-lt);color:var(--purple)}
+.ic-teal{background:var(--teal-lt);color:var(--teal)}
+.ic-amber{background:var(--amber-lt);color:var(--amber)}
+.ic-pink{background:var(--pink-lt);color:var(--pink)}
+/* CHARTS */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.chart-wrap{position:relative;height:210px}
+/* TABLES */
+.table-wrap{overflow-x:auto;border-radius:var(--r-sm)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead tr{background:var(--navy-lt);border-bottom:2px solid var(--border-blue)}
+thead th{padding:9px 13px;text-align:left;font-size:10.5px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s}
+tbody tr:hover{background:#fafbff}
+tbody tr:last-child{border-bottom:none}
+td{padding:9px 13px;color:var(--text-soft);vertical-align:middle}
+.name-cell{font-weight:700;color:var(--text)}
+.sub-cell{font-size:11px;color:var(--muted);margin-top:1px}
+.td-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:50px;font-size:10.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap}
+.b-active{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0}
+.b-inactive{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+.b-pending{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+.b-navy{background:var(--navy-lt);color:var(--navy);border:1px solid var(--border-blue)}
+.b-purple{background:var(--purple-lt);color:var(--purple);border:1px solid #e9d5ff}
+.b-teal{background:var(--teal-lt);color:var(--teal);border:1px solid #99f6e4}
+.b-orange{background:var(--orange-lt);color:var(--orange-dk);border:1px solid #fed7aa}
+.b-gold{background:#fffbeb;color:#92400e;border:1px solid #fde68a}
+.b-high{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5}
+.b-medium{background:#fff7ed;color:#c2410c;border:1px solid #fdba74}
+.b-low{background:#f0fdf4;color:#16a34a;border:1px solid #86efac}
+/* ACTIVITY FEED */
+.feed-list{list-style:none}
+.feed-item{display:flex;align-items:flex-start;gap:11px;padding:10px 0;border-bottom:1px solid var(--border)}
+.feed-item:last-child{border-bottom:none}
+.feed-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.feed-text{font-size:12px;color:var(--text-soft);flex:1;line-height:1.5}
+.feed-time{font-size:10px;color:var(--muted);white-space:nowrap;margin-top:2px}
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:5px}
+.inp{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:#fff;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s}
+.inp:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(30,58,138,.07)}
+.inp::placeholder{color:#9ca3af}
+select.inp{cursor:pointer}
+textarea.inp{resize:vertical;min-height:90px}
+/* PAGE HEADERS */
+.page-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.page-head h2{font-size:19px;font-weight:800;color:var(--text)}
+.page-head p{font-size:12px;color:var(--muted);margin-top:2px}
+.page-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+/* FILTERS */
+.filters-bar{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);padding:11px 15px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+.filters-bar .inp{padding:6px 10px;font-size:12px}
+/* QUALITY BAR */
+.quality-bar{height:5px;background:var(--border);border-radius:50px;overflow:hidden;margin-top:3px;min-width:80px}
+.quality-fill{height:100%;border-radius:50px;transition:width .4s}
+.qf-high{background:linear-gradient(90deg,var(--green),#4ade80)}
+.qf-mid{background:linear-gradient(90deg,var(--amber),#fbbf24)}
+.qf-low{background:linear-gradient(90deg,var(--red),#f87171)}
+/* TOAST */
+.toast-container{position:fixed;top:68px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:var(--r-sm);font-size:12.5px;font-weight:600;box-shadow:var(--shadow-md);animation:slideIn .25s ease;max-width:300px;background:#fff}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-success{border-left:4px solid var(--green);color:var(--green)}
+.toast-error{border-left:4px solid var(--red);color:var(--red)}
+.toast-info{border-left:4px solid var(--navy);color:var(--navy)}
+/* METRIC ROW */
+.metric-row{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.metric-row .mlbl{font-size:11.5px;font-weight:600;color:var(--text-soft);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric-row .mbar{flex:2;height:6px;background:var(--border);border-radius:50px;overflow:hidden}
+.metric-row .mfill{height:100%;background:linear-gradient(90deg,var(--navy),var(--navy-2));border-radius:50px}
+.metric-row .mval{font-size:11.5px;font-weight:700;color:var(--text);min-width:28px;text-align:right}
+/* PLACEHOLDER */
+.ph-section{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;text-align:center}
+.ph-icon{width:58px;height:58px;background:var(--navy-lt);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--navy);margin:0 auto 14px}
+.ph-section h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:6px}
+.ph-section p{font-size:12.5px;color:var(--muted);max-width:320px;margin:0 auto 18px}
+/* LOADING */
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;min-height:80px}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--r);max-width:520px;width:90%;max-height:85vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:15px;font-weight:800}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:50px}
+::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+/* MOBILE */
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99}
+@media(max-width:900px){
+  .sidebar{position:fixed;transform:translateX(-100%);z-index:100}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .tb-hamburger{display:block}
+  .sb-overlay.show{display:block}
+  .chart-grid{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .form-grid{grid-template-columns:1fr}
+  .content{padding:14px}
+}
+</style>
+</head><body>
+<div class="sb-overlay" id="sbOverlay" onclick="closeSidebar()"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="app">
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <img src="/images/logo.png" alt="WM"/>
+    <div class="sb-brand-text"><div class="name">WealthMetre</div><div class="sub">Command Center</div></div>
+  </div>
+  <div class="sb-user">
+    <div class="sb-avatar" id="sbAvatar">O</div>
+    <div class="sb-user-info"><div class="uname" id="sbName">Loading...</div><div class="urole" id="sbRole">owner</div></div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:8px">
+    <div class="sb-section">Overview</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link active" onclick="showPage('dashboard')"><span class="icon"><i class="fa fa-chart-line"></i></span>Dashboard</button></li>
+    </ul>
+    <div class="sb-section">People</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link" onclick="showPage('partners')"><span class="icon"><i class="fa fa-handshake"></i></span>Partners</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('telecallers')"><span class="icon"><i class="fa fa-headset"></i></span>Telecallers</button></li>
+    </ul>
+    <div class="sb-section">Leads & CRM</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link" onclick="showPage('batches')"><span class="icon"><i class="fa fa-file-lines"></i></span>Lead Sheets</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('leads')"><span class="icon"><i class="fa fa-users"></i></span>CRM Leads</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('followups')"><span class="icon"><i class="fa fa-calendar-check"></i></span>Follow-ups <span class="sb-badge" id="sbOverdueCount">0</span></button></li>
+    </ul>
+    <div class="sb-section">AI & Lenders</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link" onclick="showPage('diva')"><span class="icon"><i class="fa fa-robot"></i></span>Diva Monitor <span class="sb-badge-new">NEW</span></button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('lenders')"><span class="icon"><i class="fa fa-building-columns"></i></span>Lender Intelligence</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="window.open('/admin/geo_manager.html','_blank')"><span class="icon"><i class="fa fa-map-location-dot"></i></span>Geo Manager</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('parser')"><span class="icon"><i class="fa fa-wand-magic-sparkles"></i></span>AI Policy Parser</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('dataquality')"><span class="icon"><i class="fa fa-shield-halved"></i></span>Data Quality <span class="sb-badge-new">NEW</span></button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('testmatch')"><span class="icon"><i class="fa fa-flask"></i></span>Test Matching</button></li>
+    </ul>
+    <div class="sb-section">Operations</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link" onclick="showPage('contentstudio')"><span class="icon"><i class="fa fa-pen-nib"></i></span>Content Studio <span class="sb-badge-new">NEW</span></button></li>
+      <li class="sb-item"><a class="sb-link" href="https://automation.wealthmetre.com/home/workflows" target="_blank" style="text-decoration:none;"><span class="icon"><i class="fa fa-robot"></i></span>n8n Workflows <i class="fa fa-external-link" style="font-size:10px;margin-left:4px;opacity:0.6;"></i></a></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('smsharing')"><span class="icon"><i class="fa fa-share-nodes"></i></span>SM Sharing</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('whatsapp')"><span class="icon"><i class="fab fa-whatsapp"></i></span>WhatsApp Monitor</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('reports')"><span class="icon"><i class="fa fa-chart-bar"></i></span>Reports & Exports</button></li>
+    </ul>
+    <div class="sb-section">System</div>
+    <ul class="sb-menu">
+      <li class="sb-item"><button class="sb-link" onclick="showPage('auditlogs')"><span class="icon"><i class="fa fa-scroll"></i></span>Audit Logs</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('notifications')"><span class="icon"><i class="fa fa-bell"></i></span>Notifications <span class="sb-badge" id="sbNotifCount" style="display:none">0</span></button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('settings')"><span class="icon"><i class="fa fa-gear"></i></span>Settings</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('deploy')"><span class="icon"><i class="fa fa-rocket"></i></span>Deploy</button></li>
+    </ul>
+  </div>
+  <div class="sb-bottom">
+    <button class="sb-link" onclick="doLogout()" style="color:rgba(255,100,100,.8)"><span class="icon"><i class="fa fa-right-from-bracket"></i></span>Sign Out</button>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="tb-hamburger" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button>
+    <span class="tb-title" id="tbTitle">Dashboard</span>
+    <div class="tb-search" style="margin-left:12px">
+      <i class="fa fa-magnifying-glass" style="color:var(--muted);font-size:12px"></i>
+      <input type="text" placeholder="Search leads, partners, lenders..."/>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-btn" title="Follow-ups" onclick="showPage('followups')"><i class="fa fa-calendar-check"></i></button>
+      <button class="tb-btn" title="Test Matching" onclick="showPage('testmatch')"><i class="fa fa-flask"></i></button>
+      <button class="tb-btn" title="Notifications" onclick="showPage('notifications')">
+        <i class="fa fa-bell"></i>
+        <span class="tb-notif-dot" id="tbNotifDot" style="display:none"></span>
+      </button>
+      <div class="tb-user" onclick="showPage('settings')">
+        <div class="av" id="tbAvatar">O</div>
+        <span class="uname" id="tbName">Owner</span>
+        <i class="fa fa-chevron-down" style="font-size:10px;color:var(--muted)"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+  <!-- ═══ DASHBOARD HOME ═══ -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-head">
+      <div><h2>Command Center</h2><p id="dashGreeting">Welcome back — here's your business overview</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm" onclick="loadDashboard()"><i class="fa fa-rotate-right"></i> Refresh</button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('testmatch')"><i class="fa fa-flask"></i> Test Match</button>
+      </div>
+    </div>
+    <div class="stat-grid" id="statsRow1"></div>
+    <div class="stat-grid" id="statsRow2"></div>
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-chart-line" style="color:var(--navy);margin-right:6px"></i>Daily Calls (14 days)</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartDailyCalls"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-chart-pie" style="color:var(--orange-dk);margin-right:6px"></i>Lead Status Funnel</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartFunnel"></canvas></div></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-building-columns" style="color:var(--teal);margin-right:6px"></i>Lender Type Distribution</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartLenders"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-star" style="color:var(--amber);margin-right:6px"></i>CIBIL Score Distribution</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartCibil"></canvas></div></div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-handshake" style="color:var(--navy);margin-right:6px"></i>Leads by Partner (30 days)</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartPartnerLeads"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa fa-bolt" style="color:var(--orange-dk);margin-right:6px"></i>Recent Activity</h3>
+          <button class="btn btn-ghost btn-xs" onclick="loadActivity()"><i class="fa fa-rotate-right"></i></button>
+        </div>
+        <div class="card-body" style="padding:6px 16px">
+          <ul class="feed-list" id="activityFeed"><li style="padding:20px;text-align:center;color:var(--muted);font-size:12px"><i class="fa fa-spinner fa-spin"></i> Loading...</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PARTNERS ═══ -->
+  <div class="page" id="page-partners">
+    <div class="page-head">
+      <div><h2>Partner Management</h2><p>Manage your channel partner network</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Export</button>
+        <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Partner</button>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <i class="fa fa-filter" style="color:var(--muted);font-size:12px"></i>
+      <input type="text" class="inp" id="partnerSearch" placeholder="Search partner..." style="max-width:200px"/>
+      <select class="inp" id="partnerStatus" style="max-width:130px"><option value="">All Status</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      <button class="btn btn-primary btn-sm" onclick="loadPartners()"><i class="fa fa-magnifying-glass"></i> Search</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Partner</th><th>City</th><th>Mobile</th><th>Telecallers</th><th>Leads</th><th>Interested</th><th>Conv%</th><th>Tier</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+            <tbody id="partnersTable"><tr><td colspan="12" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading partners...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--muted)" id="partnersInfo">—</span>
+        <div style="display:flex;gap:6px" id="partnerPages"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TELECALLERS ═══ -->
+  <div class="page" id="page-telecallers">
+    <div class="page-head">
+      <div><h2>Telecaller Management</h2><p>All telecallers across all partners</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Export</button>
+        <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Telecaller</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Name</th><th>Partner</th><th>Mobile</th><th>Assigned</th><th>Interested</th><th>Productivity</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+            <tbody id="telecallersTable"><tr><td colspan="10" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LEAD SHEETS ═══ -->
+  <div class="page" id="page-batches">
+    <div class="page-head">
+      <div><h2>Lead Sheets & Batches</h2><p>All uploaded calling data across partners</p></div>
+      <button class="btn btn-primary btn-sm"><i class="fa fa-upload"></i> Upload Sheet</button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Sheet Name</th><th>Partner</th><th>Upload Date</th><th>Total</th><th>Assigned</th><th>Called</th><th>Interested</th><th>Conv%</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="batchesTable"><tr><td colspan="11" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CRM LEADS ═══ -->
+  <div class="page" id="page-leads">
+    <div class="page-head">
+      <div><h2>CRM Leads</h2><p>All leads across partners and telecallers</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm"><i class="fa fa-download"></i> Export</button>
+        <button class="btn btn-primary btn-sm" onclick="showPage('testmatch')"><i class="fa fa-flask"></i> Match Lead</button>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <input type="text" class="inp" id="leadSearch" placeholder="Name or mobile..." style="max-width:170px"/>
+      <select class="inp" id="leadPartner" style="max-width:140px"><option value="">All Partners</option></select>
+      <select class="inp" id="leadStatus" style="max-width:140px">
+        <option value="">All Status</option>
+        <option>Interested</option><option>Follow-up</option><option>Not Interested</option><option>New</option><option>No Answer</option><option>Wrong Number</option>
+      </select>
+      <select class="inp" id="leadLoanType" style="max-width:130px">
+        <option value="">All Loan Types</option>
+        <option>Home Loan</option><option>LAP</option><option>Business Loan</option><option>Personal Loan</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="loadLeads()"><i class="fa fa-magnifying-glass"></i></button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Customer</th><th>Mobile</th><th>City</th><th>Loan Type</th><th>Amount</th><th>Partner</th><th>Status</th><th>Follow-up</th><th>Source</th><th>Actions</th></tr></thead>
+            <tbody id="leadsTable"><tr><td colspan="11" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading leads...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--muted)" id="leadsInfo">—</span>
+        <div style="display:flex;gap:6px" id="leadPages"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FOLLOW-UPS ═══ -->
+  <div class="page" id="page-followups">
+    <div class="page-head"><div><h2>Follow-ups</h2><p>Track and manage all follow-up schedules</p></div></div>
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="ic ic-orange"><i class="fa fa-calendar-day"></i></div><div class="val" id="fupToday">—</div><div class="lbl">Due Today</div></div>
+      <div class="stat-card"><div class="ic ic-red"><i class="fa fa-triangle-exclamation"></i></div><div class="val" id="fupOverdue">—</div><div class="lbl">Overdue</div></div>
+      <div class="stat-card"><div class="ic ic-navy"><i class="fa fa-calendar-week"></i></div><div class="val" id="fupWeek">—</div><div class="lbl">This Week</div></div>
+      <div class="stat-card"><div class="ic ic-green"><i class="fa fa-check-circle"></i></div><div class="val">—</div><div class="lbl">Done Today</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Follow-up List</h3>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-xs" id="fbt-today" style="background:var(--orange-lt);color:var(--orange-dk);border:1px solid var(--orange);border-radius:50px;font-weight:700;font-size:11px;padding:3px 10px;cursor:pointer" onclick="filterFollowups('today')">Today</button>
+          <button class="btn btn-ghost btn-xs" onclick="filterFollowups('overdue')">Overdue</button>
+          <button class="btn btn-ghost btn-xs" onclick="filterFollowups('upcoming')">This Week</button>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Customer</th><th>Mobile</th><th>Partner</th><th>Telecaller</th><th>Loan</th><th>Status</th><th>Follow-up Date</th><th>Last Note</th><th>Actions</th></tr></thead>
+            <tbody id="followupsTable"><tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)">Select a filter above to load follow-ups</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DIVA MONITOR ═══ -->
+  <div class="page" id="page-diva">
+    <div class="page-head">
+      <div><h2><i class="fa fa-robot" style="color:var(--purple);margin-right:8px"></i>Diva AI Monitor</h2><p>Real-time visibility into your AI advisor's performance</p></div>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(5,1fr)">
+      <div class="stat-card"><div class="ic ic-purple"><i class="fa fa-comments"></i></div><div class="val" id="divaSessions">—</div><div class="lbl">Sessions Today</div></div>
+      <div class="stat-card"><div class="ic ic-green"><i class="fa fa-user-check"></i></div><div class="val" id="divaTotal">—</div><div class="lbl">Total Sessions</div></div>
+      <div class="stat-card"><div class="ic ic-teal"><i class="fa fa-building-columns"></i></div><div class="val" id="divaMatched">—</div><div class="lbl">With Matches</div></div>
+      <div class="stat-card"><div class="ic ic-navy"><i class="fa fa-list"></i></div><div class="val" id="divaLeads">—</div><div class="lbl">Leads Created</div></div>
+      <div class="stat-card"><div class="ic ic-red"><i class="fa fa-person-falling-burst"></i></div><div class="val" id="divaDropoff">—%</div><div class="lbl">Drop-off Rate</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header"><h3>Loan Type Distribution</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartDivaLoans"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>Sessions (Last 14 days)</h3></div>
+        <div class="card-body"><div class="chart-wrap"><canvas id="chartDivaDays"></canvas></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Recent Diva Leads</h3></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Name / Mobile</th><th>City</th><th>Loan Type</th><th>Amount</th><th>CIBIL</th><th>Income</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="divaTable"><tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading Diva sessions...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LENDERS ═══ -->
+  <div class="page" id="page-lenders">
+    <div class="page-head">
+      <div><h2>Lender Intelligence</h2><p>Your 88-lender database with AI scoring</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm" onclick="showPage('dataquality')"><i class="fa fa-shield-halved"></i> Data Quality</button>
+        <button class="btn btn-outline btn-sm" onclick="showPage('parser')"><i class="fa fa-wand-magic-sparkles"></i> Parse Policy</button>
+        <button class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Lender</button>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <input type="text" class="inp" id="lenderSearch" placeholder="Search lender..." style="max-width:200px"/>
+      <select class="inp" id="lenderTypeFilter" style="max-width:110px">
+        <option value="">All Types</option><option value="bank">Bank</option><option value="nbfc">NBFC</option><option value="hfc">HFC</option><option value="sfb">SFB</option>
+      </select>
+      <select class="inp" id="lenderCatFilter" style="max-width:120px">
+        <option value="">All Products</option><option value="home">Home Loan</option><option value="lap">LAP</option><option value="business">Business</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="loadLenders()"><i class="fa fa-magnifying-glass"></i> Filter</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadLenders(true)"><i class="fa fa-rotate-right"></i></button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Lender</th><th>Type</th><th>Product</th><th>ROI</th><th>LTV</th><th>Min CIBIL</th><th>City</th><th>Surrogates</th><th>Quality</th><th>SM</th><th>Updated</th></tr></thead>
+            <tbody id="lendersTable"><tr><td colspan="13" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading lenders...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer"><span style="font-size:12px;color:var(--muted)" id="lendersInfo">—</span></div>
+    </div>
+  </div>
+
+  <!-- ═══ AI POLICY PARSER ═══ -->
+  <div class="page" id="page-parser">
+    <div class="page-head"><div><h2>AI Policy Parser</h2><p>Paste lender policy text — AI extracts structured data</p></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start">
+      <div class="card">
+        <div class="card-header">
+          <h3><i class="fa fa-paste" style="color:var(--navy);margin-right:6px"></i>Input Policy Text</h3>
+          <button class="btn btn-ghost btn-xs" onclick="document.getElementById('policyText').value=''"><i class="fa fa-trash"></i> Clear</button>
+        </div>
+        <div class="card-body">
+          <div class="field"><label>Lender Type (hint)</label>
+            <select class="inp" id="parserLenderType"><option value="">Auto-detect</option><option value="bank">Bank</option><option value="nbfc">NBFC</option><option value="hfc">HFC</option><option value="sfb">SFB</option></select>
+          </div>
+          <div class="field"><label>Product (hint)</label>
+            <select class="inp" id="parserProduct"><option value="">Auto-detect</option><option value="home">Home Loan</option><option value="lap">LAP</option><option value="business">Business Loan</option><option value="personal">Personal Loan</option></select>
+          </div>
+          <div class="field"><label>Paste WhatsApp / Email Policy Text <span style="color:var(--red)">*</span></label>
+            <textarea class="inp" id="policyText" rows="12" placeholder="Paste lender policy here...&#10;&#10;Example:&#10;HDFC Bank — LAP Policy&#10;ROI: 9.5% – 11%&#10;Max LTV: 65%&#10;Min CIBIL: 700&#10;Processing Fee: 0.5%&#10;SM: Rahul Sharma – 9876543210"></textarea>
+          </div>
+          <button class="btn btn-primary btn-lg btn-full" onclick="parsePolicy()" id="parseBtn">
+            <i class="fa fa-wand-magic-sparkles"></i> Parse with AI
+          </button>
+        </div>
+      </div>
+      <div class="card" id="parserResult">
+        <div class="card-header"><h3><i class="fa fa-list-check" style="color:var(--green);margin-right:6px"></i>Extracted Fields <span id="parserConfidence" style="font-size:11px;color:var(--muted);font-weight:400;margin-left:6px"></span></h3></div>
+        <div class="card-body">
+          <div class="ph-section" id="parserPlaceholder">
+            <div class="ph-icon"><i class="fa fa-wand-magic-sparkles"></i></div>
+            <h3>Ready to Parse</h3>
+            <p>Paste a lender policy on the left and click Parse with AI</p>
+          </div>
+          <div id="parserFields" style="display:none"></div>
+        </div>
+        <div class="card-footer" id="parserActions" style="display:none;gap:8px;justify-content:flex-end;display:flex">
+          <button class="btn btn-ghost btn-sm" onclick="parsePolicy()"><i class="fa fa-rotate-right"></i> Re-parse</button>
+          <button class="btn btn-orange btn-sm" onclick="savePolicy('new')"><i class="fa fa-plus"></i> Save as New</button>
+          <button class="btn btn-primary btn-sm" onclick="savePolicy('update')"><i class="fa fa-floppy-disk"></i> Update Existing</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DATA QUALITY ═══ -->
+  <div class="page" id="page-dataquality">
+    <div class="page-head">
+      <div><h2>Lender Data Quality</h2><p>Monitor completeness and freshness of all 88 lenders</p></div>
+      <button class="btn btn-primary btn-sm" onclick="loadDataQuality()"><i class="fa fa-rotate-right"></i> Refresh Scores</button>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+      <div class="stat-card"><div class="ic ic-green"><i class="fa fa-circle-check"></i></div><div class="val" id="dqAvg">—</div><div class="lbl">Avg Quality Score</div></div>
+      <div class="stat-card"><div class="ic ic-red"><i class="fa fa-circle-exclamation"></i></div><div class="val" id="dqCritical">—</div><div class="lbl">Critical (&lt;50%)</div></div>
+      <div class="stat-card"><div class="ic ic-amber"><i class="fa fa-clock"></i></div><div class="val" id="dqStale">—</div><div class="lbl">Stale (60+ days)</div></div>
+      <div class="stat-card"><div class="ic ic-navy"><i class="fa fa-server"></i></div><div class="val" id="dqTotal">—</div><div class="lbl">Total Lenders</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Completeness Scores by Lender</h3></div>
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Lender</th><th>Type</th><th>Quality Score</th><th>Missing Fields</th><th>Last Updated</th><th>Age (days)</th><th>Review</th><th>Actions</th></tr></thead>
+            <tbody id="qualityTable"><tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Calculating scores...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TEST MATCHING ═══ -->
+  <div class="page" id="page-testmatch">
+    <div class="page-head"><div><h2>Test Lender Matching</h2><p>Test the AI scoring engine with any customer profile</p></div></div>
+    <div style="display:grid;grid-template-columns:360px 1fr;gap:18px;align-items:start">
+      <div class="card">
+        <div class="card-header"><h3><i class="fa fa-user-gear" style="color:var(--navy);margin-right:6px"></i>Customer Profile</h3></div>
+        <div class="card-body">
+          <div class="field"><label>Loan Type</label>
+            <select class="inp" id="tm_loan"><option value="lap">LAP</option><option value="home">Home Loan</option><option value="business">Business Loan</option><option value="personal">Personal Loan</option></select>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Loan Amount (₹)</label><input class="inp" type="number" id="tm_amount" placeholder="6000000"/></div>
+            <div class="field"><label>Property Value (₹)</label><input class="inp" type="number" id="tm_pval" placeholder="10000000"/></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Property Type</label>
+              <select class="inp" id="tm_prop"><option value="residential">Residential</option><option value="commercial">Commercial</option></select>
+            </div>
+            <div class="field"><label>City</label><input class="inp" id="tm_city" value="jaipur"/></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>CIBIL Score</label><input class="inp" type="number" id="tm_cibil" placeholder="740"/></div>
+            <div class="field"><label>Monthly Income (₹)</label><input class="inp" type="number" id="tm_income" placeholder="150000"/></div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Existing EMI (₹)</label><input class="inp" type="number" id="tm_emi" value="0"/></div>
+            <div class="field"><label>Income Proof</label>
+              <select class="inp" id="tm_proof"><option value="itr">ITR</option><option value="bank_statement">Banking</option><option value="gst">GST</option><option value="cash">Cash/None</option></select>
+            </div>
+          </div>
+          <div class="field"><label>Occupation</label>
+            <select class="inp" id="tm_occ"><option value="salaried">Salaried</option><option value="self_employed">Self Employed</option><option value="business_owner">Business Owner</option></select>
+          </div>
+          <div style="display:flex;align-items:center;gap:7px;margin-bottom:14px">
+            <input type="checkbox" id="tm_debug" style="width:13px;height:13px;cursor:pointer"/>
+            <label for="tm_debug" style="font-size:12px;font-weight:600;cursor:pointer;color:var(--text-soft)">Enable Debug Mode</label>
+          </div>
+          <button class="btn btn-primary btn-lg btn-full" onclick="runTestMatch()" id="tmBtn">
+            <i class="fa fa-flask"></i> Run AI Matching
+          </button>
+        </div>
+      </div>
+      <div id="tmResults">
+        <div class="card"><div class="card-body"><div class="ph-section"><div class="ph-icon"><i class="fa fa-flask"></i></div><h3>Ready to Match</h3><p>Fill in the customer profile and click Run AI Matching</p></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SM SHARING ═══ -->
+
+  <div class="page" id="page-contentstudio">
+    <div style="border-radius:16px;overflow:hidden;height:calc(100vh - 80px)">
+      <iframe
+        id="contentStudioFrame"
+        src="/admin/content-studio.php"
+        style="width:100%;height:100%;border:0;display:block;background:#0a0f1e"
+        loading="lazy">
+      </iframe>
+    </div>
+  </div>
+  <div class="page" id="page-smsharing">
+    <div class="page-head">
+      <div><h2>SM Sharing & Lead Sharing</h2><p>Lender Sales Manager directory and lead sharing tracker</p></div>
+      <button class="btn btn-primary" onclick="openAddSMModal()"><i class="fa fa-plus"></i> Add SM</button>
+    </div>
+    <!-- Stats -->
+    <div class="stats-row" id="smStatsRow" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px"></div>
+    <!-- Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btn-primary" id="smTab1" onclick="switchSMTab('directory')">SM Directory</button>
+      <button class="btn btn-outline" id="smTab2" onclick="switchSMTab('shares')">Lead Shares</button>
+    </div>
+    <!-- Search + Filter -->
+    <div id="smDirectoryPanel">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <input type="text" id="smSearch" placeholder="Search SM name, mobile, lender..." class="inp" style="flex:1;min-width:200px" oninput="loadSMDirectory()"/>
+        <select class="inp" id="smFilter" onchange="loadSMDirectory()" style="width:150px">
+          <option value="all">All SMs</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive</option>
+        </select>
+      </div>
+      <div class="card"><div style="overflow-x:auto"><table class="data-table" id="smTable">
+        <thead><tr><th>Lender</th><th>SM Name</th><th>Mobile</th><th>Designation</th><th>Territory</th><th>Programs</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="smTableBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#6b7280">Loading...</td></tr></tbody>
+      </table></div></div>
+    </div>
+    <!-- Shares Panel -->
+    <div id="smSharesPanel" style="display:none">
+      <div class="card"><div style="overflow-x:auto"><table class="data-table">
+        <thead><tr><th>Lead</th><th>Mobile</th><th>Loan Type</th><th>Lender</th><th>Offered ROI</th><th>LTV</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody id="sharesTableBody"><tr><td colspan="8" style="text-align:center;padding:30px;color:#6b7280">Loading...</td></tr></tbody>
+      </table></div></div>
+    </div>
+  </div>
+  <!-- Add/Edit SM Modal -->
+  <div class="modal-overlay" id="smModal" style="display:none">
+    <div class="modal-box" style="max-width:520px;background:#fff;border-radius:16px;padding:24px;width:90%">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <h3 id="smModalTitle" style="font-size:16px;font-weight:800">Add Sales Manager</h3>
+        <button onclick="closeSMModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#6b7280">&times;</button>
+      </div>
+      <input type="hidden" id="smEditId"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="field" style="grid-column:1/-1"><label>Lender <span style="color:red">*</span></label>
+          <select class="inp" id="smLenderId"><option value="">Select Lender...</option></select></div>
+        <div class="field"><label>SM Name <span style="color:red">*</span></label>
+          <input class="inp" id="smName" type="text" placeholder="Full name"/></div>
+        <div class="field"><label>Mobile <span style="color:red">*</span></label>
+          <input class="inp" id="smMobile" type="tel" maxlength="10" placeholder="10-digit"/></div>
+        <div class="field"><label>Designation</label>
+          <select class="inp" id="smDesignation">
+            <option>SM</option><option>ASM</option><option>RSM</option>
+            <option>RM</option><option>BM</option><option>ZM</option><option>Senior SM</option>
+          </select></div>
+        <div class="field"><label>Territory</label>
+          <input class="inp" id="smTerritory" placeholder="e.g. Jaipur, Rajasthan"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Programs</label>
+          <input class="inp" id="smPrograms" placeholder="e.g. Home Loan, LAP, Business Loan"/></div>
+        <div class="field" style="grid-column:1/-1"><label>Notes</label>
+          <textarea class="inp" id="smNotes" rows="2" placeholder="Any notes..."></textarea></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="closeSMModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="saveSM()"><i class="fa fa-save"></i> Save SM</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ WHATSAPP ═══ -->
+  <div class="page" id="page-whatsapp">
+    <div class="page-head"><div><h2>WhatsApp Monitor</h2><p>MSG91 delivery tracking and template management</p></div></div>
+    <div class="card"><div class="card-body"><div class="ph-section"><div class="ph-icon"><i class="fab fa-whatsapp" style="color:#25d366"></i></div><h3>WhatsApp Monitor</h3><p>Track message delivery, OTP success rates, and template performance via MSG91</p></div></div></div>
+  </div>
+
+  <!-- ═══ REPORTS ═══ -->
+  <div class="page" id="page-reports">
+    <div class="page-head"><div><h2>Reports & Exports</h2><p>Generate and download business reports</p></div></div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-navy" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-handshake"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Partner Performance</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Leads, calls, interested, conversion by partner</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-teal" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-headset"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Telecaller Report</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Daily productivity, call outcomes, follow-up completion</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-green" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-users"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Interested Leads</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">All interested leads with contact and loan details</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-orange" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-calendar-check"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Follow-up Report</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Due, overdue, and completed follow-ups</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-purple" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-building-columns"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Lender Matching</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Most matched lenders, match rate analytics</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+      <div class="card" style="padding:20px;cursor:pointer;transition:all .2s" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--shadow-md)'" onmouseleave="this.style.transform='';this.style.boxShadow='var(--shadow)'">
+        <div class="ic ic-pink" style="width:40px;height:40px;border-radius:11px;margin-bottom:12px"><i class="fa fa-robot"></i></div>
+        <div style="font-size:13.5px;font-weight:800;margin-bottom:4px">Diva AI Report</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:14px">Sessions, drop-off analysis, loan distribution</div>
+        <button class="btn btn-outline btn-sm btn-full"><i class="fa fa-download"></i> Export Excel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AUDIT LOGS ═══ -->
+  <div class="page" id="page-auditlogs">
+    <div class="page-head"><div><h2>Audit Logs</h2><p>Complete activity trail for all system actions</p></div></div>
+    <div class="filters-bar">
+      <select class="inp" style="max-width:150px"><option>All Actions</option><option>Login</option><option>Lender Edit</option><option>Lead Export</option></select>
+      <select class="inp" style="max-width:120px"><option>All Roles</option><option>Owner</option><option>Admin</option><option>Partner</option></select>
+      <input type="date" class="inp" style="max-width:145px"/>
+      <input type="date" class="inp" style="max-width:145px"/>
+      <button class="btn btn-primary btn-sm" onclick="loadAuditLogs()"><i class="fa fa-magnifying-glass"></i></button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>User</th><th>Action</th><th>Entity</th><th>Description</th><th>IP</th><th>Time</th></tr></thead>
+            <tbody id="auditTable"><tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading audit logs...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ NOTIFICATIONS ═══ -->
+  <div class="page" id="page-notifications">
+    <div class="page-head"><div><h2>Notifications</h2></div><button class="btn btn-ghost btn-sm"><i class="fa fa-check-double"></i> Mark All Read</button></div>
+    <div class="card"><div class="card-body"><div class="ph-section"><div class="ph-icon"><i class="fa fa-bell"></i></div><h3>All caught up!</h3><p>System alerts, follow-up reminders, partner activity, and lender data warnings will appear here</p></div></div></div>
+  </div>
+
+  <!-- ═══ SETTINGS ═══ -->
+  <div class="page" id="page-settings">
+    <div class="page-head"><div><h2>Settings</h2><p>System configuration and preferences</p></div></div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="card" style="padding:18px">
+        <div style="font-size:13px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fa fa-weight-scale" style="color:var(--navy)"></i> Scoring Weights</div>
+        <div class="metric-row"><span class="mlbl">ROI</span><div class="mbar"><div class="mfill" style="width:100%"></div></div><span class="mval">25</span></div>
+        <div class="metric-row"><span class="mlbl">CIBIL</span><div class="mbar"><div class="mfill" style="width:80%"></div></div><span class="mval">20</span></div>
+        <div class="metric-row"><span class="mlbl">LTV</span><div class="mbar"><div class="mfill" style="width:60%"></div></div><span class="mval">15</span></div>
+        <div class="metric-row"><span class="mlbl">FOIR</span><div class="mbar"><div class="mfill" style="width:60%"></div></div><span class="mval">15</span></div>
+        <div class="metric-row"><span class="mlbl">Geography</span><div class="mbar"><div class="mfill" style="width:40%"></div></div><span class="mval">10</span></div>
+        <div class="metric-row"><span class="mlbl">Surrogate</span><div class="mbar"><div class="mfill" style="width:40%"></div></div><span class="mval">10</span></div>
+        <div class="metric-row"><span class="mlbl">Income Profile</span><div class="mbar"><div class="mfill" style="width:40%"></div></div><span class="mval">10</span></div>
+        <button class="btn btn-outline btn-sm btn-full" style="margin-top:8px"><i class="fa fa-pen"></i> Edit Weights</button>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:13px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fa fa-star" style="color:var(--amber)"></i> CIBIL Thresholds</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:var(--navy-lt);border-radius:8px"><span style="font-size:12px;font-weight:700;color:var(--navy)"><i class="fa fa-building-columns"></i> Bank</span><span class="badge b-navy">700+</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:var(--teal-lt);border-radius:8px"><span style="font-size:12px;font-weight:700;color:var(--teal)"><i class="fa fa-house"></i> HFC</span><span class="badge b-teal">650+</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:var(--orange-lt);border-radius:8px"><span style="font-size:12px;font-weight:700;color:var(--orange-dk)"><i class="fa fa-briefcase"></i> NBFC</span><span class="badge b-orange">600+</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 11px;background:var(--purple-lt);border-radius:8px"><span style="font-size:12px;font-weight:700;color:var(--purple)"><i class="fa fa-piggy-bank"></i> SFB</span><span class="badge b-purple">550+</span></div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-full" style="margin-top:10px"><i class="fa fa-pen"></i> Edit Thresholds</button>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:13px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px"><i class="fa fa-user-shield" style="color:var(--green)"></i> Owner Account</div>
+        <div class="field" style="margin-bottom:10px"><label>Name</label><input class="inp" id="ownerName" placeholder="Loading..."/></div>
+        <div class="field" style="margin-bottom:10px"><label>Email</label><input class="inp" id="ownerEmail" placeholder="Loading..."/></div>
+        <div class="field" style="margin-bottom:10px"><label>New Password</label><input type="password" class="inp" placeholder="Leave blank to keep current"/></div>
+        <button class="btn btn-primary btn-sm btn-full"><i class="fa fa-floppy-disk"></i> Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ DEPLOY ═══ -->
+  <div class="page" id="page-deploy">
+    <div class="page-head"><div><h2>Staging → Production Deploy</h2><p>Deploy tested changes from staging to live</p></div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div class="card" style="padding:18px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div class="ic ic-amber" style="width:38px;height:38px;border-radius:10px"><i class="fa fa-code-branch"></i></div>
+          <div><div style="font-size:13.5px;font-weight:800">Staging</div><div style="font-size:11px;color:var(--muted)">/staging_html/</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Test URL: <a href="#" style="color:var(--navy);font-weight:700">staging.wealthmetre.com</a></div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div class="ic ic-green" style="width:38px;height:38px;border-radius:10px"><i class="fa fa-globe"></i></div>
+          <div><div style="font-size:13.5px;font-weight:800">Production</div><div style="font-size:11px;color:var(--muted)">/public_html/</div></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">Live URL: <a href="https://wealthmetre.com" target="_blank" style="color:var(--navy);font-weight:700">wealthmetre.com</a></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Deploy Notes</h3></div>
+      <div class="card-body">
+        <div class="field"><label>What changed in this deploy?</label><textarea class="inp" id="deployNotes" rows="3" placeholder="e.g. Fixed FOIR scoring, Added chunked Qdrant, Updated lender data..."></textarea></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm"><i class="fa fa-rotate-left"></i> Rollback</button>
+          <button class="btn btn-orange btn-sm" onclick="confirmDeploy()"><i class="fa fa-rocket"></i> Deploy to Production</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end .content -->
+</div><!-- end .main -->
+</div><!-- end .app -->
+
+
+<!-- LENDER EDIT MODAL -->
+<div class="modal-overlay" id="lenderEditModal">
+  <div class="modal" style="max-width:620px">
+    <div class="modal-head">
+      <h3><i class="fa fa-pen" style="color:var(--navy);margin-right:8px"></i>Quick Edit Lender</h3>
+      <button onclick="closeModal('lenderEditModal')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editLenderId"/>
+      <div class="form-grid">
+        <div class="field"><label>Lender Name</label><input class="inp" id="el_name" placeholder="Lender name"/></div>
+        <div class="field"><label>Lender Type</label>
+          <select class="inp" id="el_type"><option value="bank">Bank</option><option value="nbfc">NBFC</option><option value="hfc">HFC</option><option value="sfb">SFB</option></select>
+        </div>
+        <div class="field"><label>ROI Min (%)</label><input class="inp" type="number" id="el_roi_min" step="0.1"/></div>
+        <div class="field"><label>ROI Max (%)</label><input class="inp" type="number" id="el_roi_max" step="0.1"/></div>
+        <div class="field"><label>Max LTV (%)</label><input class="inp" type="number" id="el_ltv"/></div>
+        <div class="field"><label>Min CIBIL</label><input class="inp" type="number" id="el_cibil"/></div>
+        <div class="field"><label>Max FOIR (%)</label><input class="inp" type="number" id="el_foir"/></div>
+        <div class="field"><label>Processing Fee (%)</label><input class="inp" type="number" id="el_pf" step="0.1"/></div>
+        <div class="field"><label>City Coverage</label>
+          <select class="inp" id="el_city_cov">
+            <option value="pan_india">Pan India</option>
+            <option value="rajasthan">Rajasthan</option>
+            <option value="jaipur_only">Jaipur Only</option>
+          </select>
+        </div>
+        <div class="field"><label>Status</label>
+          <select class="inp" id="el_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Sales Manager Name</label><input class="inp" id="el_sm_name" placeholder="SM Name"/></div>
+      <div class="field"><label>Sales Manager Mobile</label><input class="inp" id="el_sm_mobile" placeholder="SM Mobile"/></div>
+      <div class="field"><label>Notes</label><textarea class="inp" id="el_notes" rows="2" placeholder="Special notes..."></textarea></div>
+      <div class="field"><label>Programs</label><textarea class="inp" id="el_programs" rows="2" placeholder="Available programs..."></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('lenderEditModal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveLenderEdit()" id="saveEditBtn"><i class="fa fa-floppy-disk"></i> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- LENDER DIFF MODAL -->
+<div class="modal-overlay" id="lenderDiffModal">
+  <div class="modal" style="max-width:900px;width:95vw">
+    <div class="modal-head">
+      <div>
+        <h3><i class="fa fa-code-compare" style="color:var(--navy);margin-right:8px"></i>Review Changes Before Saving</h3>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="diffLenderTitle">—</div>
+      </div>
+      <button onclick="closeModal('lenderDiffModal')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">&times;</button>
+    </div>
+    <div class="modal-body" style="padding:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden">
+        <div style="background:var(--red-lt);padding:10px 14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)">
+          <span style="font-size:12px;font-weight:800;color:var(--red)"><i class="fa fa-database"></i> Current in DB</span>
+        </div>
+        <div style="background:var(--green-lt);padding:10px 14px;border-bottom:1px solid var(--border)">
+          <span style="font-size:12px;font-weight:800;color:var(--green)"><i class="fa fa-wand-magic-sparkles"></i> New Parsed Data</span>
+        </div>
+        <div id="diffCurrentCol" style="border-right:1px solid var(--border);max-height:60vh;overflow-y:auto;padding:0"></div>
+        <div id="diffNewCol" style="max-height:60vh;overflow-y:auto;padding:0"></div>
+      </div>
+      <div style="margin-top:10px;padding:8px 12px;background:var(--amber-lt);border-radius:8px;font-size:12px;color:var(--amber-dk)">
+        <i class="fa fa-triangle-exclamation"></i> <strong>Yellow rows</strong> = changed fields &nbsp;|&nbsp;
+        <i class="fa fa-circle-check" style="color:var(--green)"></i> <strong>Green rows</strong> = new fields being added &nbsp;|&nbsp;
+        <i class="fa fa-circle-minus" style="color:var(--muted)"></i> Same = no change
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('lenderDiffModal')">Cancel</button>
+      <button class="btn btn-orange btn-sm" id="diffSaveBtn" onclick="confirmDiffSave()">
+        <i class="fa fa-floppy-disk"></i> Confirm Update
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- SM MANAGEMENT MODAL -->
+<div class="modal-overlay" id="smModal">
+  <div class="modal" style="max-width:660px">
+    <div class="modal-head">
+      <div>
+        <h3><i class="fa fa-user-tie" style="color:var(--navy);margin-right:8px"></i>Sales Manager Management</h3>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="smModalTitle">-</div>
+      </div>
+      <button onclick="closeModal('smModal')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px">
+        <div style="font-size:12.5px;font-weight:800;margin-bottom:8px">Current Sales Managers</div>
+        <div id="smListContainer"><div style="text-align:center;padding:16px;color:var(--muted);font-size:12px"><i class="fa fa-spinner fa-spin"></i> Loading...</div></div>
+      </div>
+      <div style="border-top:2px solid var(--border);padding-top:14px">
+        <div style="font-size:12.5px;font-weight:800;margin-bottom:10px;color:var(--navy)"><i class="fa fa-plus"></i> Add / Edit SM</div>
+        <input type="hidden" id="smLenderId"/>
+        <input type="hidden" id="editSmId"/>
+        <div class="form-grid">
+          <div class="field"><label>SM Name *</label><input class="inp" id="sm_name" placeholder="Full name"/></div>
+          <div class="field"><label>Mobile</label><input class="inp" id="sm_mobile" placeholder="Mobile number"/></div>
+          <div class="field"><label>Designation</label>
+            <select class="inp" id="sm_desig">
+              <option value="SM">SM</option><option value="ASM">ASM</option>
+              <option value="RSM">RSM</option><option value="RM">RM</option>
+              <option value="BM">BM</option><option value="ZM">ZM</option>
+              <option value="Senior SM">Senior SM</option>
+              <option value="DSA">DSA</option><option value="Partner">Partner</option>
+            </select>
+          </div>
+          <div class="field"><label>Program Type</label><input class="inp" id="sm_program" placeholder="e.g. Normal LAP, BT"/></div>
+          <div class="field"><label>Territory</label><input class="inp" id="sm_territory" placeholder="e.g. Jaipur, Kota"/></div>
+          <div class="field"><label>Notes</label><input class="inp" id="sm_notes" placeholder="Any info"/></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm" onclick="clearSmForm()"><i class="fa fa-rotate-left"></i> Clear</button>
+          <button class="btn btn-primary btn-sm" id="smSaveBtn" onclick="saveSmEntry()"><i class="fa fa-floppy-disk"></i> Save SM</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- LENDER DETAIL MODAL -->
+<div class="modal-overlay" id="lenderDetailModal">
+  <div class="modal" style="max-width:820px;width:96vw">
+    <div class="modal-head">
+      <div>
+        <h3><i class="fa fa-building-columns" style="color:var(--navy);margin-right:8px"></i>Lender Policy Detail</h3>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px" id="ldTitle">—</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-ghost btn-sm" onclick="openSmModal(document.getElementById('ldId').value, document.getElementById('ldTitle').textContent)"><i class="fa fa-user-tie"></i> SMs</button>
+        <button onclick="closeModal('lenderDetailModal')" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" style="max-height:75vh;overflow-y:auto;padding:18px">
+      <input type="hidden" id="ldId"/>
+
+      <!-- SECTION: Basic Info -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Basic Info</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field"><label>Lender Name</label><input class="inp" id="ld_name"/></div>
+        <div class="field"><label>Lender Type</label>
+          <select class="inp" id="ld_type"><option value="bank">Bank</option><option value="nbfc">NBFC</option><option value="hfc">HFC</option><option value="sfb">SFB</option></select>
+        </div>
+        <div class="field"><label>Product Type</label><input class="inp" id="ld_product" placeholder="e.g. Home Loan, LAP"/></div>
+        <div class="field"><label>Loan Category</label>
+          <select class="inp" id="ld_loan_cat"><option value="secured">Secured</option><option value="unsecured">Unsecured</option><option value="both">Both</option></select>
+        </div>
+        <div class="field"><label>Status</label>
+          <select class="inp" id="ld_status"><option value="active">Active</option><option value="inactive">Inactive</option></select>
+        </div>
+        <div class="field"><label>CIBIL Policy</label>
+          <select class="inp" id="ld_cibil_policy"><option value="case_to_case">Case to Case</option><option value="flexible">Flexible</option><option value="strict">Strict</option></select>
+        </div>
+      </div>
+
+      <!-- SECTION: Financials -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Financials</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field"><label>ROI Min (%)</label><input class="inp" type="number" step="0.1" id="ld_roi_min"/></div>
+        <div class="field"><label>ROI Max (%)</label><input class="inp" type="number" step="0.1" id="ld_roi_max"/></div>
+        <div class="field"><label>Max LTV (%)</label><input class="inp" type="number" step="0.1" id="ld_ltv"/></div>
+        <div class="field"><label>Min CIBIL</label><input class="inp" type="number" id="ld_cibil"/></div>
+        <div class="field"><label>Max FOIR (%)</label><input class="inp" type="number" id="ld_foir"/></div>
+        <div class="field"><label>Processing Fee (%)</label><input class="inp" type="number" step="0.1" id="ld_pf"/></div>
+        <div class="field"><label>Loan Min (Lakh)</label><input class="inp" type="number" step="0.5" id="ld_loan_min"/></div>
+        <div class="field"><label>Loan Max (Lakh)</label><input class="inp" type="number" id="ld_loan_max"/></div>
+        <div class="field"><label>Max Tenure (months)</label><input class="inp" type="number" id="ld_tenure"/></div>
+        <div class="field"><label>Geo Limit (KM)</label><input class="inp" type="number" id="ld_geo_km"/></div>
+      </div>
+
+      <!-- SECTION: Geography -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Geography</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field"><label>City Coverage</label>
+          <select class="inp" id="ld_city_cov"><option value="pan_india">Pan India</option><option value="rajasthan">Rajasthan</option><option value="jaipur_only">Jaipur Only</option></select>
+        </div>
+        <div class="field"><label>Cities / Locations</label><input class="inp" id="ld_city" placeholder="e.g. Jaipur, Kota, Jodhpur"/></div>
+      </div>
+
+      <!-- SECTION: Surrogate Programs -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Surrogate Programs</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_banking"/> Banking</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_gst"/> GST</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_itr"/> ITR</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_rtr"/> RTR</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_lip"/> LIP</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_gp"/> Gross Profit</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_sur_lowltv"/> Low LTV</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_cash"/> Cash Income</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_nip"/> NIP</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_rental"/> Rental Income</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_neg_bureau"/> Negative Bureau</label>
+      </div>
+
+      <!-- SECTION: Working Capital Products -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Working Capital Products</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_ccod" onchange="wcCheckChange()"/> CC/OD</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_dlod" onchange="wcCheckChange()"/> DLOD</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_term" onchange="wcCheckChange()"/> Term Loan</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_bg" onchange="wcCheckChange()"/> BG</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_lc" onchange="wcCheckChange()"/> LC</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_epc" onchange="wcCheckChange()"/> EPC</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_pcfc" onchange="wcCheckChange()"/> PCFC</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_wc_others" onchange="wcCheckChange()"/> Others</label>
+      </div>
+      <div id="ld_wc_others_wrap" style="display:none;margin-bottom:14px">
+        <input class="inp" id="ld_wc_others_text" placeholder="Specify other working capital products..."/>
+      </div>
+      <div style="margin-bottom:14px"></div>
+
+      <!-- SECTION: Property -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Property Types Accepted</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_sorp"/> SORP (Residential)</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_socp"/> SOCP (Commercial)</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_soip"/> SOIP (Industrial)</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_rented"/> Rented</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_land"/> Land / Plot</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_prop_uc"/> Under Construction</label>
+      </div>
+      <div class="field" style="margin-bottom:14px"><label>Property Description (free text)</label><textarea class="inp" id="ld_property_allowed" rows="2" placeholder="e.g. All types of residential, mixed use..."></textarea></div>
+
+      <!-- SECTION: Title -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Title Types Accepted</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_jda"/> JDA</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_rhb"/> RHB</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_soc"/> Society Patta</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_gp"/> Gram Panchayat</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_nn"/> Nagar Nigam</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_riico"/> RIICO</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;cursor:pointer"><input type="checkbox" id="ld_title_fh"/> Freehold</label>
+      </div>
+
+      <!-- SECTION: Income & Programs -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Income, Programs & Notes</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field"><label>Income Types</label><textarea class="inp" id="ld_income_types" rows="2" placeholder="e.g. Salaried, SENP, SEP, Cash..."></textarea></div>
+        <div class="field"><label>Special Profiles</label><textarea class="inp" id="ld_special" rows="2" placeholder="e.g. NRI, Cash Salaried..."></textarea></div>
+        <div class="field"><label>Products Supported</label><input class="inp" id="ld_products_supported" placeholder="e.g. Home Loan, LAP, BT"/></div>
+        <div class="field"><label>Programs (surrogate list)</label><input class="inp" id="ld_programs" placeholder="e.g. Banking, RTR, NIP, LIP"/></div>
+      </div>
+      <div class="field" style="margin-bottom:14px"><label>Notes</label><textarea class="inp" id="ld_notes" rows="3" placeholder="Special notes, conditions, exceptions..."></textarea></div>
+
+      <!-- SECTION: Sales Manager -->
+      <div style="font-size:11px;font-weight:800;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--border-blue)">Primary Sales Manager</div>
+      <div class="form-grid">
+        <div class="field"><label>SM Name</label><input class="inp" id="ld_sm_name"/></div>
+        <div class="field"><label>SM Mobile</label><input class="inp" id="ld_sm_mobile"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('lenderDetailModal')">Cancel</button>
+      <button class="btn btn-outline btn-sm" onclick="openSmModal(document.getElementById('ldId').value, document.getElementById('ldTitle').textContent);closeModal('lenderDetailModal')"><i class="fa fa-user-tie"></i> Manage SMs</button>
+      <button class="btn btn-primary btn-sm" id="ldSaveBtn" onclick="saveLenderDetail()"><i class="fa fa-floppy-disk"></i> Save All Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- DIVA LEAD MODAL -->
+<div class="modal-overlay" id="divaLeadModal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-head">
+      <h3><i class="fa fa-robot" style="color:var(--purple);margin-right:8px"></i>Diva Lead Detail</h3>
+      <button onclick="closeModal('divaLeadModal')" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">&times;</button>
+    </div>
+    <div style="padding:6px 18px 4px;font-size:12px;color:var(--muted);font-weight:600" id="divaLeadTitle">—</div>
+    <div class="modal-body" id="divaLeadBody" style="max-height:60vh;overflow-y:auto;padding:6px 18px 14px"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('divaLeadModal')">Close</button>
+      <a class="btn btn-green btn-sm" id="divaLeadWa" href="#" target="_blank" style="display:none"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+
+<!-- CRM LEAD MODAL -->
+<div class="modal-overlay" id="crmLeadModal">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-head">
+      <h3><i class="fa fa-user" style="color:var(--navy);margin-right:8px"></i>Lead Detail</h3>
+      <button onclick="closeModal('crmLeadModal')" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">&times;</button>
+    </div>
+    <div style="padding:6px 18px 4px;font-size:12px;color:var(--muted);font-weight:600" id="crmLeadTitle">—</div>
+    <div class="modal-body" id="crmLeadBody" style="max-height:60vh;overflow-y:auto;padding:6px 18px 14px"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('crmLeadModal')">Close</button>
+      <button class="btn btn-primary btn-sm" onclick="closeModal('crmLeadModal');showPage('testmatch')"><i class="fa fa-flask"></i> Match Lenders</button>
+      <a class="btn btn-green btn-sm" id="crmLeadWa" href="#" target="_blank" style="display:none"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head"><h3 id="confirmTitle">Confirm Action</h3><button onclick="closeModal('confirmModal')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">&times;</button></div>
+    <div class="modal-body"><p id="confirmMsg" style="font-size:13.5px;color:var(--text-soft)"></p></div>
+    <div class="modal-foot"><button class="btn btn-ghost btn-sm" onclick="closeModal('confirmModal')">Cancel</button><button class="btn btn-primary btn-sm" id="confirmOkBtn">Confirm</button></div>
+  </div>
+</div>
+<script src="/admin/dashboard.js?v=19"></script>
+<script>
+// ═══════════════════════════════════════
+// SM SHARING MODULE
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ═══════════════════════════════════════
+async function loadSMDirectory() {
+  const search = encodeURIComponent(document.getElementById('smSearch')?.value || '');
+  const filter = document.getElementById('smFilter')?.value || 'all';
+  try {
+    const res = await fetch(`/api/admin/dashboard.php?action=get_all_sms&search=${search}&filter=${filter}`,{credentials:'include'}).then(r=>r.json());
+    if (!res || res.status !== 'ok') {
+      document.getElementById('smTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:red">Error: ' + (res?.message || JSON.stringify(res)) + '</td></tr>';
+      return;
+    }
+    // Stats
+    const s = res.stats || {};
+    document.getElementById('smStatsRow').innerHTML = [
+      ['fa-users','Total SMs', s.total||0,'#1e3a8a'],
+      ['fa-circle-check','Active SMs', s.active_count||0,'#16a34a'],
+      ['fa-building-columns','Lenders Covered', s.lenders||0,'#f57c00'],
+      ['fa-share-nodes','Total Shares', res.share_count||0,'#7c3aed'],
+    ].map(([icon,label,val,color]) => `
+      <div class="card" style="padding:16px;display:flex;align-items:center;gap:12px">
+        <div style="width:42px;height:42px;border-radius:10px;background:${color}18;display:flex;align-items:center;justify-content:center;color:${color}">
+          <i class="fa ${icon}"></i></div>
+        <div><div style="font-size:22px;font-weight:800">${val}</div>
+          <div style="font-size:11px;color:#6b7280;font-weight:600">${label}</div></div>
+      </div>`).join('');
+    // Table
+    const sms = res.sms || [];
+    const tbody = document.getElementById('smTableBody');
+    if (!sms.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#6b7280">No SMs found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = sms.map(sm => `
+      <tr style="${sm.is_active=='0'?'opacity:0.55':''}">
+        <td><span style="font-weight:700;color:#1e3a8a">${escHtml(sm.lender_name||'—')}</span></td>
+        <td><span style="font-weight:700">${escHtml(sm.sm_name)}</span></td>
+        <td>
+          <a href="tel:${sm.sm_mobile}" style="color:#1e3a8a;font-weight:600">${sm.sm_mobile||'—'}</a>
+        </td>
+        <td><span style="background:#eff4ff;color:#1e3a8a;padding:3px 8px;border-radius:50px;font-size:11px;font-weight:700">${sm.designation||'SM'}</span></td>
+        <td style="color:#6b7280;font-size:12px">${escHtml(sm.territory||'—')}</td>
+        <td style="color:#6b7280;font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis">${escHtml(sm.program_type||'—')}</td>
+        <td><span style="padding:3px 10px;border-radius:50px;font-size:11px;font-weight:700;background:${sm.is_active=='1'?'#f0fdf4':'#fef2f2'};color:${sm.is_active=='1'?'#16a34a':'#dc2626'}">${sm.is_active=='1'?'Active':'Inactive'}</span></td>
+        <td>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm" style="background:#25d366;color:#fff;padding:5px 10px" onclick="waSM('${sm.sm_mobile}','${escHtml(sm.sm_name)}','${escHtml(sm.lender_name||'')}')">
+              <i class="fab fa-whatsapp"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="editSM(${JSON.stringify(sm).replace(/"/g,'&quot;')})">
+              <i class="fa fa-pen"></i></button>
+            <button class="btn btn-sm" style="background:${sm.is_active=='1'?'#fef2f2':'#f0fdf4'};color:${sm.is_active=='1'?'#dc2626':'#16a34a'};border:1px solid ${sm.is_active=='1'?'#fecaca':'#bbf7d0'}" onclick="toggleSM(${sm.id},${sm.is_active})">
+              <i class="fa fa-${sm.is_active=='1'?'ban':'rotate-right'}"></i></button>
+          </div>
+        </td>
+      </tr>`).join('');
+  } catch(e) {
+    document.getElementById('smTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:red">JS Error: ' + e.message + '</td></tr>';
+  }
+}
+
+async function loadShareLogs() {
+  try {
+    const res = await fetch('/api/admin/dashboard.php?action=get_share_logs',{credentials:'include'}).then(r=>r.json());
+    if (!res || res.status !== 'ok') {
+      document.getElementById('smTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:red">Error: ' + (res?.message || JSON.stringify(res)) + '</td></tr>';
+      return;
+    }
+    const tbody = document.getElementById('sharesTableBody');
+    const shares = res.shares || [];
+    if (!shares.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:30px;color:#6b7280">No shares yet</td></tr>';
+      return;
+    }
+    tbody.innerHTML = shares.map(s => `
+      <tr>
+        <td style="font-weight:700">${escHtml(s.customer_name||'—')}</td>
+        <td>${s.cust_mobile||'—'}</td>
+        <td><span style="background:#eff4ff;color:#1e3a8a;padding:2px 8px;border-radius:50px;font-size:11px">${escHtml(s.loan_type||'—')}</span></td>
+        <td style="font-weight:600">${escHtml(s.lender_name||'—')}</td>
+        <td>${s.offered_roi ? s.offered_roi+'%' : '—'}</td>
+        <td>${s.offered_ltv ? s.offered_ltv+'%' : '—'}</td>
+        <td><span style="padding:2px 8px;border-radius:50px;font-size:11px;font-weight:700;background:#f0fdf4;color:#16a34a">${escHtml(s.status||'shared')}</span></td>
+        <td style="font-size:12px;color:#6b7280">${s.created_at ? new Date(s.created_at).toLocaleDateString('en-IN') : '—'}</td>
+      </tr>`).join('');
+  } catch(e) { console.error(e); }
+}
+
+function switchSMTab(tab) {
+  document.getElementById('smDirectoryPanel').style.display = tab==='directory' ? 'block' : 'none';
+  document.getElementById('smSharesPanel').style.display   = tab==='shares' ? 'block' : 'none';
+  document.getElementById('smTab1').className = tab==='directory' ? 'btn btn-primary' : 'btn btn-outline';
+  document.getElementById('smTab2').className = tab==='shares'    ? 'btn btn-primary' : 'btn btn-outline';
+  if (tab==='shares') loadShareLogs();
+}
+
+async function openAddSMModal() {
+  document.getElementById('smEditId').value = '';
+  document.getElementById('smModalTitle').textContent = 'Add Sales Manager';
+  document.getElementById('smName').value = '';
+  document.getElementById('smMobile').value = '';
+  document.getElementById('smTerritory').value = '';
+  document.getElementById('smPrograms').value = '';
+  document.getElementById('smNotes').value = '';
+  await loadLenderDropdown();
+  document.getElementById('smModal').style.display = 'flex';
+}
+
+async function editSM(sm) {
+  document.getElementById('smEditId').value = sm.id;
+  document.getElementById('smModalTitle').textContent = 'Edit Sales Manager';
+  document.getElementById('smName').value = sm.sm_name || '';
+  document.getElementById('smMobile').value = sm.sm_mobile || '';
+  document.getElementById('smTerritory').value = sm.territory || '';
+  document.getElementById('smPrograms').value = sm.program_type || '';
+  document.getElementById('smNotes').value = sm.notes || '';
+  document.getElementById('smDesignation').value = sm.designation || 'SM';
+  await loadLenderDropdown(sm.lender_id);
+  document.getElementById('smModal').style.display = 'flex';
+}
+
+async function loadLenderDropdown(selectedId) {
+  const sel = document.getElementById('smLenderId');
+  sel.innerHTML = '<option value="">Select Lender...</option>';
+  try {
+    const res = await fetch('/api/admin/dashboard.php?action=lenders_list',{credentials:'include'}).then(r=>r.json());
+    const lenders = res.lenders || res.data || [];
+    lenders.forEach(l => {
+      const opt = document.createElement('option');
+      opt.value = l.id;
+      opt.textContent = l.lender_name;
+      if (selectedId && l.id == selectedId) opt.selected = true;
+      sel.appendChild(opt);
+    });
+  } catch(e) {}
+}
+
+function closeSMModal() {
+  document.getElementById('smModal').style.display = 'none';
+}
+
+async function saveSM() {
+  const id = document.getElementById('smEditId').value;
+  const data = {
+    lender_id:    document.getElementById('smLenderId').value,
+    sm_name:      document.getElementById('smName').value.trim(),
+    sm_mobile:    document.getElementById('smMobile').value.trim(),
+    designation:  document.getElementById('smDesignation').value,
+    territory:    document.getElementById('smTerritory').value.trim(),
+    program_type: document.getElementById('smPrograms').value.trim(),
+    notes:        document.getElementById('smNotes').value.trim(),
+  };
+  if (!data.lender_id || !data.sm_name || !data.sm_mobile) {
+    alert('Lender, SM Name aur Mobile required hai'); return;
+  }
+  data.action = id ? 'update_sm' : 'add_sm';
+  if (id) data.id = id;
+  try {
+    await fetch('/api/admin/dashboard.php', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json','X-Auth-Token':localStorage.getItem('wm_admin_token')||''},
+      body: JSON.stringify(data)
+    }).then(r=>r.json());
+    closeSMModal();
+    showToast(id ? 'SM updated!' : 'SM added!', 'success');
+    loadSMDirectory();
+  } catch(e) { showToast('Error saving SM', 'error'); }
+}
+
+async function toggleSM(id, isActive) {
+  const reason = isActive=='1' ? prompt('Deactivation reason:') : null;
+  if (isActive=='1' && !reason) return;
+  try {
+    await fetch('/api/admin/dashboard.php',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'toggle_sm',id,reason:reason||''})}).then(r=>r.json());
+    showToast(isActive=='1' ? 'SM deactivated' : 'SM activated', 'success');
+    loadSMDirectory();
+  } catch(e) {}
+}
+
+function waSM(mobile, name, lender) {
+  const msg = encodeURIComponent(`Namaste ${name}! 🙏\nWealthMetre se baat kar raha hoon.\nEk ${lender} ke liye quality lead hai share karna chahta hoon.\nKya aap available hain?`);
+  window.open(`https://wa.me/91${mobile}?text=${msg}`, '_blank');
+}
+</script>
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+</style>
+</body>
+</html>

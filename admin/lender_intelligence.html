@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lender Intelligence — WealthMetre Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+<style>
+:root {
+  --navy: #0f1f3d;
+  --navy-lt: #1a2f52;
+  --accent: #2563eb;
+  --accent-lt: #3b82f6;
+  --green: #10b981;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #1e293b;
+  --muted: #64748b;
+  --code: #0f172a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* AUTH SCREEN */
+#authScreen {
+  position: fixed; inset: 0; background: var(--navy);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.auth-box {
+  background: var(--navy-lt); border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px; padding: 40px; width: 360px; text-align: center;
+}
+.auth-logo { font-size: 32px; margin-bottom: 8px; }
+.auth-title { color: #fff; font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.auth-sub { color: rgba(255,255,255,.5); font-size: 13px; margin-bottom: 24px; }
+.auth-input {
+  width: 100%; padding: 12px 16px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,.15); background: rgba(255,255,255,.07);
+  color: #fff; font-size: 14px; margin-bottom: 12px; font-family: 'DM Mono', monospace;
+  letter-spacing: 2px;
+}
+.auth-input:focus { outline: none; border-color: var(--accent); }
+.auth-btn {
+  width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: var(--accent); color: #fff; font-weight: 600; cursor: pointer;
+  font-size: 14px; transition: background .2s;
+}
+.auth-btn:hover { background: var(--accent-lt); }
+.auth-err { color: #f87171; font-size: 12px; margin-top: 8px; }
+
+/* LAYOUT */
+.sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0; width: 220px;
+  background: var(--navy); padding: 24px 0; z-index: 100;
+}
+.sidebar-logo {
+  padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,.08);
+  margin-bottom: 16px;
+}
+.sidebar-logo-text { color: #fff; font-weight: 700; font-size: 16px; }
+.sidebar-logo-sub { color: rgba(255,255,255,.4); font-size: 11px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 20px;
+  color: rgba(255,255,255,.6); font-size: 13px; cursor: pointer;
+  transition: all .2s; border-left: 3px solid transparent;
+}
+.nav-item:hover, .nav-item.active {
+  color: #fff; background: rgba(255,255,255,.06);
+  border-left-color: var(--accent);
+}
+.nav-item i { width: 16px; text-align: center; }
+.nav-section { padding: 16px 20px 6px; font-size: 10px; color: rgba(255,255,255,.3); letter-spacing: 1px; font-weight: 600; }
+.nav-count { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; padding: 1px 6px; border-radius: 10px; }
+
+.main { margin-left: 220px; padding: 24px; min-height: 100vh; }
+.topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.page-title { font-size: 22px; font-weight: 700; }
+.page-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+/* PAGES */
+.page { display: none; }
+.page.active { display: block; }
+
+/* CARDS */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card-title { font-size: 14px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; }
+.stat-val { font-size: 28px; font-weight: 700; color: var(--navy); }
+.stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-card.blue .stat-val { color: var(--accent); }
+.stat-card.green .stat-val { color: var(--green); }
+.stat-card.orange .stat-val { color: var(--orange); }
+
+/* PARSER */
+.parse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+textarea.policy-input {
+  width: 100%; height: 280px; border: 1px solid var(--border); border-radius: 8px;
+  padding: 14px; font-family: 'DM Mono', monospace; font-size: 12.5px;
+  resize: vertical; color: var(--text); background: #f8fafc; line-height: 1.6;
+}
+textarea.policy-input:focus { outline: none; border-color: var(--accent); }
+.btn { padding: 10px 20px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all .2s; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent-lt); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.btn-success { background: var(--green); color: #fff; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* RESULT PANEL */
+.result-panel {
+  display: none; border: 1px solid var(--border); border-radius: 12px;
+  overflow: hidden;
+}
+.result-panel.show { display: block; }
+.result-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; background: var(--navy); color: #fff;
+}
+.result-body { padding: 20px; }
+.confidence-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 16px; overflow: hidden; }
+.confidence-fill { height: 100%; border-radius: 3px; background: var(--green); transition: width .5s; }
+.decision-badge {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+  border-radius: 20px; font-size: 12px; font-weight: 600;
+}
+.decision-new_lender { background: #fef3c7; color: #92400e; }
+.decision-policy_update { background: #dbeafe; color: #1e40af; }
+.decision-new_product { background: #d1fae5; color: #065f46; }
+.decision-duplicate { background: #f3f4f6; color: #6b7280; }
+
+/* FORM */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.field label { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .5px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 7px;
+  font-size: 13px; color: var(--text); background: #fff; font-family: 'DM Sans', sans-serif;
+}
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+.field textarea { height: 80px; resize: vertical; }
+.field-full { grid-column: 1 / -1; }
+.section-head { font-size: 12px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: .8px; padding: 12px 0 8px; border-top: 1px solid var(--border); margin-top: 8px; }
+
+/* CHANGE SUMMARY */
+.change-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+.change-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.change-dot.new { background: var(--green); }
+.change-dot.changed { background: var(--orange); }
+.change-dot.removed { background: var(--red); }
+
+/* TABLE */
+.lenders-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.lenders-table th { background: var(--bg); padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid var(--border); }
+.lenders-table td { padding: 12px 14px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+.lenders-table tr:hover td { background: #f8fafc; }
+.lender-name { font-weight: 600; color: var(--navy); }
+.product-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; background: #eff6ff; color: var(--accent); }
+
+/* SEARCH */
+.search-bar { display: flex; gap: 10px; margin-bottom: 16px; }
+.search-input { flex: 1; padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; }
+.search-input:focus { outline: none; border-color: var(--accent); }
+.filter-select { padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; background: #fff; min-width: 130px; }
+
+/* FLAGS */
+.flag-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fef3c7; border-radius: 6px; font-size: 12px; color: #92400e; margin-bottom: 6px; }
+.review-badge { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+/* SEARCHABLE TEXT */
+.rag-text {
+  background: var(--code); color: #a5f3fc; font-family: 'DM Mono', monospace;
+  font-size: 12px; padding: 14px; border-radius: 8px; line-height: 1.7;
+  margin-top: 8px; white-space: pre-wrap; word-break: break-word;
+}
+
+/* TOAST */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { padding: 12px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; color: #fff; display: flex; align-items: center; gap: 8px; animation: slideIn .3s ease; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+.toast.success { background: var(--green); }
+.toast.error { background: var(--red); }
+.toast.info { background: var(--accent); }
+@keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+/* LOADING */
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; display: inline-block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state { text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+.empty-icon { font-size: 36px; margin-bottom: 12px; }
+
+/* RESPONSIVE */
+@media(max-width:1024px) {
+  .parse-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">🏦</div>
+    <div class="auth-title">Lender Intelligence</div>
+    <div class="auth-sub">WealthMetre Admin Panel</div>
+    <input class="auth-input" type="password" id="adminKeyInput" placeholder="Enter admin key" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <button class="auth-btn" onclick="doLogin()">Access Panel</button>
+    <div class="auth-err" id="authErr"></div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-text">⚡ WealthMetre</div>
+    <div class="sidebar-logo-sub">Lender Intelligence Admin</div>
+  </div>
+  <div class="nav-section">LENDER OPS</div>
+  <div class="nav-item active" onclick="showPage('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</div>
+  <div class="nav-item" onclick="showPage('parser')"><i class="fa-solid fa-robot"></i> Policy Parser <span class="nav-count">AI</span></div>
+  <div class="nav-item" onclick="showPage('lenders')"><i class="fa-solid fa-building-columns"></i> All Lenders <span class="nav-count" id="lenderCountBadge">0</span></div>
+  <div class="nav-section">TOOLS</div>
+  <div class="nav-item" onclick="showPage('search')"><i class="fa-solid fa-magnifying-glass"></i> Test Matching</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Lender database health & coverage</div>
+      </div>
+      <button class="btn btn-primary" onclick="showPage('parser')"><i class="fa-solid fa-robot"></i> Parse New Policy</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card blue"><div class="stat-val" id="statTotal">—</div><div class="stat-label">Total Active Lenders</div></div>
+      <div class="stat-card green"><div class="stat-val" id="statLAP">—</div><div class="stat-label">LAP Products</div></div>
+      <div class="stat-card orange"><div class="stat-val" id="statBL">—</div><div class="stat-label">Business Loan</div></div>
+      <div class="stat-card"><div class="stat-val" id="statHL">—</div><div class="stat-label">Home Loan</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-clock" style="color:var(--accent)"></i> Recently Updated Lenders</div>
+      <table class="lenders-table" id="recentTable">
+        <thead><tr><th>Lender</th><th>Product</th><th>ROI Range</th><th>Max LTV</th><th>City</th><th>RM Contact</th></tr></thead>
+        <tbody id="recentBody"><tr><td colspan="6" class="empty-state">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PARSER -->
+  <div class="page" id="page-parser">
+    <div class="topbar">
+      <div>
+        <div class="page-title">AI Policy Parser</div>
+        <div class="page-sub">Paste any WhatsApp or email lender policy — AI extracts structured data</div>
+      </div>
+    </div>
+    <div class="parse-grid">
+      <!-- LEFT: Input -->
+      <div>
+        <div class="card">
+          <div class="card-title"><i class="fa-brands fa-whatsapp" style="color:#25d366"></i> Paste Policy Message</div>
+          <textarea class="policy-input" id="policyInput" placeholder="Paste the WhatsApp message or email here...
+
+Example:
+Cholamandalam Investment & Finance company
+Lap Loan details.
+Loan Amount 10 L - 7.5 Cr
+Property- JDA, NN, RHB...
+LTV - SORP 65%-70% SOCP 50%-60%
+LOCATION - JAIPUR 75 KM Radius
+TENOR - LAP Upto 15 Years
+Borrower Segment: SENP, SEP
+Programs: Banking Surrogate, EMI Surrogate
+Login Fees: 5500
+Regards,
+Rishi Kumar | 8946963559"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+            <span style="font-size:12px;color:var(--muted)">GPT-4o-mini • ~₹0.15 per parse</span>
+            <button class="btn btn-primary" id="parseBtn" onclick="parsePolicy()">
+              <i class="fa-solid fa-robot"></i> Parse with AI
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Result -->
+      <div>
+        <div class="result-panel" id="resultPanel">
+          <div class="result-header">
+            <div>
+              <div style="font-weight:700;font-size:15px" id="resultLenderName">Parsing...</div>
+              <div style="font-size:12px;opacity:.7;margin-top:2px" id="resultProduct"></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <span class="decision-badge" id="decisionBadge"></span>
+              <span id="humanReviewBadge"></span>
+            </div>
+          </div>
+          <div class="result-body">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <span style="font-size:12px;color:var(--muted)">AI Confidence</span>
+              <span style="font-size:12px;font-weight:700" id="confidenceText">—</span>
+            </div>
+            <div class="confidence-bar"><div class="confidence-fill" id="confidenceFill" style="width:0%"></div></div>
+
+            <div id="changeSummary" style="margin-bottom:12px"></div>
+            <div id="riskFlags" style="margin-bottom:12px"></div>
+          </div>
+        </div>
+
+        <!-- DUAL PRODUCT BANNER -->
+        <div id="dualProductBanner" style="display:none;background:#fef3c7;border:1.5px solid #f59e0b;border-radius:10px;padding:14px 18px;margin-bottom:12px">
+          <div style="font-weight:700;color:#92400e;margin-bottom:6px">⚠️ Two Products Detected</div>
+          <div style="font-size:13px;color:#92400e" id="dualProductNote"></div>
+          <button class="btn btn-sm" style="margin-top:10px;background:#f59e0b;color:#fff;border:none" onclick="loadSecondProduct()">
+            <i class="fa-solid fa-plus"></i> Create Second Product Record
+          </button>
+        </div>
+
+        <div id="parseLoading" style="display:none;text-align:center;padding:40px">
+          <div style="font-size:32px;margin-bottom:12px">🤖</div>
+          <div style="font-weight:700;margin-bottom:6px">AI is analyzing the policy...</div>
+          <div style="font-size:12px;color:var(--muted)">Extracting 30+ fields, matching lenders, checking for changes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEW FORM (shown after parse) -->
+    <div id="reviewForm" style="display:none">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-pen-to-square" style="color:var(--accent)"></i> Review & Edit Before Saving</div>
+
+        <div class="section-head">🏦 Lender Identity</div>
+        <div class="form-grid">
+          <div class="field"><label>Lender Name *</label><input type="text" id="f_lender_name"/></div>
+          <div class="field"><label>Lender Type</label>
+            <select id="f_lender_type">
+              <option value="nbfc">NBFC</option>
+              <option value="bank">Bank</option>
+              <option value="hfc">HFC</option>
+              <option value="sfb">Small Finance Bank</option>
+            </select>
+          </div>
+          <div class="field"><label>Loan Category</label>
+            <select id="f_loan_category">
+              <option value="secured">🔒 Secured</option>
+              <option value="unsecured">⚡ Unsecured</option>
+              <option value="both">🔄 Both</option>
+            </select>
+          </div>
+          <div class="field"><label>Product *</label>
+            <select id="f_product">
+              <option>LAP</option>
+              <option>Home Loan</option>
+              <option>Business Loan - Unsecured</option>
+              <option>Business Loan - Secured</option>
+              <option>Working Capital - CC/OD</option>
+              <option>CGTMSE - Unsecured</option>
+              <option>Cash Credit</option>
+              <option>Overdraft</option>
+              <option>Personal Loan</option>
+              <option>Car Loan</option>
+              <option>Machinery Loan</option>
+              <option>Education Loan</option>
+              <option>Institutional Loan</option>
+              <option>Balance Transfer</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-head">💰 Rates & Amounts</div>
+        <div class="form-grid-3">
+          <div class="field"><label>ROI Min (%)</label><input type="number" step="0.01" id="f_roi_min" placeholder="e.g. 9.5"/></div>
+          <div class="field"><label>ROI Max (%)</label><input type="number" step="0.01" id="f_roi_max" placeholder="e.g. 14.0"/></div>
+          <div class="field"><label>Max LTV (%)</label><input type="number" step="0.1" id="f_max_ltv" placeholder="e.g. 70"/></div>
+          <div class="field"><label>Min Loan (Lakh)</label><input type="number" step="0.1" id="f_loan_min_lakh" placeholder="e.g. 10"/></div>
+          <div class="field"><label>Max Loan (Lakh)</label><input type="number" step="0.1" id="f_loan_max_lakh" placeholder="e.g. 500"/></div>
+          <div class="field"><label>Min CIBIL</label><input type="number" id="f_min_cibil" placeholder="e.g. 700 or blank=C2C"/></div>
+        </div>
+
+        <div class="section-head">📊 LTV Matrix (by Property Type)</div>
+        <div class="form-grid-3">
+          <div class="field"><label>SORP LTV (%)</label><input type="number" step="0.1" id="f_ltv_sorp" placeholder="e.g. 75"/></div>
+          <div class="field"><label>SOCP LTV (%)</label><input type="number" step="0.1" id="f_ltv_socp" placeholder="e.g. 65"/></div>
+          <div class="field"><label>SOIP (Self Occ. Industrial) %</label><input type="number" step="0.1" id="f_ltv_soip" placeholder="Same as Industrial"/></div>
+          <div class="field"><label>Rented/Vacant (%)</label><input type="number" step="0.1" id="f_ltv_rented" placeholder="e.g. 60"/></div>
+          <div class="field"><label>Industrial Rented/Vacant %</label><input type="number" step="0.1" id="f_ltv_industrial" placeholder="e.g. 35"/></div>
+          <div class="field"><label>Land (%)</label><input type="number" step="0.1" id="f_ltv_land" placeholder="e.g. 60"/></div>
+        </div>
+        <div class="section-head">⏱️ Tenure Matrix</div>
+        <div class="form-grid-3">
+          <div class="field"><label>Default Tenure (Months)</label><input type="number" id="f_tenure_default" placeholder="180"/></div>
+          <div class="field"><label>Land Tenure (Months)</label><input type="number" id="f_tenure_land" placeholder="144"/></div>
+          <div class="field"><label>Commercial Tenure (Months)</label><input type="number" id="f_tenure_commercial" placeholder="180"/></div>
+        </div>
+        <div class="section-head">📍 Geography</div>
+        <div class="form-grid">
+          <div class="field"><label>Cities Allowed</label><input type="text" id="f_city_allowed" placeholder="Jaipur, Jodhpur, Udaipur"/></div>
+          <div class="field"><label>Geo Limit Notes</label><input type="text" id="f_geo_limit" placeholder="75km radius from Jaipur"/></div>
+        </div>
+
+        <div class="section-head">🏗️ Property & Eligibility</div>
+        <div class="form-grid">
+          <div class="field"><label>Property Types Accepted</label><textarea id="f_property_allowed" placeholder="JDA, RHB, NN, Society Patta, RIICO, 90-B"></textarea></div>
+          <div class="field"><label>Income / Borrower Types</label><textarea id="f_income_types" placeholder="SENP, SEP, Salaried, Self Employed"></textarea></div>
+          <div class="field"><label>Max Tenure (Months)</label><input type="number" id="f_max_tenure_months" placeholder="180 = 15 years"/></div>
+          <div class="field"><label>Profile Allowed</label><input type="text" id="f_profile_allowed" placeholder="SENP, SEP"/></div>
+        </div>
+
+        <div class="section-head">⚡ Programs & USPs</div>
+        <div class="form-grid">
+          <div class="field field-full"><label>Programs / Surrogate Types</label>
+            <textarea id="f_programs" placeholder="Banking Surrogate, EMI Surrogate upto 7.5Cr, GST Program, Low LTV Program, Rental Program"></textarea>
+          </div>
+          <div class="field"><label>Foreclosure Charges</label><input type="text" id="f_foreclosure_charges" placeholder="Nil"/></div>
+          <div class="field"><label>Prepayment Charges</label><input type="text" id="f_prepayment_charges" placeholder="Nil"/></div>
+          <div class="field field-full"><label>Notes / Special Conditions</label>
+            <textarea id="f_notes" placeholder="Login fees, special conditions, processing fee, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="section-head">👤 Relationship Manager</div>
+        <div class="form-grid-3">
+          <div class="field"><label>RM Name</label><input type="text" id="f_sales_manager_name"/></div>
+          <div class="field"><label>RM Mobile</label><input type="text" id="f_sales_manager_mobile"/></div>
+          <div class="field"><label>Guarantor Required</label>
+            <select id="f_guarantor_required"><option>Case to Case</option><option>Yes</option><option>No</option></select>
+          </div>
+        </div>
+        <div class="section-head" style="color:#b45309">💰 DSA Payout (Internal — Not Shown to Customers)</div>
+        <div class="form-grid-3">
+          <div class="field field-full">
+            <label style="color:#b45309">Payout / Commission Structure</label>
+            <input type="text" id="f_dsa_payout" 
+              style="border-color:#f59e0b;background:#fffbeb"
+              placeholder="e.g. 0.50% on LAP, 0.75% on HL above 50L, PF sharing 70%"/>
+          </div>
+        </div>
+
+        <div class="section-head">🔍 RAG Search Text (Auto-generated)</div>
+        <div class="rag-text" id="ragText">Will be generated after parsing...</div>
+
+        <div style="display:flex;gap:12px;margin-top:20px">
+          <input type="hidden" id="existingLenderId" value=""/>
+          <button class="btn btn-success" onclick="savePolicy()"><i class="fa-solid fa-floppy-disk"></i> Save to Database</button>
+          <button class="btn btn-outline" onclick="clearParser()"><i class="fa-solid fa-rotate-left"></i> Clear & Start Over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LENDERS LIST -->
+  <div class="page" id="page-lenders">
+    <div class="topbar">
+      <div>
+        <div class="page-title">All Lenders</div>
+        <div class="page-sub" id="lenderCountText">Loading...</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-outline" onclick="exportCSV()"><i class="fa-solid fa-download"></i> Export CSV</button>
+        <button class="btn btn-primary" onclick="showPage('parser')"><i class="fa-solid fa-plus"></i> Add Lender</button>
+      </div>
+    </div>
+    <div class="search-bar">
+      <input class="search-input" type="text" id="lenderSearch" placeholder="Search lender name..." oninput="loadLenders()"/>
+      <select class="filter-select" id="categoryFilter" onchange="handleAdminCategory()" autocomplete="off">
+        <option value="" selected>All Categories</option>
+        <option value="secured">🔒 Secured</option>
+        <option value="unsecured">⚡ Unsecured</option>
+        <option value="both">🔄 Both</option>
+      </select>
+      <select class="filter-select" id="productFilter" onchange="loadLenders()" autocomplete="off">
+        <option value="" selected>All Products</option>
+        <option>LAP</option>
+        <option>Home Loan</option>
+        <option>Business Loan</option>
+        <option>Business Loan - Secured</option>
+        <option>Business Loan - Unsecured</option>
+        <option>Personal Loan</option>
+        <option>Car Loan</option>
+        <option>Working Capital - CC/OD</option>
+        <option>CGTMSE - Unsecured</option>
+        <option>Institutional Loan</option>
+        <option>Balance Transfer</option>
+      </select>
+      <select class="filter-select" id="typeFilter" onchange="loadLenders()" autocomplete="off">
+        <option value="" selected>All Types</option>
+        <option value="bank">🏦 Bank</option>
+        <option value="nbfc">🏢 NBFC</option>
+        <option value="hfc">🏠 HFC</option>
+        <option value="sfb">⭐ SFB</option>
+      </select>
+      <button class="btn btn-outline" onclick="loadLenders()"><i class="fa-solid fa-refresh"></i></button>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="lenders-table">
+        <thead><tr>
+          <th>Lender Name</th><th>Product</th><th>ROI</th><th>Max LTV</th>
+          <th>City</th><th>Programs</th><th>RM</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="lendersBody"><tr><td colspan="8" class="empty-state"><div class="spinner" style="border-color:rgba(0,0,0,.1);border-top-color:var(--accent);margin:0 auto"></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TEST MATCHING -->
+  <div class="page" id="page-search">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Test Lender Matching</div>
+        <div class="page-sub">Test how the AI matching engine responds to customer profiles</div>
+      </div>
+    </div>
+    <div class="parse-grid">
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-user" style="color:var(--accent)"></i> Customer Profile</div>
+        <div class="form-grid">
+          <div class="field"><label>Loan Type</label>
+            <select id="t_loan_type"><option>LAP</option><option>Home Loan</option><option>Business Loan - Unsecured</option><option>Business Loan - Secured</option><option>Working Capital - CC/OD</option><option>CGTMSE - Unsecured</option></select>
+          </div>
+          <div class="field"><label>City</label><input type="text" id="t_city" value="Jaipur"/></div>
+          <div class="field"><label>Loan Amount (₹)</label><input type="number" id="t_amount" placeholder="5000000"/></div>
+          <div class="field"><label>CIBIL Score</label><input type="number" id="t_cibil" placeholder="720"/></div>
+          <div class="field"><label>Monthly Income (₹)</label><input type="number" id="t_income" placeholder="75000"/></div>
+          <div class="field"><label>Existing EMI (₹)</label><input type="number" id="t_emi" placeholder="0"/></div>
+          <div class="field"><label>Property Type</label>
+            <select id="t_property"><option>JDA</option><option>Society Patta</option><option>RHB</option><option>Freehold</option></select>
+          </div>
+          <div class="field"><label>Occupation</label>
+            <select id="t_occ"><option>Salaried</option><option>Self Employed</option><option>Business Owner</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="testMatch()">
+          <i class="fa-solid fa-bolt"></i> Run AI Match
+        </button>
+      </div>
+      <div>
+        <div id="matchResult"><div class="empty-state"><div class="empty-icon">🎯</div>Fill profile and click "Run AI Match"</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const API = '/api/admin/policy_parser.php';
+const HYBRID = '/api/hybrid_query.php';
+let ADMIN_KEY = '';
+let parsedResult = null;
+
+// ══════════════════════════
+// AUTH
+// ══════════════════════════
+function doLogin() {
+  const key = document.getElementById('adminKeyInput').value.trim();
+  if (!key) return;
+  ADMIN_KEY = key;
+  apiCall('list').then(r => {
+    if (r.lenders !== undefined) {
+      sessionStorage.setItem('wm_admin_key', key);
+      document.getElementById('authScreen').style.display = 'none';
+      init();
+    } else {
+      document.getElementById('authErr').textContent = 'Invalid admin key';
+      ADMIN_KEY = '';
+    }
+  }).catch(() => {
+    document.getElementById('authErr').textContent = 'Invalid admin key';
+    ADMIN_KEY = '';
+  });
+}
+
+// ══════════════════════════
+// INIT
+// ══════════════════════════
+function init() {
+  loadDashboard();
+  // Delay reset to override browser form state restoration
+  setTimeout(() => {
+    ['categoryFilter','productFilter','typeFilter','lenderSearch'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) { el.value = ''; el.selectedIndex = 0; }
+    });
+    loadLenders();
+  }, 100);
+}
+
+// Auto-login if key stored
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('wm_admin_key');
+  if (saved) {
+    ADMIN_KEY = saved;
+    apiCall('list').then(r => {
+      if (r.lenders !== undefined) {
+        document.getElementById('authScreen').style.display = 'none';
+        init();
+      } else {
+        sessionStorage.removeItem('wm_admin_key');
+      }
+    }).catch(() => sessionStorage.removeItem('wm_admin_key'));
+  }
+});
+
+// ══════════════════════════
+// NAVIGATION
+// ══════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick')?.includes(name)) n.classList.add('active');
+  });
+}
+
+// ══════════════════════════
+// DASHBOARD
+// ══════════════════════════
+async function loadDashboard() {
+  try {
+    const r = await apiCall('list');
+    const lenders = r.lenders || [];
+    document.getElementById('statTotal').textContent = lenders.length;
+    document.getElementById('statLAP').textContent = lenders.filter(l => l.product?.toLowerCase().includes('lap')).length;
+    document.getElementById('statBL').textContent = lenders.filter(l => l.product?.toLowerCase().includes('business')).length;
+    document.getElementById('statHL').textContent = lenders.filter(l => l.product?.toLowerCase().includes('home')).length;
+    document.getElementById('lenderCountBadge').textContent = lenders.length;
+
+    // Recent 10
+    const recent = lenders.slice(0, 10);
+    document.getElementById('recentBody').innerHTML = recent.map(l => `
+      <tr>
+        <td><div class="lender-name">${esc(l.lender_name)}</div></td>
+        <td><span class="product-badge">${esc(l.product||'—')}</span></td>
+        <td>${l.roi_min ? l.roi_min + '% – ' + (l.roi_max||'?') + '%' : 'On Request'}</td>
+        <td>${l.max_ltv ? l.max_ltv + '%' : '—'}</td>
+        <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.city_allowed||'—')}</td>
+        <td>${l.sales_manager_name ? `<div style="font-size:12px">${esc(l.sales_manager_name)}</div><div style="font-size:11px;color:var(--muted)">${esc(l.sales_manager_mobile||'')}</div>` : '—'}</td>
+      </tr>
+    `).join('');
+  } catch(e) { console.error(e); }
+}
+
+// ══════════════════════════
+// PARSER
+// ══════════════════════════
+async function parsePolicy() {
+  const rawText = document.getElementById('policyInput').value.trim();
+  if (!rawText) { toast('Please paste a policy message first', 'error'); return; }
+
+  const btn = document.getElementById('parseBtn');
+  btn.innerHTML = '<div class="spinner"></div> Parsing...';
+  btn.disabled = true;
+  document.getElementById('parseLoading').style.display = 'block';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('reviewForm').style.display = 'none';
+
+  try {
+    const r = await apiCall('parse', { raw_text: rawText });
+    const result = r.result;
+    parsedResult = result;
+
+    // Show result panel
+    document.getElementById('resultPanel').classList.add('show');
+    document.getElementById('resultLenderName').textContent = result.lender_name || 'Unknown Lender';
+    document.getElementById('resultProduct').textContent = result.product || '';
+
+    // Decision badge
+    const dec = result.decision || 'unclear';
+    document.getElementById('decisionBadge').className = 'decision-badge decision-' + dec;
+    document.getElementById('decisionBadge').textContent = dec.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+
+    // Human review
+    if (result.human_review_required) {
+      document.getElementById('humanReviewBadge').innerHTML = '<span class="review-badge">⚠️ Review Required</span>';
+    } else {
+      document.getElementById('humanReviewBadge').innerHTML = '<span style="font-size:12px;color:#10b981">✅ Auto-approved</span>';
+    }
+
+    // Confidence
+    const conf = result.confidence_score || 0;
+    document.getElementById('confidenceText').textContent = conf + '%';
+    document.getElementById('confidenceFill').style.width = conf + '%';
+    document.getElementById('confidenceFill').style.background = conf >= 80 ? '#10b981' : conf >= 60 ? '#f59e0b' : '#ef4444';
+
+    // Change summary
+    const changes = result.change_summary || [];
+    document.getElementById('changeSummary').innerHTML = changes.length ? changes.map(c =>
+      `<div class="change-item"><div class="change-dot changed"></div>${esc(c)}</div>`
+    ).join('') : '';
+
+    // Risk flags
+    const flags = result.risk_flags || [];
+    document.getElementById('riskFlags').innerHTML = flags.length ? flags.map(f =>
+      `<div class="flag-item"><i class="fa-solid fa-triangle-exclamation"></i>${esc(f)}</div>`
+    ).join('') : '';
+
+    // Fill form
+    fillReviewForm(result);
+    document.getElementById('reviewForm').style.display = 'block';
+
+    // Existing lender id
+    if (result.matched_lender_id) {
+      document.getElementById('existingLenderId').value = result.matched_lender_id;
+    } else {
+      document.getElementById('existingLenderId').value = '';
+    }
+
+    // RAG text
+    document.getElementById('ragText').textContent = result.searchable_text || 'Not generated';
+
+    // Dual product detection
+    if (result.dual_product_note) {
+      document.getElementById('dualProductBanner').style.display = 'block';
+      document.getElementById('dualProductNote').textContent = result.dual_product_note;
+      // Prepare second product data by swapping product + ROI
+      const note = result.dual_product_note;
+      // Use structured second_product data from AI
+      secondProductData = JSON.parse(JSON.stringify(result)); // deep copy
+      if (result.second_product) {
+        secondProductData.product   = result.second_product.product  || secondProductData.product;
+        secondProductData.roi_min   = result.second_product.roi_min  || secondProductData.roi_min;
+        secondProductData.roi_max   = result.second_product.roi_max  || secondProductData.roi_max;
+      }
+      secondProductData.dual_product_note = null;
+      secondProductData.second_product    = null;
+      secondProductData.matched_lender_id = null;
+      secondProductData.decision = 'new_product';
+      secondProductData.dual_product_note = null;
+    } else {
+      document.getElementById('dualProductBanner').style.display = 'none';
+      secondProductData = null;
+    }
+
+    toast('Policy parsed successfully!', 'success');
+  } catch(e) {
+    toast('Parsing failed: ' + e.message, 'error');
+  }
+
+  btn.innerHTML = '<i class="fa-solid fa-robot"></i> Parse with AI';
+  btn.disabled = false;
+  document.getElementById('parseLoading').style.display = 'none';
+}
+
+function fillReviewForm(r) {
+  const set = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== null && val !== undefined) el.value = val;
+  };
+  set('f_lender_name', r.lender_name);
+  // Handle select dropdown for product
+  const prodEl = document.getElementById('f_product');
+  if (prodEl && r.product) {
+    for (let opt of prodEl.options) {
+      if (opt.value === r.product || opt.text === r.product) {
+        prodEl.value = opt.value;
+        break;
+      }
+    }
+  }
+  set('f_roi_min', r.roi_min);
+  set('f_roi_max', r.roi_max);
+  set('f_max_ltv', r.max_ltv);
+  set('f_min_cibil', r.min_cibil);
+  set('f_loan_min_lakh', r.loan_min_lakh);
+  set('f_loan_max_lakh', r.loan_max_lakh);
+  set('f_max_tenure_months', r.max_tenure_months);
+  set('f_city_allowed', r.city_allowed);
+  set('f_geo_limit', r.geo_limit);
+  set('f_property_allowed', r.property_allowed);
+  set('f_income_types', r.income_types);
+  set('f_profile_allowed', r.profile_allowed);
+  set('f_programs', r.programs);
+  set('f_notes', r.notes);
+  set('f_sales_manager_name', r.sales_manager_name);
+  set('f_sales_manager_mobile', r.sales_manager_mobile);
+  set('f_foreclosure_charges', r.foreclosure_charges);
+  set('f_prepayment_charges', r.prepayment_charges);
+  set('f_guarantor_required', r.guarantor_required);
+  if (r.lender_type) { const el=document.getElementById('f_lender_type'); if(el) el.value=r.lender_type; }
+  if (r.loan_category) { const el=document.getElementById('f_loan_category'); if(el) el.value=r.loan_category; }
+  set('f_dsa_payout', r.dsa_payout);
+  // LTV Matrix
+  if (r.ltv_matrix) {
+    const m = typeof r.ltv_matrix === 'string' ? JSON.parse(r.ltv_matrix) : r.ltv_matrix;
+    set('f_ltv_sorp', m.sorp); set('f_ltv_socp', m.socp);
+    set('f_ltv_soip', m.soip); set('f_ltv_rented', m.rented);
+    set('f_ltv_industrial', m.industrial); set('f_ltv_land', m.land);
+  }
+  if (r.tenure_matrix) {
+    const t = typeof r.tenure_matrix === 'string' ? JSON.parse(r.tenure_matrix) : r.tenure_matrix;
+    set('f_tenure_default', t.default_months);
+    set('f_tenure_land', t.land_months);
+    set('f_tenure_commercial', t.commercial_months);
+  }
+}
+
+async function savePolicy() {
+  const fields = {
+    lender_name: v('f_lender_name'),
+    product: v('f_product'),
+    roi_min: v('f_roi_min'),
+    roi_max: v('f_roi_max'),
+    max_ltv: v('f_max_ltv'),
+    min_cibil: v('f_min_cibil'),
+    loan_min_lakh: v('f_loan_min_lakh'),
+    loan_max_lakh: v('f_loan_max_lakh'),
+    max_tenure_months: v('f_max_tenure_months'),
+    city_allowed: v('f_city_allowed'),
+    geo_limit: v('f_geo_limit'),
+    property_allowed: v('f_property_allowed'),
+    income_types: v('f_income_types'),
+    ltv_matrix: {
+      sorp: v('f_ltv_sorp')||null, socp: v('f_ltv_socp')||null,
+      soip: v('f_ltv_soip')||null, rented: v('f_ltv_rented')||null,
+      industrial: v('f_ltv_industrial')||null, land: v('f_ltv_land')||null
+    },
+    tenure_matrix: {
+      default_months: v('f_tenure_default')||null,
+      land_months: v('f_tenure_land')||null,
+      commercial_months: v('f_tenure_commercial')||null
+    },
+    profile_allowed: v('f_profile_allowed'),
+    programs: v('f_programs'),
+    notes: v('f_notes'),
+    sales_manager_name: v('f_sales_manager_name'),
+    sales_manager_mobile: v('f_sales_manager_mobile'),
+    foreclosure_charges: v('f_foreclosure_charges'),
+    prepayment_charges: v('f_prepayment_charges'),
+    guarantor_required: v('f_guarantor_required')
+  };
+
+  if (!fields.lender_name) { toast('Lender name is required', 'error'); return; }
+
+  const existingId = document.getElementById('existingLenderId').value;
+
+  try {
+    const r = await apiCall('save', { fields, existing_id: existingId || null });
+    toast(r.message || 'Saved!', 'success');
+    clearParser();
+    loadDashboard();
+    loadLenders();
+  } catch(e) {
+    toast('Save failed: ' + e.message, 'error');
+  }
+}
+
+function clearParser() {
+  document.getElementById('policyInput').value = '';
+  document.getElementById('reviewForm').style.display = 'none';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('existingLenderId').value = '';
+  ['f_lender_name','f_product','f_roi_min','f_roi_max','f_max_ltv','f_min_cibil',
+   'f_loan_min_lakh','f_loan_max_lakh','f_max_tenure_months','f_city_allowed',
+   'f_geo_limit','f_property_allowed','f_income_types','f_profile_allowed',
+   'f_programs','f_notes','f_sales_manager_name','f_sales_manager_mobile',
+   'f_foreclosure_charges','f_prepayment_charges'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+// ══════════════════════════
+// LENDERS LIST
+// ══════════════════════════
+async function loadLenders() {
+  const search = document.getElementById('lenderSearch')?.value || '';
+  const product  = document.getElementById('productFilter')?.value || '';
+  const category = document.getElementById('categoryFilter')?.value || '';
+  const ltype    = document.getElementById('typeFilter')?.value || '';
+  try {
+    const r = await apiCall('list', null, `search=${encodeURIComponent(search)}&product=${encodeURIComponent(product)}&category=${encodeURIComponent(category)}&ltype=${encodeURIComponent(ltype)}`);
+    const lenders = r.lenders || [];
+    document.getElementById('lenderCountText').textContent = lenders.length + ' lenders active';
+    document.getElementById('lenderCountBadge').textContent = lenders.length;
+
+    document.getElementById('lendersBody').innerHTML = lenders.length ? lenders.map(l => `
+      <tr>
+        <td><div class="lender-name">${esc(l.lender_name)}</div></td>
+        <td><span class="product-badge">${esc(l.product||'—')}</span></td>
+        <td>${l.roi_min ? l.roi_min+'% – '+(l.roi_max||'?')+'%' : '<span style="color:var(--muted)">On Request</span>'}</td>
+        <td>${l.max_ltv ? l.max_ltv+'%' : '—'}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px">${esc(l.city_allowed||'—')}</td>
+        <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--muted)">${esc((l.programs||'').substring(0,60)||'—')}</td>
+        <td style="font-size:12px">${l.sales_manager_name ? esc(l.sales_manager_name)+'<br><a href="tel:'+esc(l.sales_manager_mobile||'')+'" style="color:var(--accent);text-decoration:none">'+esc(l.sales_manager_mobile||'')+'</a>' : '—'}</td>
+        <td>
+          <button class="btn btn-outline btn-sm" onclick="editLender(${l.id})"><i class="fa-solid fa-pen"></i></button>
+          <button class="btn btn-danger btn-sm" onclick="deleteLender(${l.id},'${esc(l.lender_name)}')"><i class="fa-solid fa-trash"></i></button>
+        </td>
+      </tr>
+    `).join('') : '<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">🏦</div>No lenders found</div></td></tr>';
+  } catch(e) { console.error(e); }
+}
+
+async function editLender(id) {
+  try {
+    const r = await apiCall('get', { id });
+    const l = r.lender;
+    showPage('parser');
+    fillReviewForm({
+      lender_name: l.lender_name, product: l.product,
+      roi_min: l.roi_min, roi_max: l.roi_max, max_ltv: l.max_ltv,
+      min_cibil: l.min_cibil, loan_min_lakh: l.loan_min_lakh,
+      loan_max_lakh: l.loan_max_lakh, max_tenure_months: l.max_tenure_months,
+      city_allowed: l.city_allowed, geo_limit: l.geo_limit,
+      property_allowed: l.property_allowed, income_types: l.income_types,
+      profile_allowed: l.profile_allowed, programs: l.programs,
+      notes: l.notes, sales_manager_name: l.sales_manager_name,
+      sales_manager_mobile: l.sales_manager_mobile,
+      foreclosure_charges: l.foreclosure_charges,
+      prepayment_charges: l.prepayment_charges,
+      guarantor_required: l.guarantor_required
+    });
+    document.getElementById('existingLenderId').value = id;
+    document.getElementById('reviewForm').style.display = 'block';
+    toast('Loaded for editing — make changes and Save', 'info');
+  } catch(e) { toast('Could not load lender', 'error'); }
+}
+
+async function deleteLender(id, name) {
+  if (!confirm('Deactivate ' + name + '?')) return;
+  try {
+    await apiCall('delete', { id });
+    toast(name + ' deactivated', 'success');
+    loadLenders(); loadDashboard();
+  } catch(e) { toast('Delete failed', 'error'); }
+}
+
+// ══════════════════════════
+// TEST MATCHING
+// ══════════════════════════
+async function testMatch() {
+  const profile = {
+    loan_type: v('t_loan_type'), city: v('t_city'),
+    amount: v('t_amount'), cibil: v('t_cibil'),
+    monthly_income: v('t_income'), existing_emi: v('t_emi'),
+    property_title: v('t_property'), occupation: v('t_occ')
+  };
+  document.getElementById('matchResult').innerHTML = '<div style="text-align:center;padding:30px">🤖 Running AI match...</div>';
+  try {
+    const r = await fetch(HYBRID, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(profile)
+    }).then(x => x.json());
+
+    const lenders = r.lenders || [];
+    document.getElementById('matchResult').innerHTML = lenders.length ? `
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px">${lenders.length} lenders matched</div>
+      ${lenders.slice(0,5).map((l,i) => `
+        <div class="card" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div style="font-weight:700;font-size:14px">${esc(l.lender_name)}</div>
+              <span class="product-badge">${esc(l.product||'')}</span>
+            </div>
+            <div style="background:var(--navy);color:#fff;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700">
+              Score: ${l.score||'—'}
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.6">${esc(l.why||l.ai_explanation||'')}</div>
+        </div>
+      `).join('')}
+    ` : '<div class="empty-state"><div class="empty-icon">😔</div>No lenders matched this profile</div>';
+  } catch(e) {
+    document.getElementById('matchResult').innerHTML = '<div class="empty-state">Match failed: ' + e.message + '</div>';
+  }
+}
+
+// ══════════════════════════
+// EXPORT
+// ══════════════════════════
+async function exportCSV() {
+  try {
+    const r = await apiCall('export');
+    const rows = r.rows || [];
+    if (!rows.length) { toast('No data to export','error'); return; }
+
+    const headers = Object.keys(rows[0]);
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => headers.map(h => {
+        const val = String(row[h]||'').replace(/"/g,'""');
+        return `"${val}"`;
+      }).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `wealthmetre_lenders_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast(`Exported ${rows.length} lenders`, 'success');
+  } catch(e) { toast('Export failed','error'); }
+}
+
+// ══════════════════════════
+// DUAL PRODUCT
+// ══════════════════════════
+let secondProductData = null;
+
+async function loadSecondProduct() {
+  if (!secondProductData) return;
+  // Step 1: Save first product automatically
+  toast('Saving first product...', 'info');
+  await savePolicy();
+  // Step 2: Wait briefly then load second product
+  await new Promise(r => setTimeout(r, 800));
+  // Step 3: Clear and fill with second product
+  clearParser();
+  fillReviewForm(secondProductData);
+  document.getElementById('reviewForm').style.display = 'block';
+  document.getElementById('dualProductBanner').style.display = 'none';
+  document.getElementById('reviewForm').scrollIntoView({behavior:'smooth'});
+  toast('First product saved! Now review and save the second product.', 'success');
+}
+
+// ══════════════════════════
+// API HELPER
+// ══════════════════════════
+async function apiCall(action, body = null, queryStr = '') {
+  const url = API + (queryStr ? '?' + queryStr : '');
+  const payload = { action, admin_key: ADMIN_KEY, ...(body || {}) };
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Admin-Key': ADMIN_KEY },
+    body: JSON.stringify(payload)
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  const data = await r.json();
+  if (data.status === 'error') throw new Error(data.message);
+  return data;
+}
+
+// ══════════════════════════
+// UTILS
+// ══════════════════════════
+function handleAdminCategory() {
+  const cat = document.getElementById('categoryFilter').value;
+  const prod = document.getElementById('productFilter');
+  const secured = ['','LAP','Home Loan','Car Loan','Institutional Loan','Business Loan - Secured','Working Capital - CC/OD','Balance Transfer'];
+  const unsecured = ['','Personal Loan','Business Loan - Unsecured','Working Capital - CC/OD','CGTMSE - Unsecured'];
+  const all = ['','LAP','Home Loan','Business Loan','Business Loan - Secured','Business Loan - Unsecured','Personal Loan','Car Loan','Working Capital - CC/OD','CGTMSE - Unsecured','Institutional Loan','Balance Transfer'];
+
+  const list = cat === 'secured' ? secured : cat === 'unsecured' ? unsecured : all;
+  const labels = {
+    '':'All Products','LAP':'LAP','Home Loan':'Home Loan',
+    'Business Loan':'Business Loan','Business Loan - Secured':'Business Loan - Secured',
+    'Business Loan - Unsecured':'Business Loan - Unsecured',
+    'Personal Loan':'Personal Loan','Car Loan':'Car Loan',
+    'Working Capital - CC/OD':'Working Capital - CC/OD',
+    'CGTMSE - Unsecured':'CGTMSE - Unsecured',
+    'Institutional Loan':'Institutional Loan','Balance Transfer':'Balance Transfer'
+  };
+
+  prod.innerHTML = list.map(v => `<option value="${v}">${labels[v]||v}</option>`).join('');
+  prod.selectedIndex = 0;
+  loadLenders();
+}
+
+function catBadge(cat) {
+  if (cat==='secured')   return {bg:'#eff6ff',color:'#1d4ed8',label:'🔒 Secured'};
+  if (cat==='unsecured') return {bg:'#f0fdf4',color:'#15803d',label:'⚡ Unsecured'};
+  return {bg:'#fef9c3',color:'#854d0e',label:'🔄 Both'};
+}
+function v(id) { return document.getElementById(id)?.value?.trim() || ''; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function toast(msg, type = 'info') {
+  const w = document.getElementById('toastWrap');
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.innerHTML = `<i class="fa-solid fa-${type==='success'?'check':type==='error'?'xmark':'info'}"></i> ${msg}`;
+  w.appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+</script>
+</body>
+</html>

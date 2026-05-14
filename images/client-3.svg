@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="100" fill="#E8EEFF"/>
+  
+  <!-- Face -->
+  <circle cx="100" cy="85" r="50" fill="#FFD7B5"/>
+  
+  <!-- Hair -->
+  <path d="M60,60 C60,40 80,30 100,30 C120,30 140,40 140,60 C140,75 135,85 135,85 L65,85 C65,85 60,75 60,60 Z" fill="#808080"/>
+  
+  <!-- Glasses -->
+  <rect x="75" y="75" width="20" height="15" rx="5" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+  <rect x="105" y="75" width="20" height="15" rx="5" fill="none" stroke="#1A1A1A" stroke-width="2"/>
+  <line x1="95" y1="82" x2="105" y2="82" stroke="#1A1A1A" stroke-width="2"/>
+  <line x1="65" y1="82" x2="75" y2="82" stroke="#1A1A1A" stroke-width="2"/>
+  <line x1="125" y1="82" x2="135" y2="82" stroke="#1A1A1A" stroke-width="2"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="85" cy="82" rx="3" ry="5" fill="#4A2C2A"/>
+  <ellipse cx="115" cy="82" rx="3" ry="5" fill="#4A2C2A"/>
+  
+  <!-- Eyebrows -->
+  <path d="M80,70 C85,65 90,65 95,70" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  <path d="M105,70 C110,65 115,65 120,70" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M100,85 L95,95 L105,95" fill="#FFD7B5"/>
+  
+  <!-- Mouth -->
+  <path d="M85,105 C90,110 110,110 115,105" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  
+  <!-- Mustache -->
+  <path d="M90,95 C95,100 105,100 110,95" stroke="#808080" stroke-width="2" fill="none"/>
+  
+  <!-- Suit -->
+  <path d="M70,135 L70,200 L130,200 L130,135 Z" fill="#1E3A8A"/>
+  <path d="M100,135 L85,155 L100,200 L115,155 Z" fill="#FFFFFF"/>
+  
+  <!-- Tie -->
+  <path d="M100,135 L95,155 L100,175 L105,155 Z" fill="#FF9800"/>
+  
+  <!-- Pocket -->
+  <rect x="115" y="145" width="10" height="15" rx="2" fill="#FFFFFF"/>
+</svg>

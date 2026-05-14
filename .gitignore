@@ -1,0 +1,19 @@
+# Secrets — NEVER commit these
+config/database.php
+config/services.php
+config/staging.php
+.env
+*.env
+
+# User uploads
+uploads/
+storage/logs/
+storage/exports/
+
+# Backups
+../backups/
+
+# OS + editor files
+.DS_Store
+Thumbs.db
+*.swp

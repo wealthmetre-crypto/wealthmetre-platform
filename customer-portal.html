@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Portal | Track Your Loan | WealthMetre</title>
+  <meta name="description" content="Track your loan application status with WealthMetre. Check application stage, pending documents, bank login status, and disbursal ETA." />
+  <link rel="icon" href="images/favicon_new.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root{
+      --wm-blue:#1e3a8a;
+      --wm-blue-2:#1e4db7;
+      --wm-blue-soft:#eff4ff;
+      --wm-border:#dbeafe;
+      --wm-orange:#ff9800;
+      --wm-green:#16a34a;
+      --wm-red:#dc2626;
+      --wm-text:#1a1a2e;
+      --wm-muted:#6b7280;
+      --wm-white:#ffffff;
+      --wm-bg:#f5f8ff;
+      --wm-card:#ffffff;
+      --wm-shadow:0 10px 30px rgba(30,58,138,.10);
+      --wm-radius:18px;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(30,77,183,.08), transparent 22%),
+        linear-gradient(180deg, #f8fbff 0%, #f3f7ff 100%);
+      color:var(--wm-text);
+    }
+
+    a{text-decoration:none;color:inherit}
+    img{max-width:100%}
+    .container{width:min(1200px, calc(100% - 32px));margin:auto}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(255,255,255,.88);
+      backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(30,58,138,.08);
+    }
+
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      min-height:78px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width:0;
+    }
+
+    .brand img{
+      height:54px;
+      width:auto;
+      display:block;
+    }
+
+    .brand-text h1{
+      font-size:18px;
+      font-weight:800;
+      color:var(--wm-blue);
+      line-height:1.1;
+    }
+
+    .brand-text p{
+      font-size:12px;
+      color:var(--wm-muted);
+      margin-top:3px;
+    }
+
+    .nav-cta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 18px;
+      font-weight:700;
+      transition:.25s ease;
+      white-space:nowrap;
+      font-family:inherit;
+    }
+
+    .btn:hover{transform:translateY(-2px)}
+
+    .btn-primary{
+      background:linear-gradient(135deg,var(--wm-blue),var(--wm-blue-2));
+      color:#fff;
+      box-shadow:0 10px 20px rgba(30,58,138,.16);
+    }
+
+    .btn-outline{
+      background:#fff;
+      color:var(--wm-blue);
+      border:1.5px solid var(--wm-border);
+      box-shadow:0 6px 18px rgba(30,58,138,.08);
+    }
+
+    .btn-orange{
+      background:linear-gradient(135deg,#ffb11f,var(--wm-orange));
+      color:#fff;
+      box-shadow:0 10px 20px rgba(255,152,0,.18);
+    }
+
+    .hero{
+      padding:34px 0 24px;
+    }
+
+    .hero-grid{
+      display:grid;
+      grid-template-columns:1.2fr .9fr;
+      gap:22px;
+      align-items:stretch;
+    }
+
+    .hero-card,
+    .login-card,
+    .panel,
+    .mini-card{
+      background:var(--wm-card);
+      border:1px solid rgba(30,58,138,.08);
+      border-radius:var(--wm-radius);
+      box-shadow:var(--wm-shadow);
+    }
+
+    .hero-card{
+      padding:28px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero-card::before{
+      content:"";
+      position:absolute;
+      width:220px;
+      height:220px;
+      right:-60px;
+      top:-70px;
+      background:radial-gradient(circle, rgba(30,77,183,.14), transparent 65%);
+      border-radius:50%;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--wm-blue);
+      background:var(--wm-blue-soft);
+      border:1px solid var(--wm-border);
+      padding:8px 14px;
+      border-radius:999px;
+      margin-bottom:14px;
+    }
+
+    .eyebrow .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--wm-orange);
+      display:inline-block;
+    }
+
+    .hero-card h2{
+      font-size:42px;
+      line-height:1.08;
+      letter-spacing:-1.2px;
+      max-width:720px;
+      margin-bottom:12px;
+    }
+
+    .hero-card h2 .blue{color:var(--wm-blue)}
+    .hero-card h2 .orange{color:var(--wm-orange)}
+
+    .hero-card p{
+      font-size:16px;
+      line-height:1.7;
+      color:#455066;
+      max-width:760px;
+      margin-bottom:18px;
+    }
+
+    .hero-pills{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:#fff;
+      border:1px solid rgba(30,58,138,.08);
+      color:#425066;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:600;
+      box-shadow:0 4px 10px rgba(30,58,138,.04);
+    }
+
+    .login-card{
+      padding:24px;
+      align-self:stretch;
+    }
+
+    .login-card h3{
+      font-size:24px;
+      margin-bottom:8px;
+      color:var(--wm-text);
+    }
+
+    .login-card p{
+      color:var(--wm-muted);
+      line-height:1.7;
+      font-size:14px;
+      margin-bottom:18px;
+    }
+
+    .tab-row{
+      display:flex;
+      gap:10px;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+
+    .tab-btn{
+      flex:1;
+      min-width:140px;
+      border:none;
+      cursor:pointer;
+      padding:12px 14px;
+      border-radius:12px;
+      font-weight:700;
+      background:#f7f9ff;
+      color:var(--wm-muted);
+      border:1px solid #e5edff;
+      transition:.2s ease;
+      font-family:inherit;
+    }
+
+    .tab-btn.active{
+      background:var(--wm-blue-soft);
+      color:var(--wm-blue);
+      border-color:var(--wm-border);
+    }
+
+    .form-group{margin-bottom:14px}
+    .label{
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      color:#354055;
+      margin-bottom:8px;
+    }
+
+    .input-wrap{
+      position:relative;
+    }
+
+    .input-wrap i{
+      position:absolute;
+      left:14px;
+      top:50%;
+      transform:translateY(-50%);
+      color:#90a0c0;
+      font-size:14px;
+    }
+
+    .input{
+      width:100%;
+      height:50px;
+      border-radius:14px;
+      border:1.5px solid #dce7ff;
+      background:#fff;
+      padding:0 16px 0 42px;
+      outline:none;
+      font-size:15px;
+      color:var(--wm-text);
+      transition:.2s ease;
+      font-family:inherit;
+    }
+
+    .input:focus{
+      border-color:#93b1ff;
+      box-shadow:0 0 0 4px rgba(30,77,183,.08);
+    }
+
+    .otp-row{
+      display:none;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .otp-row.show{
+      display:flex;
+    }
+
+    .otp-box{
+      flex:1;
+      height:48px;
+      border-radius:12px;
+      border:1.5px solid #dce7ff;
+      text-align:center;
+      font-size:20px;
+      font-weight:700;
+      outline:none;
+    }
+
+    .helper{
+      font-size:12px;
+      color:var(--wm-muted);
+      margin-top:6px;
+    }
+
+    .portal{
+      padding:6px 0 46px;
+    }
+
+    .hidden{display:none !important}
+
+    .dashboard-grid{
+      display:grid;
+      grid-template-columns:1.35fr .9fr;
+      gap:22px;
+    }
+
+    .left-col,.right-col{
+      display:grid;
+      gap:22px;
+      align-content:start;
+    }
+
+    .panel{
+      padding:22px;
+    }
+
+    .panel-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+
+    .panel-title h3{
+      font-size:22px;
+      margin-bottom:5px;
+    }
+
+    .panel-title p{
+      color:var(--wm-muted);
+      font-size:14px;
+      line-height:1.6;
+    }
+
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .status-badge.blue{
+      background:var(--wm-blue-soft);
+      color:var(--wm-blue);
+      border:1px solid var(--wm-border);
+    }
+
+    .status-badge.green{
+      background:#effdf4;
+      color:var(--wm-green);
+      border:1px solid #c9f1d6;
+    }
+
+    .summary-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+    }
+
+    .mini-card{
+      padding:16px;
+      min-height:112px;
+    }
+
+    .mini-card .icon{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      background:var(--wm-blue-soft);
+      color:var(--wm-blue);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      margin-bottom:12px;
+    }
+
+    .mini-card .k{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+      color:var(--wm-muted);
+      font-weight:800;
+      margin-bottom:7px;
+    }
+
+    .mini-card .v{
+      font-size:20px;
+      font-weight:800;
+      color:var(--wm-text);
+      line-height:1.2;
+    }
+
+    .mini-card .sub{
+      font-size:12px;
+      color:var(--wm-muted);
+      margin-top:7px;
+      line-height:1.4;
+    }
+
+    .timeline{
+      display:grid;
+      gap:14px;
+      position:relative;
+    }
+
+    .timeline::before{
+      content:"";
+      position:absolute;
+      left:20px;
+      top:8px;
+      bottom:8px;
+      width:2px;
+      background:linear-gradient(180deg,#c9dbff,#edf3ff);
+    }
+
+    .tl-item{
+      display:flex;
+      gap:14px;
+      position:relative;
+      z-index:1;
+    }
+
+    .tl-dot{
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      flex-shrink:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px;
+      font-weight:800;
+      border:2px solid #dbe7ff;
+      background:#fff;
+      color:#8fa0c5;
+      box-shadow:0 6px 14px rgba(30,58,138,.06);
+    }
+
+    .tl-item.done .tl-dot{
+      background:linear-gradient(135deg,var(--wm-blue),var(--wm-blue-2));
+      color:#fff;
+      border-color:transparent;
+    }
+
+    .tl-item.current .tl-dot{
+      background:linear-gradient(135deg,#ffb11f,var(--wm-orange));
+      color:#fff;
+      border-color:transparent;
+    }
+
+    .tl-body{
+      flex:1;
+      background:#fbfcff;
+      border:1px solid #eaf0ff;
+      border-radius:14px;
+      padding:14px 16px;
+    }
+
+    .tl-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+      flex-wrap:wrap;
+    }
+
+    .tl-top h4{
+      font-size:16px;
+    }
+
+    .tl-top span{
+      font-size:12px;
+      font-weight:700;
+      color:var(--wm-muted);
+      background:#fff;
+      border:1px solid #ebeff8;
+      border-radius:999px;
+      padding:6px 10px;
+    }
+
+    .tl-body p{
+      font-size:14px;
+      color:#536178;
+      line-height:1.6;
+    }
+
+    .list{
+      display:grid;
+      gap:12px;
+    }
+
+    .list-item{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      padding:14px 14px;
+      background:#fbfcff;
+      border:1px solid #eaf0ff;
+      border-radius:14px;
+    }
+
+    .list-item-left{
+      display:flex;
+      gap:12px;
+    }
+
+    .list-icon{
+      width:42px;
+      height:42px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff7ed;
+      color:#c56a00;
+      border:1px solid #ffe0b2;
+      flex-shrink:0;
+    }
+
+    .list-item h4{
+      font-size:15px;
+      margin-bottom:3px;
+    }
+
+    .list-item p{
+      font-size:13px;
+      color:var(--wm-muted);
+      line-height:1.55;
+    }
+
+    .tag{
+      flex-shrink:0;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .tag.pending{
+      background:#fff7ed;
+      color:#c56a00;
+      border:1px solid #ffe0b2;
+    }
+
+    .tag.done{
+      background:#effdf4;
+      color:var(--wm-green);
+      border:1px solid #c9f1d6;
+    }
+
+    .details-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .detail-card{
+      padding:16px;
+      border-radius:14px;
+      border:1px solid #eaf0ff;
+      background:#fbfcff;
+    }
+
+    .detail-card .k{
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.45px;
+      color:var(--wm-muted);
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .detail-card .v{
+      font-size:16px;
+      font-weight:800;
+      color:var(--wm-text);
+      line-height:1.4;
+    }
+
+    .advisor-box{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+    }
+
+    .advisor-avatar{
+      width:56px;
+      height:56px;
+      border-radius:16px;
+      background:linear-gradient(135deg,var(--wm-blue),var(--wm-blue-2));
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      flex-shrink:0;
+      box-shadow:0 10px 20px rgba(30,58,138,.14);
+    }
+
+    .advisor-box h4{
+      font-size:18px;
+      margin-bottom:3px;
+    }
+
+    .advisor-box p{
+      font-size:14px;
+      color:var(--wm-muted);
+      line-height:1.65;
+      margin-bottom:14px;
+    }
+
+    .action-row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .note{
+      margin-top:14px;
+      background:#fffaf0;
+      border:1px solid #ffe6b0;
+      color:#7a5a09;
+      border-radius:14px;
+      padding:14px 15px;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .empty-state{
+      text-align:center;
+      padding:44px 20px;
+    }
+
+    .empty-icon{
+      width:72px;
+      height:72px;
+      border-radius:22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--wm-blue-soft);
+      color:var(--wm-blue);
+      font-size:30px;
+      margin:0 auto 14px;
+    }
+
+    .empty-state h3{
+      font-size:24px;
+      margin-bottom:8px;
+    }
+
+    .empty-state p{
+      color:var(--wm-muted);
+      max-width:560px;
+      margin:0 auto;
+      line-height:1.7;
+    }
+
+    .footer{
+      padding:26px 0 34px;
+      color:var(--wm-muted);
+      font-size:14px;
+      text-align:center;
+    }
+
+    @media (max-width:1100px){
+      .hero-grid,
+      .dashboard-grid{
+        grid-template-columns:1fr;
+      }
+
+      .summary-grid{
+        grid-template-columns:repeat(2,1fr);
+      }
+    }
+
+    @media (max-width:768px){
+      .nav{
+        min-height:72px;
+        align-items:flex-start;
+        padding:12px 0;
+        flex-direction:column;
+      }
+
+      .nav-cta{
+        width:100%;
+        justify-content:flex-start;
+      }
+
+      .hero{
+        padding-top:22px;
+      }
+
+      .hero-card,
+      .login-card,
+      .panel{
+        padding:18px;
+      }
+
+      .hero-card h2{
+        font-size:31px;
+        letter-spacing:-.7px;
+      }
+
+      .summary-grid,
+      .details-grid{
+        grid-template-columns:1fr;
+      }
+
+      .list-item{
+        flex-direction:column;
+      }
+
+      .tag{
+        align-self:flex-start;
+      }
+    }
+
+    @media (max-width:520px){
+      .container{width:min(100% - 20px, 1200px)}
+      .hero-card h2{font-size:28px}
+      .tab-btn{min-width:unset}
+      .otp-row{gap:8px}
+      .otp-box{height:44px;font-size:18px}
+      .btn{padding:11px 15px}
+      .brand img{height:46px}
+      .brand-text h1{font-size:16px}
+      .brand-text p{font-size:11px}
+      .summary-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="container nav">
+      <a href="/" class="brand">
+        <img src="images/logo.png" alt="WealthMetre Logo" />
+        <div class="brand-text">
+          <h1>WealthMetre</h1>
+          <p>Customer Tracking Portal</p>
+        </div>
+      </a>
+
+      <div class="nav-cta">
+        <a href="/" class="btn btn-outline"><i class="fa-solid fa-house"></i> Back to Home</a>
+        <a href="/partner_portal.html" class="btn btn-primary"><i class="fa-solid fa-handshake-angle"></i> Partner Login</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-card">
+        <div class="eyebrow"><span class="dot"></span> Live Loan Tracking Portal</div>
+        <h2>
+          Track Your <span class="blue">Loan Journey</span><br />
+          from <span class="orange">Login</span> to <span class="blue">Disbursal</span>
+        </h2>
+        <p>
+          Check your current application stage, pending documents, bank login status,
+          underwriting progress, sanction movement, and expected disbursal timeline —
+          all in one place.
+        </p>
+
+        <div class="hero-pills">
+          <div class="pill"><i class="fa-solid fa-file-circle-check"></i> Application Stage</div>
+          <div class="pill"><i class="fa-solid fa-building-columns"></i> Bank Login Status</div>
+          <div class="pill"><i class="fa-solid fa-folder-open"></i> Pending Documents</div>
+          <div class="pill"><i class="fa-solid fa-clock"></i> Disbursal ETA</div>
+        </div>
+      </div>
+
+      <div class="login-card">
+        <h3>Customer Login</h3>
+        <p>
+          Enter your mobile number or application ID to track your case.
+          Demo OTP is <strong>1234</strong>.
+        </p>
+
+        <div class="tab-row">
+          <button class="tab-btn active" id="mobileTab" type="button">Login by Mobile</button>
+          <button class="tab-btn" id="appTab" type="button">Track by App ID</button>
+        </div>
+
+        <div id="mobileLoginBox">
+          <div class="form-group">
+            <label class="label">Registered Mobile Number</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-mobile-screen-button"></i>
+              <input class="input" id="mobileInput" type="tel" maxlength="10" placeholder="Enter 10-digit mobile number" />
+            </div>
+            <div class="helper">Example demo number: <strong>9876543210</strong></div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%" id="sendOtpBtn" type="button">
+            <i class="fa-solid fa-paper-plane"></i> Send OTP
+          </button>
+
+          <div class="otp-row" id="otpRow">
+            <input class="otp-box" maxlength="1" />
+            <input class="otp-box" maxlength="1" />
+            <input class="otp-box" maxlength="1" />
+            <input class="otp-box" maxlength="1" />
+          </div>
+
+          <button class="btn btn-orange hidden" style="width:100%;margin-top:12px" id="verifyOtpBtn" type="button">
+            <i class="fa-solid fa-shield-halved"></i> Verify OTP & Login
+          </button>
+        </div>
+
+        <div id="appIdLoginBox" class="hidden">
+          <div class="form-group">
+            <label class="label">Application ID</label>
+            <div class="input-wrap">
+              <i class="fa-solid fa-hashtag"></i>
+              <input class="input" id="appIdInput" type="text" placeholder="Enter application ID e.g. WM240801" />
+            </div>
+            <div class="helper">Demo IDs: <strong>WM240801</strong>, <strong>WM240802</strong></div>
+          </div>
+
+          <button class="btn btn-primary" style="width:100%" id="trackAppBtn" type="button">
+            <i class="fa-solid fa-magnifying-glass"></i> Track Application
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="portal">
+    <div class="container">
+      <div id="emptyState" class="panel">
+        <div class="empty-state">
+          <div class="empty-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <h3>Your application updates will appear here</h3>
+          <p>
+            Login using your registered mobile number or application ID to view
+            current stage, pending documents, bank status, and expected next action.
+          </p>
+        </div>
+      </div>
+
+      <div id="dashboardWrap" class="hidden">
+        <div class="dashboard-grid">
+          <div class="left-col">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Application Overview</h3>
+                  <p id="overviewSub">Live status of your loan case</p>
+                </div>
+                <div class="status-badge blue" id="statusBadge">
+                  <i class="fa-solid fa-bolt"></i> Under Process
+                </div>
+              </div>
+
+              <div class="summary-grid" id="summaryGrid"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Application Timeline</h3>
+                  <p>Track each step from lead creation to final disbursal</p>
+                </div>
+              </div>
+
+              <div class="timeline" id="timeline"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Pending Documents</h3>
+                  <p>Documents needed to move your file faster</p>
+                </div>
+              </div>
+
+              <div class="list" id="pendingDocsList"></div>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Case Details</h3>
+                  <p>Important information about your application</p>
+                </div>
+              </div>
+
+              <div class="details-grid" id="caseDetails"></div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Relationship Manager</h3>
+                  <p>Your point of contact for file updates</p>
+                </div>
+              </div>
+
+              <div class="advisor-box">
+                <div class="advisor-avatar"><i class="fa-solid fa-user-tie"></i></div>
+                <div style="flex:1">
+                  <h4 id="advisorName">WealthMetre Support</h4>
+                  <p id="advisorRole">Loan Advisory Team</p>
+
+                  <div class="action-row">
+                    <a href="tel:+917976218596" class="btn btn-primary"><i class="fa-solid fa-phone"></i> Call</a>
+                    <a href="https://wa.me/917976218596" target="_blank" class="btn btn-outline"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+                  </div>
+
+                  <div class="note" id="advisorNote">
+                    Our team will update your case as soon as the next movement happens.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div class="panel-title">
+                  <h3>Next Expected Update</h3>
+                  <p>Estimated timeline based on current case stage</p>
+                </div>
+              </div>
+
+              <div class="details-grid" id="etaGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    <div class="container">
+      © 2026 WealthMetre Finserve · Customer Portal · Jaipur, Rajasthan
+    </div>
+  </div>
+
+  <script>
+    const demoCases = [
+      {
+        application_id: "WM240801",
+        mobile: "9876543210",
+        name: "Rahul Sharma",
+        loan_type: "Home Loan",
+        loan_amount: "₹40,00,000",
+        bank_name: "HDFC Bank",
+        current_stage: "Bank Login Done",
+        current_stage_key: "bank_login",
+        status_type: "blue",
+        city: "Jaipur",
+        cibil: "748",
+        property_type: "JDA Approved Residential",
+        advisor_name: "Diva Support Team",
+        advisor_role: "Senior Loan Advisor · WealthMetre",
+        advisor_note: "Bank login ho chuka hai. Ab file credit review me move kar rahi hai. Please pending documents jaldi share kar dein for faster processing.",
+        eta_next_update: "Within 24 hours",
+        eta_disbursal: "4–6 working days",
+        eta_remark: "Timeline depends on credit approval and legal/technical clearance.",
+        created_on: "08 Apr 2026",
+        updated_on: "09 Apr 2026",
+        bank_rm: "HDFC Processing Desk",
+        branch: "Jaipur Civil Lines",
+        foir: "Within acceptable range",
+        docs_pending: [
+          {
+            title: "Last 6 Months Bank Statement",
+            note: "PDF format preferred. Salary credit clearly visible hona chahiye.",
+            status: "Pending"
+          },
+          {
+            title: "Property Registry Copy",
+            note: "Complete registry + chain papers required for legal check.",
+            status: "Pending"
+          },
+          {
+            title: "PAN Card",
+            note: "Received and verified.",
+            status: "Done"
+          }
+        ],
+        timeline: [
+          { key: "lead_created", title: "Lead Created", desc: "Your requirement was captured successfully.", date: "08 Apr 2026", state: "done" },
+          { key: "docs_received", title: "Initial Documents Received", desc: "Basic profile and income documents were reviewed.", date: "08 Apr 2026", state: "done" },
+          { key: "bank_login", title: "Bank Login Done", desc: "Your case has been logged in with the selected lender.", date: "09 Apr 2026", state: "current" },
+          { key: "credit", title: "Credit Underwriting", desc: "Bank credit team will evaluate profile, income and repayment capacity.", date: "Pending", state: "upcoming" },
+          { key: "legal", title: "Legal & Technical", desc: "Property verification, legal scrutiny and valuation stage.", date: "Pending", state: "upcoming" },
+          { key: "sanction", title: "Sanction", desc: "Loan sanction approval and terms confirmation.", date: "Pending", state: "upcoming" },
+          { key: "disbursal", title: "Disbursal", desc: "Loan amount credited after final documentation.", date: "Pending", state: "upcoming" }
+        ]
+      },
+      {
+        application_id: "WM240802",
+        mobile: "9999999999",
+        name: "Priya Verma",
+        loan_type: "Loan Against Property",
+        loan_amount: "₹55,00,000",
+        bank_name: "IDFC FIRST Bank",
+        current_stage: "Credit Underwriting",
+        current_stage_key: "credit",
+        status_type: "blue",
+        city: "Jaipur",
+        cibil: "721",
+        property_type: "Society Patta Residential",
+        advisor_name: "Ankit Mehta",
+        advisor_role: "LAP Specialist · WealthMetre",
+        advisor_note: "Credit discussion chal raha hai. Income surrogates aur banking review ho rahe hain. Strong follow-up in progress.",
+        eta_next_update: "By tomorrow evening",
+        eta_disbursal: "5–7 working days",
+        eta_remark: "Final pricing may vary after bank’s internal assessment.",
+        created_on: "07 Apr 2026",
+        updated_on: "09 Apr 2026",
+        bank_rm: "IDFC FIRST Credit Team",
+        branch: "Jaipur Tonk Road",
+        foir: "Moderate, manageable",
+        docs_pending: [
+          {
+            title: "GST Summary / Business Proof",
+            note: "Latest filing summary or equivalent business document required.",
+            status: "Pending"
+          },
+          {
+            title: "Ownership Proof",
+            note: "Received and matched with title chain.",
+            status: "Done"
+          }
+        ],
+        timeline: [
+          { key: "lead_created", title: "Lead Created", desc: "Case registered in WealthMetre system.", date: "07 Apr 2026", state: "done" },
+          { key: "docs_received", title: "Documents Received", desc: "Primary file docs collected and reviewed.", date: "07 Apr 2026", state: "done" },
+          { key: "bank_login", title: "Bank Login Done", desc: "Case forwarded and logged with lender.", date: "08 Apr 2026", state: "done" },
+          { key: "credit", title: "Credit Underwriting", desc: "Profile analysis and policy fitment under review.", date: "09 Apr 2026", state: "current" },
+          { key: "legal", title: "Legal & Technical", desc: "Property check will begin after credit comfort.", date: "Pending", state: "upcoming" },
+          { key: "sanction", title: "Sanction", desc: "Sanction terms and pricing approval stage.", date: "Pending", state: "upcoming" },
+          { key: "disbursal", title: "Disbursal", desc: "Funds credited after execution and compliance.", date: "Pending", state: "upcoming" }
+        ]
+      }
+    ];
+
+    const mobileTab = document.getElementById("mobileTab");
+    const appTab = document.getElementById("appTab");
+    const mobileLoginBox = document.getElementById("mobileLoginBox");
+    const appIdLoginBox = document.getElementById("appIdLoginBox");
+    const sendOtpBtn = document.getElementById("sendOtpBtn");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+    const otpRow = document.getElementById("otpRow");
+    const otpBoxes = document.querySelectorAll(".otp-box");
+    const mobileInput = document.getElementById("mobileInput");
+    const appIdInput = document.getElementById("appIdInput");
+    const trackAppBtn = document.getElementById("trackAppBtn");
+
+    const emptyState = document.getElementById("emptyState");
+    const dashboardWrap = document.getElementById("dashboardWrap");
+    const summaryGrid = document.getElementById("summaryGrid");
+    const timeline = document.getElementById("timeline");
+    const pendingDocsList = document.getElementById("pendingDocsList");
+    const caseDetails = document.getElementById("caseDetails");
+    const advisorName = document.getElementById("advisorName");
+    const advisorRole = document.getElementById("advisorRole");
+    const advisorNote = document.getElementById("advisorNote");
+    const etaGrid = document.getElementById("etaGrid");
+    const overviewSub = document.getElementById("overviewSub");
+    const statusBadge = document.getElementById("statusBadge");
+
+    function setTab(mode){
+      const mobileMode = mode === "mobile";
+      mobileTab.classList.toggle("active", mobileMode);
+      appTab.classList.toggle("active", !mobileMode);
+      mobileLoginBox.classList.toggle("hidden", !mobileMode);
+      appIdLoginBox.classList.toggle("hidden", mobileMode);
+    }
+
+    mobileTab.addEventListener("click", () => setTab("mobile"));
+    appTab.addEventListener("click", () => setTab("app"));
+
+    sendOtpBtn.addEventListener("click", () => {
+      const mobile = mobileInput.value.trim();
+      if(!/^\d{10}$/.test(mobile)){
+        alert("Please enter a valid 10-digit mobile number.");
+        return;
+      }
+      otpRow.classList.add("show");
+      verifyOtpBtn.classList.remove("hidden");
+      alert("Demo OTP sent successfully. Use 1234.");
+      otpBoxes[0].focus();
+    });
+
+    otpBoxes.forEach((box, index) => {
+      box.addEventListener("input", e => {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0,1);
+        if(e.target.value && otpBoxes[index + 1]) otpBoxes[index + 1].focus();
+      });
+
+      box.addEventListener("keydown", e => {
+        if(e.key === "Backspace" && !e.target.value && otpBoxes[index - 1]){
+          otpBoxes[index - 1].focus();
+        }
+      });
+    });
+
+    verifyOtpBtn.addEventListener("click", () => {
+      const otp = [...otpBoxes].map(i => i.value).join("");
+      const mobile = mobileInput.value.trim();
+      if(otp !== "1234"){
+        alert("Invalid demo OTP. Please use 1234.");
+        return;
+      }
+      const found = demoCases.find(item => item.mobile === mobile);
+      if(!found){
+        alert("No application found for this mobile number in demo data.");
+        return;
+      }
+      renderCase(found);
+    });
+
+    trackAppBtn.addEventListener("click", () => {
+      const appId = appIdInput.value.trim().toUpperCase();
+      if(!appId){
+        alert("Please enter an application ID.");
+        return;
+      }
+      const found = demoCases.find(item => item.application_id.toUpperCase() === appId);
+      if(!found){
+        alert("No application found for this Application ID in demo data.");
+        return;
+      }
+      renderCase(found);
+    });
+
+    function renderCase(data){
+      emptyState.classList.add("hidden");
+      dashboardWrap.classList.remove("hidden");
+
+      overviewSub.textContent = `${data.name} · ${data.loan_type} · ${data.application_id}`;
+      statusBadge.className = `status-badge ${data.status_type || "blue"}`;
+      statusBadge.innerHTML = `<i class="fa-solid fa-bolt"></i> ${data.current_stage}`;
+
+      summaryGrid.innerHTML = `
+        ${summaryCard("fa-hashtag","Application ID", data.application_id, "Track this ID for future updates")}
+        ${summaryCard("fa-building-columns","Bank", data.bank_name, data.branch)}
+        ${summaryCard("fa-indian-rupee-sign","Loan Amount", data.loan_amount, data.loan_type)}
+        ${summaryCard("fa-location-dot","City / Title", data.city, data.property_type)}
+      `;
+
+      timeline.innerHTML = data.timeline.map(item => `
+        <div class="tl-item ${item.state === "done" ? "done" : item.state === "current" ? "current" : ""}">
+          <div class="tl-dot">
+            ${item.state === "done" ? '<i class="fa-solid fa-check"></i>' : item.state === "current" ? '<i class="fa-solid fa-hourglass-half"></i>' : '<i class="fa-solid fa-circle"></i>'}
+          </div>
+          <div class="tl-body">
+            <div class="tl-top">
+              <h4>${item.title}</h4>
+              <span>${item.date}</span>
+            </div>
+            <p>${item.desc}</p>
+          </div>
+        </div>
+      `).join("");
+
+      pendingDocsList.innerHTML = data.docs_pending.map(doc => `
+        <div class="list-item">
+          <div class="list-item-left">
+            <div class="list-icon">
+              <i class="fa-solid ${doc.status === "Done" ? "fa-file-circle-check" : "fa-file-arrow-up"}"></i>
+            </div>
+            <div>
+              <h4>${doc.title}</h4>
+              <p>${doc.note}</p>
+            </div>
+          </div>
+          <div class="tag ${doc.status === "Done" ? "done" : "pending"}">${doc.status}</div>
+        </div>
+      `).join("");
+
+      caseDetails.innerHTML = `
+        ${detailCard("Applicant Name", data.name)}
+        ${detailCard("CIBIL Score", data.cibil)}
+        ${detailCard("Current Stage", data.current_stage)}
+        ${detailCard("FOIR", data.foir)}
+        ${detailCard("Created On", data.created_on)}
+        ${detailCard("Last Updated", data.updated_on)}
+        ${detailCard("Bank RM / Desk", data.bank_rm)}
+        ${detailCard("Property Type", data.property_type)}
+      `;
+
+      advisorName.textContent = data.advisor_name;
+      advisorRole.textContent = data.advisor_role;
+      advisorNote.textContent = data.advisor_note;
+
+      etaGrid.innerHTML = `
+        ${detailCard("Next Update ETA", data.eta_next_update)}
+        ${detailCard("Expected Disbursal", data.eta_disbursal)}
+        ${detailCard("Selected Lender", data.bank_name)}
+        ${detailCard("Remarks", data.eta_remark)}
+      `;
+
+      window.scrollTo({ top: dashboardWrap.offsetTop - 90, behavior: "smooth" });
+    }
+
+    function summaryCard(icon, label, value, sub){
+      return `
+        <div class="mini-card">
+          <div class="icon"><i class="fa-solid ${icon}"></i></div>
+          <div class="k">${label}</div>
+          <div class="v">${value}</div>
+          <div class="sub">${sub}</div>
+        </div>
+      `;
+    }
+
+    function detailCard(label, value){
+      return `
+        <div class="detail-card">
+          <div class="k">${label}</div>
+          <div class="v">${value}</div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

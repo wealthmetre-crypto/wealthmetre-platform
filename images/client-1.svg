@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" fill="none">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="100" fill="#E8EEFF"/>
+  
+  <!-- Face -->
+  <circle cx="100" cy="85" r="50" fill="#FFD7B5"/>
+  
+  <!-- Hair -->
+  <path d="M60,85 C60,60 80,35 100,35 C120,35 140,60 140,85 C140,95 135,105 135,105 L65,105 C65,105 60,95 60,85 Z" fill="#4A2C2A"/>
+  
+  <!-- Eyes -->
+  <ellipse cx="80" cy="80" rx="5" ry="7" fill="#4A2C2A"/>
+  <ellipse cx="120" cy="80" rx="5" ry="7" fill="#4A2C2A"/>
+  
+  <!-- Eyebrows -->
+  <path d="M75,70 C80,65 85,65 90,70" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  <path d="M110,70 C115,65 120,65 125,70" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  
+  <!-- Nose -->
+  <path d="M100,85 L95,95 L105,95" fill="#FFD7B5"/>
+  
+  <!-- Mouth -->
+  <path d="M85,110 C90,115 110,115 115,110" stroke="#4A2C2A" stroke-width="2" fill="none"/>
+  
+  <!-- Suit -->
+  <path d="M70,135 L70,200 L130,200 L130,135 Z" fill="#1E3A8A"/>
+  <path d="M100,135 L85,155 L100,200 L115,155 Z" fill="#FFFFFF"/>
+  
+  <!-- Tie -->
+  <path d="M100,135 L95,155 L100,175 L105,155 Z" fill="#FF9800"/>
+</svg>

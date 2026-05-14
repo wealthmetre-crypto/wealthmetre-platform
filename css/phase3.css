@@ -1,0 +1,989 @@
+/*
+ * WealthMetre — phase3.css
+ * Styles for Phase 3 homepage sections:
+ *   1. Hero Diva live chat preview
+ *   2. How it Works — Journey cards
+ *   3. Lender Network visualization
+ *   4. AI Eligibility Calculator
+ *
+ * Add to <head> after additions.css:
+ *   <link rel="stylesheet" href="css/phase3.css" />
+ */
+
+/* ═══════════════════════════════════════════════════════
+   1 — HERO DIVA LIVE PREVIEW
+   Replaces wm-journey-wrap in the hero right column
+═══════════════════════════════════════════════════════ */
+.hero-diva-preview {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(30,58,138,.1);
+}
+
+.hdp-head {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 70%, #0d9488 100%);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hdp-head::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.hdp-orb {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #1e40af, #0f766e, #d97706, #1e40af);
+  animation: hdpSpin 5s linear infinite;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hdp-orb-in {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+@keyframes hdpSpin { to { transform: rotate(360deg); } }
+
+.hdp-hinfo  { flex: 1; position: relative; z-index: 1; }
+.hdp-hname  { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.2; }
+.hdp-hstatus {
+  font-size: 11px;
+  color: rgba(255,255,255,.6);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+}
+.hdp-hstatus::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: #4ade80;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hdp-body {
+  padding: 14px;
+  background: #f8faff;
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  overflow: hidden;
+}
+
+.hdp-msg { display: flex; gap: 8px; animation: hdpFade .3s ease; }
+.hdp-msg.user { justify-content: flex-end; }
+
+@keyframes hdpFade {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hdp-av {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #1e40af, #0f766e, #d97706, #1e40af);
+  animation: hdpSpin 5s linear infinite;
+  flex-shrink: 0;
+  align-self: flex-end;
+  position: relative;
+}
+
+.hdp-av-in {
+  position: absolute;
+  inset: 2px;
+  border-radius: 50%;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.hdp-bub {
+  max-width: 84%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.hdp-msg.bot  .hdp-bub { background: #fff; border: 1px solid #e2e8f0; border-bottom-left-radius: 3px; color: #1a1a2e; }
+.hdp-msg.user .hdp-bub { background: #1e3a8a; color: #fff; border-bottom-right-radius: 3px; }
+
+.hdp-typing-row .hdp-bub { padding: 11px 14px; }
+.hdp-dots { display: flex; align-items: center; gap: 4px; }
+.hdp-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: hdpDot 1.2s infinite ease-in-out;
+}
+.hdp-dot:nth-child(2) { animation-delay: .2s; }
+.hdp-dot:nth-child(3) { animation-delay: .4s; }
+
+@keyframes hdpDot {
+  0%,80%,100% { transform: translateY(0); opacity: .4; }
+  40% { transform: translateY(-4px); opacity: 1; }
+}
+
+.hdp-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-left: 32px; }
+
+.hdp-chip {
+  padding: 6px 13px;
+  border-radius: 99px;
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  font-size: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #334155;
+  cursor: default;
+  transition: border-color .15s;
+}
+.hdp-chip:hover { border-color: #1e3a8a; color: #1e3a8a; background: #eff6ff; }
+
+.hdp-result {
+  background: #fff;
+  border: 1px solid #fde68a;
+  border-left: 3px solid #f59e0b;
+  border-radius: 10px;
+  padding: 11px 13px;
+  margin-left: 32px;
+  animation: hdpFade .3s ease;
+}
+
+.hdp-rtag {
+  font-size: 10px;
+  font-weight: 700;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 2px 8px;
+  border-radius: 99px;
+  display: inline-block;
+  margin-bottom: 6px;
+}
+
+.hdp-rname { font-size: 13.5px; font-weight: 700; color: #1a1a2e; margin-bottom: 7px; }
+
+.hdp-rgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.hdp-rstat { background: #f8fafc; border-radius: 7px; padding: 6px 8px; }
+.hdp-rstat .rl { font-size: 9.5px; color: #64748b; display: block; margin-bottom: 2px; }
+.hdp-rstat .rv { font-size: 13px; font-weight: 700; color: #1e3a8a; }
+
+.hdp-foot {
+  padding: 10px 12px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+  display: flex;
+  gap: 8px;
+}
+
+.hdp-input {
+  flex: 1;
+  padding: 9px 13px;
+  border-radius: 9px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  outline: none;
+  color: #1a1a2e;
+  background: #f8faff;
+}
+.hdp-input:focus { border-color: #1e3a8a; }
+.hdp-input::placeholder { color: #94a3b8; }
+
+.hdp-send {
+  width: 40px; height: 40px;
+  border-radius: 9px;
+  background: #1e3a8a;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background .2s;
+}
+.hdp-send:hover { background: #1d4ed8; }
+.hdp-send svg { fill: #fff; }
+
+
+/* ═══════════════════════════════════════════════════════
+   2 — HOW IT WORKS — JOURNEY CARDS
+═══════════════════════════════════════════════════════ */
+.journey-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.journey-card-v2 {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 22px 18px;
+  position: relative;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  overflow: visible;
+}
+.journey-card-v2:hover {
+  border-color: #1e3a8a;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(30,58,138,.1);
+}
+.journey-card-v2:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -14px; top: 50%;
+  transform: translateY(-50%);
+  color: #cbd5e1;
+  font-size: 16px; z-index: 2;
+  background: #f8faff; padding: 0 2px;
+}
+
+.jc-step-num { font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: .05em; margin-bottom: 12px; }
+.jc-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 12px; background: #eff6ff;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; transition: background .2s;
+}
+.journey-card-v2:hover .jc-icon-wrap { background: #dbeafe; }
+.jc-icon-wrap i { font-size: 18px; color: #1e3a8a; }
+.jc-card-title { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; line-height: 1.3; }
+.jc-card-desc  { font-size: 12.5px; color: #6b7280; line-height: 1.6; }
+
+.journey-timing-note {
+  margin-top: 20px; padding: 12px 18px;
+  background: #eff6ff; border-radius: 10px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: #1e40af;
+}
+.journey-timing-note i { font-size: 14px; flex-shrink: 0; }
+
+@media (max-width: 900px) {
+  .journey-cards-grid { grid-template-columns: repeat(2, 1fr); }
+  .journey-card-v2:nth-child(2)::after { display: none; }
+}
+@media (max-width: 480px) {
+  .journey-cards-grid { grid-template-columns: 1fr; }
+  .journey-card-v2::after { display: none !important; }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   3 — LENDER NETWORK VISUALIZATION
+═══════════════════════════════════════════════════════ */
+.lender-vis-wrap {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.lvw-live-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #dcfce7; border: 1px solid #86efac; color: #166534;
+  padding: 3px 10px; border-radius: 99px;
+  font-size: 10.5px; font-weight: 700; margin-bottom: 10px;
+}
+.lvw-live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #22c55e; animation: lvwPulse 2s infinite;
+}
+@keyframes lvwPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+
+.lvw-canvas {
+  position: relative; height: 280px; margin: 20px 0;
+  border: 1px solid #f1f5f9; border-radius: 12px;
+  overflow: hidden; background: #f8faff;
+}
+
+.lvw-center {
+  position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, #1e3a8a, #0d9488);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 10;
+  box-shadow: 0 0 0 8px rgba(30,58,138,.08), 0 0 0 16px rgba(30,58,138,.04);
+}
+.lvw-center-text { font-size: 9px; font-weight: 800; color: #fff; text-align: center; line-height: 1.4; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.lvw-ring {
+  position: absolute; left: 50%; top: 50%;
+  border: 1px solid rgba(30,58,138,.12); border-radius: 50%;
+  transform: translate(-50%, -50%); pointer-events: none;
+  animation: lvwRing 3s ease-out infinite;
+}
+.lvw-ring:nth-child(2) { animation-delay: 1s; }
+.lvw-ring:nth-child(3) { animation-delay: 2s; }
+@keyframes lvwRing {
+  0%   { opacity: .6; transform: translate(-50%,-50%) scale(.3); }
+  100% { opacity: 0;  transform: translate(-50%,-50%) scale(1); }
+}
+
+.lvw-node { position: absolute; transform: translate(-50%,-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.lvw-nd { width: 38px; height: 38px; border-radius: 50%; background: #fff; border: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; color: #475569; transition: all .3s; font-family: 'Plus Jakarta Sans', sans-serif; }
+.lvw-nl { font-size: 8.5px; color: #94a3b8; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; }
+.lvw-node.active .lvw-nd { background: #eff6ff; border-color: #3b82f6; color: #1e40af; transform: scale(1.15); box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+
+.lvw-scan-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.lvw-scan-label { font-size: 11.5px; color: #6b7280; white-space: nowrap; font-family: 'Plus Jakarta Sans', sans-serif; min-width: 200px; }
+.lvw-scan-bar { flex: 1; height: 4px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+.lvw-scan-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #1e3a8a, #0d9488); transition: width .15s ease; }
+.lvw-scan-pct { font-size: 11px; font-weight: 600; color: #1e3a8a; min-width: 30px; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+.lvw-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 16px; }
+.lvw-stat { background: #f8faff; border-radius: 10px; padding: 12px 14px; text-align: center; }
+.lvw-stat-n { font-size: 22px; font-weight: 800; color: #1e3a8a; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; margin-bottom: 4px; }
+.lvw-stat-l { font-size: 11px; color: #94a3b8; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+
+/* ═══════════════════════════════════════════════════════
+   4 — AI ELIGIBILITY CALCULATOR
+═══════════════════════════════════════════════════════ */
+.ai-calc-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 20px; margin-top: 24px; }
+
+.ai-calc-inputs { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 18px; padding: 24px; }
+.ai-calc-inputs h3 { font-size: 15px; font-weight: 700; color: #1a1a2e; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.ai-calc-inputs h3 i { color: #1e3a8a; }
+
+.aci-field { margin-bottom: 18px; }
+.aci-field label { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 8px; }
+.aci-field-val { font-size: 13px; font-weight: 700; color: #1e3a8a; }
+
+.aci-field input[type="range"] { width: 100%; height: 5px; -webkit-appearance: none; background: #e5e7eb; border-radius: 99px; outline: none; cursor: pointer; }
+.aci-field input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #1e3a8a; cursor: pointer; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(30,58,138,.3); }
+
+.aci-field select { width: 100%; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e5e7eb; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; color: #1a1a2e; background: #f8faff; outline: none; cursor: pointer; }
+.aci-field select:focus { border-color: #1e3a8a; }
+
+.ai-calc-results { background: #fff; border: 1.5px solid #e5e7eb; border-radius: 18px; padding: 24px; }
+.acr-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.acr-approval { flex: 1; }
+.acr-apr-label { font-size: 11.5px; color: #6b7280; margin-bottom: 3px; font-weight: 500; }
+.acr-apr-pct { font-size: 36px; font-weight: 800; line-height: 1; margin-bottom: 2px; font-family: 'Plus Jakarta Sans', sans-serif; transition: color .4s; }
+.acr-matches { text-align: right; }
+.acr-matches-label { font-size: 11.5px; color: #6b7280; margin-bottom: 3px; font-weight: 500; }
+.acr-matches-num { font-size: 32px; font-weight: 800; color: #1e3a8a; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1; }
+.acr-bar-wrap { height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden; margin-bottom: 8px; }
+.acr-bar { height: 100%; border-radius: 99px; transition: width .6s ease, background .4s; }
+.acr-note { font-size: 12.5px; color: #6b7280; margin-bottom: 18px; line-height: 1.5; }
+
+.acr-metrics { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 18px; }
+.acr-metric { background: #f8faff; border-radius: 10px; padding: 12px 14px; }
+.acr-metric-val { font-size: 16px; font-weight: 700; color: #1a1a2e; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 3px; }
+.acr-metric-lab { font-size: 11px; color: #94a3b8; }
+
+.acr-lenders { border-top: 1.5px solid #f1f5f9; padding-top: 14px; }
+.acr-lenders-title { font-size: 12px; font-weight: 700; color: #374151; margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em; }
+.acr-lender-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f8faff; }
+.acr-lender-row:last-child { border-bottom: none; }
+.acr-lname { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+.acr-lbadge { font-size: 10px; padding: 2px 8px; border-radius: 99px; margin-top: 2px; display: inline-block; }
+.acr-lbadge.green { background: #dcfce7; color: #166534; }
+.acr-lbadge.amber { background: #fef3c7; color: #92400e; }
+.acr-lrate { font-size: 13px; font-weight: 700; color: #1e3a8a; }
+.acr-empty { font-size: 12.5px; color: #94a3b8; padding: 8px 0; font-style: italic; }
+
+@media (max-width: 900px) { .ai-calc-grid { grid-template-columns: 1fr; } }
+
+
+/* ═══════════════════════════════════════════════════════
+   5 — HERO TYPEWRITER + FIXED DIVA AUTO-DEMO WIDGET
+   ─────────────────────────────────────────────────────
+   UPDATED: Now uses ask-diva.png logo as Diva identity.
+   Old .wm-diva / .wm-diva__* classes replaced with .dv-* below.
+   Old .wm-hl--* classes kept for headline colors (still used in HTML).
+═══════════════════════════════════════════════════════ */
+
+/* ── Headline color classes (keep — used in index.html) ── */
+.wm-hero__headline {
+  font-size: clamp(30px, 3.6vw, 50px);
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -.02em;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.wm-hl--black  { color: #1f2937; }
+.wm-hl--blue   { color: #1f6fd6; }
+.wm-hl--for    { color: #1f2937; display: block; min-height: 1.2em; }
+.wm-hl--orange { color: #f59e0b; }
+
+/* Typewriter cursor */
+.wm-type-cursor {
+  display: inline-block;
+  width: 3px;
+  height: .84em;
+  background: #f59e0b;
+  border-radius: 2px;
+  vertical-align: middle;
+  margin-left: 3px;
+  animation: wmBlink .75s step-end infinite;
+}
+
+@keyframes wmBlink {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+
+/* ══════════════════════════════════════════════════════
+   DIVA HERO DEMO WIDGET — .dv-* classes
+   HEIGHT IS LOCKED. SCREENS SWAP INSIDE. NOTHING STACKS.
+══════════════════════════════════════════════════════ */
+
+/* Shared keyframes */
+@keyframes dvPulseRing {
+  0%   { transform: scale(1);    opacity: .65; }
+  65%  { transform: scale(1.22); opacity: 0;   }
+  100% { transform: scale(1.22); opacity: 0;   }
+}
+@keyframes dvBlinkDot {
+  0%,88%,100% { opacity: 1;  }
+  94%         { opacity: .3; }
+}
+@keyframes dvSpin      { to { transform: rotate(360deg);  } }
+@keyframes dvSpinR     { to { transform: rotate(-360deg); } }
+@keyframes dvBounce {
+  0%,80%,100% { transform: scale(.65); opacity: .45; }
+  40%         { transform: scale(1.1); opacity: 1;   }
+}
+@keyframes dvFadeIn    { to { opacity: 1; } }
+@keyframes dvSlideRight {
+  from { opacity: 0; transform: translateX(10px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+@keyframes dvAvatarGlow {
+  0%,65%,100% { box-shadow: 0 2px 8px rgba(0,0,0,.13); }
+  32%          { box-shadow: 0 2px 8px rgba(37,99,235,.30), 0 0 14px rgba(37,99,235,.18); }
+}
+@keyframes dvPulseDot {
+  0%,100% { opacity: 1;   transform: scale(1);   }
+  50%     { opacity: .55; transform: scale(1.35); }
+}
+
+/* ── Widget shell ── */
+.dv-widget {
+  width: 100%;
+  max-width: 420px;
+  height: 548px;           /* ← FIXED. Change only this to resize. */
+  background: #fff;
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 2px 4px rgba(0,0,0,.04),
+    0 16px 48px rgba(0,0,0,.13),
+    0 32px 64px rgba(0,0,0,.07),
+    0 0 0 1px rgba(255,255,255,.85) inset;
+}
+
+/* ── Header (flex-shrink:0 — never moves, never clipped) ── */
+.dv-hdr {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #0C2248 0%, #1A3A6B 46%, #1E52BF 100%);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+/* Avatar wrapper */
+.dv-hdr__avWrap {
+  position: relative;
+  width: 46px; height: 46px;
+  flex-shrink: 0;
+}
+
+/* Soft pulse ring around logo */
+.dv-hdr__ring {
+  position: absolute;
+  inset: -5px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.20);
+  animation: dvPulseRing 3s ease-out infinite;
+}
+
+/* Ask Diva logo image */
+.dv-hdr__img {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid rgba(255,255,255,.36);
+  display: block;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.12),
+    0 4px 16px rgba(0,0,0,.32),
+    0 0 22px rgba(37,99,235,.55);
+}
+
+/* Green online dot */
+.dv-hdr__dot {
+  position: absolute;
+  bottom: 1px; right: 1px;
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: #22C55E;
+  border: 2.5px solid #1A3A6B;
+  animation: dvBlinkDot 3s ease infinite;
+}
+
+/* Title + subtitle */
+.dv-hdr__info  { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.dv-hdr__name  { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -.01em; }
+.dv-hdr__role  { font-size: 11px; color: rgba(255,255,255,.58); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Live tag */
+.dv-hdr__live  { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15); border-radius: 100px; padding: 4px 11px; flex-shrink: 0; }
+.dv-hdr__liveDot  { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: dvBlinkDot 3s ease infinite; flex-shrink: 0; }
+.dv-hdr__liveText { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.80); letter-spacing: .05em; text-transform: uppercase; }
+
+/* ── Progress bar (flex-shrink:0 — never moves) ── */
+.dv-prog { flex-shrink: 0; height: 3px; background: rgba(37,99,235,.10); }
+.dv-prog__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2563EB, #06B6D4);
+  border-radius: 0 2px 2px 0;
+  transition: width .6s cubic-bezier(.4,0,.2,1);
+  width: 4%;
+}
+
+/* ── Stage: takes remaining fixed height, screens swap inside ── */
+.dv-stage {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(37,99,235,.05) 0%, transparent 65%),
+    #F8FAFC;
+}
+
+/* Each screen: absolute → fills stage → never pushes anything */
+.dv-screen {
+  position: absolute;
+  inset: 0;
+  padding: 20px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  /* Entry state — invisible + below */
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity .34s cubic-bezier(.4,0,.2,1),
+    transform .34s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+.dv-screen.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.dv-screen.is-exit    { opacity: 0; transform: translateY(-16px); pointer-events: none; }
+
+/* ── Diva message row ── */
+.dv-msgRow { display: flex; gap: 10px; align-items: flex-start; }
+
+/* Bot avatar — uses ask-diva.png */
+.dv-av {
+  width: 32px; height: 32px;
+  border-radius: 50%; overflow: hidden;
+  flex-shrink: 0; margin-top: 2px;
+  border: 1.5px solid rgba(255,255,255,.9);
+  box-shadow: 0 2px 8px rgba(0,0,0,.13);
+  animation: dvAvatarGlow 5s ease infinite;
+}
+.dv-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Message bubble — premium white card */
+.dv-bubble {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 4px 16px 16px 16px;
+  padding: 13px 15px;
+  font-size: 13.5px; line-height: 1.62;
+  color: #0F172A; font-weight: 400;
+  max-width: calc(100% - 44px);
+  box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
+  letter-spacing: -.01em;
+}
+.dv-bubble strong { font-weight: 600; color: #0F172A; }
+/* Muted helper text inside bubble */
+.dv-bubble .dm { color: #64748B; font-size: 12.5px; }
+
+/* ── User reply bubble ── */
+.dv-replyRow    { display: flex; justify-content: flex-end; }
+.dv-replyBubble {
+  background: linear-gradient(135deg, #1A3A6B 0%, #2563EB 100%);
+  color: #fff;
+  border-radius: 16px 4px 16px 16px;
+  padding: 10px 15px;
+  font-size: 13px; font-weight: 500;
+  max-width: 78%; letter-spacing: -.01em;
+  box-shadow: 0 4px 14px rgba(37,99,235,.24);
+  animation: dvSlideRight .28s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Option buttons (visual only in auto-demo) ── */
+.dv-opts       { display: flex; flex-direction: column; gap: 7px; }
+.dv-opts.g2    { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+
+.dv-opt {
+  background: #fff;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 11px;
+  padding: 10px 13px;
+  font-size: 13px; font-weight: 500; color: #0F172A;
+  display: flex; align-items: center; gap: 7px;
+  cursor: default; user-select: none;
+  transition: border-color .25s, background .25s, transform .2s, box-shadow .2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  line-height: 1.3;
+}
+.dv-opt .oi { font-size: 15px; flex-shrink: 0; }
+.dv-opt.chosen {
+  border-color: #2563EB;
+  background: rgba(37,99,235,.07);
+  color: #2563EB;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(37,99,235,.15);
+}
+
+/* ── Searching state ── */
+.dv-searching {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; height: 100%; text-align: center;
+}
+
+/* Double-ring spinner with Diva logo inside */
+.dv-ring { position: relative; width: 58px; height: 58px; flex-shrink: 0; }
+.dv-ring__out {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 3px solid rgba(37,99,235,.12);
+  border-top-color: #2563EB;
+  animation: dvSpin .9s linear infinite;
+}
+.dv-ring__in {
+  position: absolute; inset: 8px; border-radius: 50%;
+  border: 2px solid rgba(6,182,212,.12);
+  border-bottom-color: #06B6D4;
+  animation: dvSpinR 1.35s linear infinite;
+}
+.dv-ring__logo {
+  position: absolute; inset: 14px;
+  border-radius: 50%; object-fit: cover; opacity: .88;
+}
+
+.dv-s-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; font-weight: 700; color: #0A1628; letter-spacing: -.01em; }
+
+.dv-s-lines { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+.dv-s-line  { font-size: 12px; color: #64748B; display: flex; align-items: center; gap: 6px; }
+.dv-s-line .ck { color: #22C55E; font-size: 11px; animation: dvFadeIn .4s ease forwards; opacity: 0; }
+.dv-s-line:nth-child(1) .ck { animation-delay: .5s; }
+.dv-s-line:nth-child(2) .ck { animation-delay: 1.2s; }
+.dv-s-line:nth-child(3) .ck { animation-delay: 2.0s; }
+
+.dv-s-dots { display: flex; gap: 5px; margin-top: 4px; }
+.dv-s-dots span { width: 7px; height: 7px; border-radius: 50%; background: #2563EB; animation: dvBounce 1.2s ease infinite; }
+.dv-s-dots span:nth-child(2) { animation-delay: .2s; }
+.dv-s-dots span:nth-child(3) { animation-delay: .4s; }
+
+/* ── Result card ── */
+.dv-resultScreen { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+
+.dv-card {
+  background: #fff;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 16px; padding: 15px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.08);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.dv-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, #2563EB, #06B6D4);
+}
+
+.dv-card__head      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 6px; }
+.dv-card__bank      { display: flex; align-items: center; gap: 8px; }
+.dv-card__bankIcon  { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg,#deeaff,#c2d4ff); display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.dv-card__bankName  { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #0A1628; letter-spacing: -.01em; }
+
+.dv-card__badges    { display: flex; gap: 5px; flex-wrap: wrap; }
+.dv-badge           { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 100px; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.dv-badge--green    { background: rgba(34,197,94,.10); border: 1px solid rgba(34,197,94,.25); color: #16a34a; }
+.dv-badge--blue     { background: rgba(37,99,235,.10); border: 1px solid rgba(37,99,235,.22); color: #2563EB; }
+
+.dv-card__grid      { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 13px; }
+.dv-card__item      { display: flex; flex-direction: column; gap: 2px; }
+.dv-card__lbl       { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #94A3B8; font-weight: 600; }
+.dv-card__val       { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; color: #0A1628; letter-spacing: -.02em; line-height: 1.1; }
+.dv-card__val.green  { color: #16a34a; }
+.dv-card__val.orange { color: #F97316; }
+.dv-card__sub       { font-size: 10.5px; color: #64748B; font-weight: 400; }
+
+.dv-card__btns { display: flex; gap: 7px; }
+.dv-card__btn1 {
+  flex: 1; background: linear-gradient(135deg, #1A3A6B, #2563EB); color: #fff;
+  border: none; border-radius: 10px; padding: 11px 0;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 14px rgba(37,99,235,.28);
+  transition: transform .2s, box-shadow .2s;
+}
+.dv-card__btn1:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,.38); }
+.dv-card__btn2 {
+  flex: 1; background: transparent; color: #2563EB;
+  border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 11px 0;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.dv-card__btn2:hover { border-color: #2563EB; background: rgba(37,99,235,.04); }
+
+.dv-footnote { text-align: center; font-size: 11.5px; color: #94A3B8; line-height: 1.4; flex-shrink: 0; }
+
+/* ── Footer / step dots (flex-shrink:0 — never moves) ── */
+.dv-footer {
+  flex-shrink: 0; padding: 10px 18px;
+  border-top: 1px solid #E2E8F0;
+  background: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dv-footer__sec    { font-size: 11.5px; color: #94A3B8; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.dv-footer__dots   { display: flex; gap: 4px; }
+.dv-dot            { width: 6px; height: 6px; border-radius: 50%; background: #E2E8F0; transition: background .35s, width .35s, border-radius .35s; }
+.dv-dot.active     { background: #2563EB; width: 16px; border-radius: 3px; }
+.dv-dot.done       { background: rgba(37,99,235,.28); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .dv-widget { height: 500px; }
+  .wm-hero__headline { font-size: clamp(26px, 4vw, 40px); }
+}
+@media (max-width: 480px) {
+  .dv-widget { height: 480px; }
+  .wm-hero__headline { font-size: 27px; }
+}
+/* ================================================================
+   PASTE THIS INTO: css/phase3.css
+   LOCATION: At the very end of the file, after all existing rules.
+   ================================================================ */
+
+
+/* ================================================================
+   FIX 1 — HEADER CLASS ALIAS
+   Your index.html uses .dv-header__* class names.
+   Your phase3.css was written for .dv-hdr__* class names.
+   These aliases fix the mismatch without touching your HTML.
+   ================================================================ */
+
+/* Map old HTML class names → correct styles */
+.dv-header                    { flex-shrink: 0; background: linear-gradient(135deg, #0C2248 0%, #1A3A6B 46%, #1E52BF 100%); padding: 14px 18px; display: flex; align-items: center; gap: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.10); }
+.dv-header__avatarWrap        { position: relative; width: 46px; height: 46px; flex-shrink: 0; }
+.dv-header__pulseRing         { position: absolute; inset: -5px; border-radius: 50%; border: 2px solid rgba(255,255,255,.20); animation: dvPulseRing 3s ease-out infinite; }
+.dv-header__logo              { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; border: 2.5px solid rgba(255,255,255,.36); display: block; box-shadow: 0 0 0 1px rgba(255,255,255,.12), 0 4px 16px rgba(0,0,0,.32), 0 0 22px rgba(37,99,235,.55); }
+.dv-header__onlineDot         { position: absolute; bottom: 1px; right: 1px; width: 11px; height: 11px; border-radius: 50%; background: #22C55E; border: 2.5px solid #1A3A6B; animation: dvBlinkDot 3s ease infinite; }
+.dv-header__info              { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; }
+.dv-header__name              { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: -.01em; }
+.dv-header__role              { font-size: 11px; color: rgba(255,255,255,.58); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dv-header__liveTag           { display: flex; align-items: center; gap: 5px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15); border-radius: 100px; padding: 4px 11px; flex-shrink: 0; }
+.dv-liveTag__dot              { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: dvBlinkDot 3s ease infinite; flex-shrink: 0; }
+.dv-liveTag__text             { font-size: 10px; font-weight: 600; color: rgba(255,255,255,.80); letter-spacing: .05em; text-transform: uppercase; }
+
+/* Progress bar alias */
+.dv-progress                  { flex-shrink: 0; height: 3px; background: rgba(37,99,235,.10); }
+.dv-progress__fill            { height: 100%; background: linear-gradient(90deg, #2563EB, #06B6D4); border-radius: 0 2px 2px 0; transition: width .6s cubic-bezier(.4,0,.2,1); width: 4%; }
+
+/* Footer secure text alias */
+.dv-footer__secure            { font-size: 11.5px; color: #94A3B8; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+
+/* Popup aliases (if your popup HTML also uses old class names) */
+.dv-popup__header             { flex-shrink: 0; background: linear-gradient(135deg, #0C2248 0%, #1A3A6B 46%, #1E52BF 100%); padding: 13px 16px; display: flex; align-items: center; gap: 10px; box-shadow: inset 0 1px 0 rgba(255,255,255,.10); position: relative; overflow: hidden; }
+.dv-popup__avatarWrap         { position: relative; width: 40px; height: 40px; flex-shrink: 0; z-index: 1; }
+.dv-popup__pulseRing          { position: absolute; inset: -4px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.20); animation: dvPulseRing 2.8s ease-out infinite; }
+.dv-popup__logo               { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255,255,255,.32); display: block; box-shadow: 0 2px 8px rgba(0,0,0,.28), 0 0 16px rgba(37,99,235,.45); }
+.dv-popup__onlineDot          { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: #22C55E; border: 2px solid #1A3A6B; animation: dvBlinkDot 3s ease infinite; }
+.dv-popup__hinfo              { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; position: relative; z-index: 1; }
+.dv-popup__hname              { font-size: 14px; font-weight: 700; color: #fff; }
+.dv-popup__hrole              { font-size: 11px; color: rgba(255,255,255,.58); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dv-popup__closeBtn           { background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.15); border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,.80); cursor: pointer; transition: background .2s; flex-shrink: 0; padding: 0; position: relative; z-index: 1; }
+.dv-popup__closeBtn:hover     { background: rgba(255,255,255,.22); color: #fff; }
+.dv-popup__inputAvatar        { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; flex-shrink: 0; opacity: .70; }
+.dv-popup__input              { flex: 1; border: none; background: transparent; font-size: 13px; color: #0F172A; outline: none; font-family: 'Plus Jakarta Sans', sans-serif; min-width: 0; }
+.dv-popup__input::placeholder { color: #94A3B8; }
+.dv-popup__sendBtn            { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #1A3A6B, #2563EB); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: transform .2s, box-shadow .2s; box-shadow: 0 2px 8px rgba(37,99,235,.28); }
+.dv-popup__sendBtn:hover      { transform: scale(1.09); box-shadow: 0 4px 14px rgba(37,99,235,.42); }
+.dv-popup__footNote           { font-size: 10.5px; color: #94A3B8; text-align: center; font-weight: 400; }
+
+/* Launcher aliases */
+.dv-launcher__imgWrap         { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+.dv-launcher__img             { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(37,99,235,.2); display: block; }
+.dv-launcher__onlineDot       { position: absolute; bottom: 0; right: 0; width: 11px; height: 11px; border-radius: 50%; background: #22C55E; border: 2px solid #fff; animation: dvBlinkDot 3s ease infinite; }
+.dv-launcher__label           { display: flex; flex-direction: column; gap: 1px; }
+.dv-launcher__labelMain       { font-size: 13.5px; font-weight: 700; color: #0A1628; letter-spacing: -.01em; line-height: 1.2; }
+.dv-launcher__labelSub        { font-size: 10.5px; color: #64748B; font-weight: 400; }
+.dv-launcher__closeBtn        { background: rgba(100,116,139,.10); border: none; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; color: #64748B; cursor: pointer; transition: background .2s; flex-shrink: 0; padding: 0; }
+.dv-launcher__closeBtn:hover  { background: rgba(100,116,139,.22); }
+.dv-popup__is-open            { opacity: 1 !important; transform: scale(1) translateY(0) !important; pointer-events: auto !important; }
+
+
+/* ================================================================
+   FIX 2 — FEATURED ASK DIVA IMAGE SECTION
+   New element between header and stage.
+   Shows on load → collapses when demo starts.
+   ================================================================ */
+
+.dv-featured {
+  flex-shrink: 0;
+  height: 196px;               /* fixed height — widget stays at 548px total   */
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #EEF5FF 0%, #F0F6FF 60%, #F8FAFC 100%);
+
+  /* Smooth collapse when demo starts */
+  transition:
+    height 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.40s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Class added by JS when first demo screen appears */
+.dv-featured.is-gone {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* The Ask Diva image — contained, never overflows, never cropped */
+.dv-featured__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;         /* shows full image with no cropping             */
+  object-position: center top; /* keeps face/brand text in upper portion        */
+
+  /* Subtle breathing — widget feels alive */
+  animation: dvFeaturedPulse 6s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes dvFeaturedPulse {
+  0%,  100% { transform: scale(1.00); }
+  50%        { transform: scale(1.028); }
+}
+
+/* Gradient fade at the bottom — image blends into stage */
+.dv-featured__fade {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 52px;
+  background: linear-gradient(to bottom, transparent, #F8FAFC);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Floating pill badge at the bottom of the image */
+.dv-featured__badge {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1A3A6B;
+  white-space: nowrap;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.10);
+  letter-spacing: 0.03em;
+
+  /* Appears after a short delay */
+  animation: dvBadgeIn 0.5s 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes dvBadgeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);   }
+}
+
+.dv-featured__badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22C55E;
+  flex-shrink: 0;
+  animation: dvBlinkDot 3s ease infinite;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dv-featured { height: 158px; }
+}
+
+@media (max-width: 480px) {
+  .dv-featured { height: 136px; }
+}
+
+
+/* ================================================================
+   FIX 3 — POPUP OPEN STATE
+   Your popup HTML uses class "is-open" but diva-widget.css
+   was written for class "open". This ensures both work.
+   ================================================================ */
+.dv-popup.is-open {
+  opacity: 1 !important;
+  transform: scale(1) translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* ================================================================
+   END OF ADDITIONS
+   ================================================================ */

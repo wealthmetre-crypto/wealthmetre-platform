@@ -1,0 +1,775 @@
+/*
+ * WealthMetre — diva-widget.css  (Phase 2 + Phase 3 upgrade)
+ * Diva AI — Floating launcher, popup panel, orb toggle
+ * Updated: ask-diva.png logo replaces orb/letter avatars
+ */
+
+/* ── CSS Variables ──────────────────────────────────── */
+:root {
+  --dv-blue:    #1e3a8a;
+  --dv-teal:    #0d9488;
+  --dv-gold:    #f59e0b;
+  --dv-orb1:    #1e40af;
+  --dv-orb2:    #0f766e;
+  --dv-orb3:    #d97706;
+  --dv-glass:   rgba(255,255,255,0.92);
+  --dv-dark:    #0f1729;
+  --dv-radius:  16px;
+  --dv-shadow:  0 24px 64px rgba(15,23,42,.22), 0 4px 16px rgba(15,23,42,.12);
+}
+
+
+/* ════════════════════════════════════════════════════
+   SHARED KEYFRAMES
+════════════════════════════════════════════════════ */
+@keyframes onlinePulse {
+  0%,100% { box-shadow: 0 0 0 0   rgba(34,197,94,.4); }
+  50%      { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+}
+@keyframes agentRing {
+  0%   { transform: scale(1);    opacity: .6; }
+  100% { transform: scale(1.65); opacity: 0;  }
+}
+@keyframes orbSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes dvBlinkDot {
+  0%,88%,100% { opacity: 1;  }
+  94%         { opacity: .3; }
+}
+@keyframes dvPulseRing {
+  0%   { transform: scale(1);    opacity: .65; }
+  65%  { transform: scale(1.22); opacity: 0;   }
+  100% { transform: scale(1.22); opacity: 0;   }
+}
+@keyframes launcherIn {
+  from { opacity: 0; transform: translateY(24px) scale(.88); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+@keyframes dvFade {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes dvDot {
+  0%,80%,100% { transform: scale(.8); opacity: .4; }
+  40%         { transform: scale(1.2); opacity: 1; }
+}
+@keyframes dvSpin { to { transform: rotate(360deg); } }
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ════════════════════════════════════════════════════
+   FLOATING LAUNCHER — branded pill button
+   Replaces old #divaToggle orb
+════════════════════════════════════════════════════ */
+.dv-launcher {
+  position: fixed;
+  bottom: 28px; right: 28px;
+  z-index: 99998;
+  display: flex; align-items: center; gap: 10px;
+  background: #fff;
+  border: 1px solid rgba(37,99,235,.14);
+  border-radius: 100px;
+  padding: 8px 16px 8px 8px;
+  cursor: pointer;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,.05),
+    0 12px 32px rgba(37,99,235,.18),
+    0 24px 48px rgba(0,0,0,.10);
+  transition: transform .25s ease, box-shadow .25s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: launcherIn .6s .9s cubic-bezier(.34,1.56,.64,1) both;
+}
+
+.dv-launcher:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 6px 8px rgba(0,0,0,.06),
+    0 18px 40px rgba(37,99,235,.26),
+    0 32px 56px rgba(0,0,0,.12);
+}
+
+/* Hidden state (after popup opens) */
+.dv-launcher.hidden {
+  opacity: 0;
+  transform: translateY(14px) scale(.9);
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+/* Outer soft pulse ring */
+.dv-launcher__pulse {
+  position: absolute;
+  inset: -7px; border-radius: 100px;
+  border: 2px solid rgba(37,99,235,.17);
+  animation: dvPulseRing 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+/* Avatar image wrapper */
+.dv-launcher__avWrap { position: relative; width: 40px; height: 40px; flex-shrink: 0; }
+
+.dv-launcher__img {
+  width: 40px; height: 40px;
+  border-radius: 50%; object-fit: cover;
+  border: 2px solid rgba(37,99,235,.2);
+  display: block;
+}
+
+/* Fallback if image missing */
+.dv-launcher__img[src=""], .dv-launcher__img:not([src]) {
+  background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+}
+
+/* Online dot on avatar */
+.dv-launcher__dot {
+  position: absolute; bottom: 0; right: 0;
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #22C55E; border: 2px solid #fff;
+  animation: dvBlinkDot 3s ease infinite;
+}
+
+/* Label text */
+.dv-launcher__lbl  { display: flex; flex-direction: column; gap: 1px; }
+.dv-launcher__main { font-size: 13.5px; font-weight: 700; color: #0A1628; letter-spacing: -.01em; line-height: 1.2; }
+.dv-launcher__sub  { font-size: 10.5px; color: #64748B; font-weight: 400; }
+
+/* Dismiss × button */
+.dv-launcher__x {
+  background: rgba(100,116,139,.10);
+  border: none; border-radius: 50%;
+  width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  color: #64748B; cursor: pointer;
+  transition: background .2s; flex-shrink: 0; padding: 0;
+}
+.dv-launcher__x:hover { background: rgba(100,116,139,.22); }
+
+
+/* ════════════════════════════════════════════════════
+   POPUP PANEL — glass morphism, dark header
+   Replaces old #divaPanel
+════════════════════════════════════════════════════ */
+.dv-popup {
+  position: fixed;
+  bottom: 92px; right: 28px;
+  z-index: 99999;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  height: 540px;
+  max-height: calc(100vh - 120px);
+  background: var(--dv-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: var(--dv-shadow);
+  border: 1px solid rgba(255,255,255,.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+
+  /* Hidden state */
+  opacity: 0;
+  transform: scale(.92) translateY(16px);
+  transform-origin: bottom right;
+  pointer-events: none;
+  transition:
+    transform .35s cubic-bezier(.34,1.4,.64,1),
+    opacity .25s ease;
+}
+
+.dv-popup.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Popup Header ── */
+.dv-popup__hdr {
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #0C2248 0%, #1A3A6B 46%, #1E52BF 100%);
+  padding: 13px 16px;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+  position: relative; overflow: hidden;
+}
+
+/* Subtle grid texture on header */
+.dv-popup__hdr::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.dv-popup__avWrap {
+  position: relative; width: 40px; height: 40px;
+  flex-shrink: 0; z-index: 1;
+}
+
+.dv-popup__ring {
+  position: absolute; inset: -4px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,.20);
+  animation: dvPulseRing 2.8s ease-out infinite;
+}
+
+.dv-popup__img {
+  width: 40px; height: 40px;
+  border-radius: 50%; object-fit: cover;
+  border: 2px solid rgba(255,255,255,.32); display: block;
+  box-shadow: 0 2px 8px rgba(0,0,0,.28), 0 0 16px rgba(37,99,235,.45);
+}
+
+.dv-popup__odot {
+  position: absolute; bottom: 1px; right: 1px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #22C55E; border: 2px solid #1A3A6B;
+  animation: dvBlinkDot 3s ease infinite;
+}
+
+.dv-popup__info { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 0; position: relative; z-index: 1; }
+.dv-popup__name { font-size: 14px; font-weight: 700; color: #fff; }
+.dv-popup__role { font-size: 11px; color: rgba(255,255,255,.58); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.dv-popup__close {
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.15); border-radius: 50%;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,.80); cursor: pointer;
+  transition: background .2s; flex-shrink: 0; padding: 0;
+  position: relative; z-index: 1;
+}
+.dv-popup__close:hover { background: rgba(255,255,255,.22); color: #fff; }
+
+/* ── Chat body ── */
+.dv-popup__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 14px;
+  display: flex; flex-direction: column; gap: 12px;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(37,99,235,.04) 0%, transparent 55%),
+    #F8FAFC;
+  scroll-behavior: smooth;
+}
+.dv-popup__body::-webkit-scrollbar { width: 4px; }
+.dv-popup__body::-webkit-scrollbar-track { background: transparent; }
+.dv-popup__body::-webkit-scrollbar-thumb { background: rgba(100,116,139,.20); border-radius: 4px; }
+
+/* Message enter animation */
+.pop-msg { animation: msgIn .28s cubic-bezier(.4,0,.2,1) forwards; opacity: 0; }
+
+/* ── Message bubbles (reuse dv-msgRow, dv-av, dv-bubble, dv-replyRow, dv-replyBubble from phase3.css) ── */
+
+/* ── Quick-reply chips ── */
+.pop-chips {
+  display: flex; flex-wrap: wrap; gap: 7px;
+  padding-left: 42px;
+}
+
+.pop-chip {
+  background: #fff;
+  border: 1.5px solid #E2E8F0; border-radius: 100px;
+  padding: 7px 14px;
+  font-size: 13px; font-weight: 500; color: #0F172A;
+  cursor: pointer;
+  transition: border-color .2s, background .2s, color .2s, transform .15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.pop-chip:hover {
+  border-color: #2563EB; background: rgba(37,99,235,.06);
+  color: #2563EB; transform: translateY(-1px);
+}
+
+/* ── Typing indicator ── */
+.pop-typing { display: flex; gap: 10px; align-items: center; }
+
+.pop-typing__bubble {
+  background: #fff; border: 1px solid #E2E8F0;
+  border-radius: 4px 14px 14px 14px;
+  padding: 12px 16px;
+  display: flex; gap: 4px; align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.pop-typing__bubble span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #94A3B8; animation: dvDot 1.2s ease infinite;
+}
+.pop-typing__bubble span:nth-child(2) { animation-delay: .2s; }
+.pop-typing__bubble span:nth-child(3) { animation-delay: .4s; }
+
+/* ── Footer / input row ── */
+.dv-popup__footer {
+  flex-shrink: 0;
+  padding: 10px 12px 8px;
+  border-top: 1px solid #E2E8F0;
+  background: #fff;
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.dv-popup__inputRow {
+  display: flex; align-items: center; gap: 8px;
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0; border-radius: 100px;
+  padding: 6px 6px 6px 10px;
+  transition: border-color .2s;
+}
+.dv-popup__inputRow:focus-within {
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.08);
+}
+
+/* Ask Diva logo shown in input bar */
+.dv-popup__iav {
+  width: 24px; height: 24px;
+  border-radius: 50%; object-fit: cover;
+  flex-shrink: 0; opacity: .70;
+}
+
+.dv-popup__input {
+  flex: 1; border: none; background: transparent;
+  font-size: 13px; color: #0F172A; outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif; min-width: 0;
+}
+.dv-popup__input::placeholder { color: #94A3B8; }
+
+.dv-popup__send {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, #1A3A6B, #2563EB);
+  border: none; color: #fff; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 2px 8px rgba(37,99,235,.28);
+}
+.dv-popup__send:hover { transform: scale(1.09); box-shadow: 0 4px 14px rgba(37,99,235,.42); }
+
+.dv-popup__note {
+  font-size: 10.5px; color: #94A3B8;
+  text-align: center; font-weight: 400;
+}
+
+/* ── Overlay behind popup ── */
+.dv-overlay {
+  position: fixed; inset: 0;
+  z-index: 99997;
+  background: rgba(10,22,40,.30);
+  backdrop-filter: blur(2px);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s ease;
+}
+.dv-overlay.active { opacity: 1; pointer-events: auto; }
+
+
+/* ════════════════════════════════════════════════════
+   LEGACY PANEL — kept for backwards compatibility
+   Old #divaPanel still used on inner pages until migrated
+════════════════════════════════════════════════════ */
+#divaPanel {
+  position: fixed;
+  bottom: 100px; right: 24px;
+  z-index: 99998;
+  width: 400px; height: 620px;
+  background: var(--dv-glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--dv-radius);
+  box-shadow: var(--dv-shadow);
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(255,255,255,.7);
+  transform: scale(.92) translateY(16px);
+  transform-origin: bottom right;
+  opacity: 0; pointer-events: none;
+  transition: transform .35s cubic-bezier(.34,1.4,.64,1), opacity .25s ease;
+  overflow: hidden;
+}
+#divaPanel.dv-open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+
+/* ════════════════════════════════════════════════════
+   LEGACY TOGGLE — kept for inner pages not yet migrated
+   Homepage now uses .dv-launcher instead
+════════════════════════════════════════════════════ */
+#divaToggle {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 99999;
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  cursor: pointer; border: none;
+  background: none; padding: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dv-pulse-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(29,78,216,.5);
+  animation: agentRing 2.5s ease-out infinite;
+  pointer-events: none;
+}
+.dv-pulse-ring.r2 { animation-delay: 1.2s; }
+
+.dv-agent-core {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: linear-gradient(145deg, #1e3a8a, #1e4db7);
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid rgba(255,255,255,.15);
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 20px rgba(30,58,138,.5);
+}
+.dv-agent-core i { font-size: 22px; color: #fff; transition: transform .3s; }
+
+#divaToggle:hover .dv-agent-core       { transform: scale(1.08); box-shadow: 0 6px 28px rgba(30,58,138,.7); }
+#divaToggle:hover .dv-agent-core i    { transform: scale(1.12); }
+
+#divaToggle.dv-thinking .dv-agent-core {
+  background: linear-gradient(145deg, #0d9488, #0f766e);
+  animation: thinkPulse .8s ease-in-out infinite alternate;
+}
+@keyframes thinkPulse {
+  from { box-shadow: 0 4px 16px rgba(13,148,136,.4); }
+  to   { box-shadow: 0 4px 28px rgba(13,148,136,.8); }
+}
+
+.dv-orb-label {
+  position: absolute; right: calc(100% + 12px); top: 50%;
+  transform: translateY(-50%);
+  background: #0f172a; color: #fff;
+  padding: 6px 12px; border-radius: 8px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px; font-weight: 600;
+  white-space: nowrap; opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+.dv-orb-label::after {
+  content: ''; position: absolute; right: -5px; top: 50%;
+  transform: translateY(-50%); border: 5px solid transparent;
+  border-right: none; border-left-color: #0f172a;
+}
+#divaToggle:hover .dv-orb-label { opacity: 1; }
+
+.dv-online-dot {
+  position: absolute; bottom: 2px; right: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: #22c55e; border: 2px solid #fff;
+  animation: onlinePulse 3s ease infinite;
+}
+
+
+/* ════════════════════════════════════════════════════
+   PANEL INTERNALS (shared by both legacy and popup)
+════════════════════════════════════════════════════ */
+.dv-head {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0d9488 100%);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.dv-head::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+  background-size: 20px 20px; pointer-events: none;
+}
+
+.dv-hav {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; position: relative; overflow: hidden;
+  border: 2px solid rgba(255,255,255,.28);
+}
+.dv-hav img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Fallback: animated orb when no image */
+.dv-hav.orb-fallback {
+  background: conic-gradient(from 0deg, #1e40af, #0f766e, #d97706, #1e40af);
+  animation: orbSpin 6s linear infinite;
+}
+.dv-hav-inner {
+  position: absolute; inset: 2px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #2d5be3, #0f172a 70%);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 800; color: #fff;
+}
+
+.dv-hinfo    { flex: 1; position: relative; z-index: 1; }
+.dv-hname    { font-size: 14px; font-weight: 700; color: #fff; line-height: 1.2; letter-spacing: -.2px; }
+.dv-hstatus  { font-size: 11px; color: rgba(255,255,255,.65); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.dv-hstatus-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: onlinePulse 3s infinite; }
+.dv-hacts    { display: flex; gap: 6px; position: relative; z-index: 1; }
+.dv-hbtn     { width: 30px; height: 30px; border-radius: 8px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.8); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.dv-hbtn:hover { background: rgba(255,255,255,.22); color: #fff; }
+
+/* ── Body ── */
+.dv-body {
+  flex: 1; overflow-y: auto; padding: 14px 14px 8px; background: #f8faff; scroll-behavior: smooth;
+}
+.dv-body::-webkit-scrollbar       { width: 3px; }
+.dv-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+
+/* ── Messages ── */
+.dv-msg { display: flex; margin-bottom: 10px; animation: dvFade .25s ease; }
+.dv-msg.user { justify-content: flex-end; }
+
+.dv-bub {
+  max-width: 82%; padding: 10px 13px; border-radius: 14px;
+  font-size: 13.5px; line-height: 1.55; word-wrap: break-word; white-space: pre-wrap;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.dv-msg.user .dv-bub { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); color: #fff; border-bottom-right-radius: 4px; box-shadow: 0 2px 8px rgba(30,58,138,.25); }
+.dv-msg.bot  .dv-bub { background: #fff; color: #1a1a2e; border: 1px solid #e2e8f0; border-bottom-left-radius: 4px; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+
+/* Bot avatar inside panel — uses ask-diva.png */
+.dv-av {
+  width: 26px; height: 26px; border-radius: 50%;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  margin-right: 8px; flex-shrink: 0; align-self: flex-end;
+  border: 1.5px solid rgba(255,255,255,.9);
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+.dv-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Typing indicator ── */
+.dv-typing-row .dv-bub { padding: 12px 16px; }
+.dv-typing { display: flex; align-items: center; gap: 4px; }
+.dv-dot    { width: 6px; height: 6px; border-radius: 50%; background: #94a3b8; animation: dvDot 1.4s infinite ease-in-out; }
+.dv-dot:nth-child(2) { animation-delay: .2s; }
+.dv-dot:nth-child(3) { animation-delay: .4s; }
+
+/* ── Chips ── */
+.dv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px 34px; }
+.dv-chip  { padding: 7px 14px; border-radius: 99px; border: 1.5px solid #e2e8f0; background: #fff; font-size: 12.5px; font-family: 'Plus Jakarta Sans', sans-serif; color: #334155; cursor: pointer; transition: all .18s; font-weight: 500; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.dv-chip:hover { border-color: #1e3a8a; background: #eff6ff; color: #1e3a8a; transform: translateY(-1px); box-shadow: 0 3px 8px rgba(30,58,138,.12); }
+
+/* ── Inline input ── */
+.dv-inp-wrap { display: flex; gap: 8px; margin: 4px 0 10px 34px; }
+.dv-inp      { flex: 1; padding: 9px 12px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 13px; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; background: #fff; transition: border-color .2s; }
+.dv-inp:focus { border-color: #1e3a8a; box-shadow: 0 0 0 3px rgba(30,58,138,.08); }
+.dv-inp-btn  { padding: 9px 14px; background: #1e3a8a; color: #fff; border: none; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; transition: background .2s; }
+.dv-inp-btn:hover { background: #1d4ed8; }
+
+/* ── Summary card ── */
+.dv-summary { background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 14px; margin: 4px 0 10px 34px; }
+.dv-srow    { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(30,58,138,.08); font-size: 12.5px; }
+.dv-srow:last-child { border-bottom: none; }
+.dv-srow .sl { color: #64748b; }
+.dv-srow .sv { font-weight: 700; color: #1e3a8a; }
+
+/* ── Consent block ── */
+.dv-consent { background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 12px 14px; margin: 4px 0 10px 34px; }
+.dv-cbtns   { display: flex; gap: 8px; margin-top: 8px; }
+.dv-cyes    { background: #16a34a; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; }
+.dv-cno     { background: #fff; color: #6b7280; border: 1.5px solid #e5e7eb; border-radius: 8px; padding: 8px 16px; font-size: 12px; cursor: pointer; flex: 1; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* ── CTA block ── */
+.dv-cta      { background: linear-gradient(135deg, #1e3a8a, #1e4db7); padding: 12px 16px; margin: 4px 0 10px 34px; border-radius: 12px; }
+.dv-cta-text { font-size: 12px; color: rgba(255,255,255,.85); margin-bottom: 8px; line-height: 1.5; }
+.dv-cta-btn  { background: #f59e0b; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; width: 100%; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+/* ── Lender results ── */
+.dv-results { margin: 4px 0 10px; }
+.dv-rh      { font-size: 12px; font-weight: 700; color: #1e3a8a; margin: 0 0 8px 34px; text-transform: uppercase; letter-spacing: .5px; }
+.dv-lcard   { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.05); position: relative; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+.dv-lcard:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+.dv-lcard::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: linear-gradient(180deg, #1e3a8a, #0d9488); }
+.dv-lcard.top { border-color: #fde68a; background: linear-gradient(135deg, #fffbeb, #fff); }
+.dv-lcard.top::before { background: linear-gradient(180deg, #f59e0b, #d97706); }
+.dv-rank      { position: absolute; top: 10px; right: 10px; font-size: 10px; font-weight: 700; color: #94a3b8; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 99px; padding: 2px 8px; }
+.dv-rank.top  { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; padding: 3px 10px; font-size: 10.5px; display: inline-block; margin-bottom: 6px; position: static; }
+.dv-lname     { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 8px; padding-left: 6px; }
+.dv-lgrid     { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; padding-left: 6px; margin-bottom: 8px; }
+.dv-lstat     { background: #f8fafc; border-radius: 8px; padding: 6px 8px; }
+.dv-lstat .sl { font-size: 10px; color: #64748b; text-transform: uppercase; letter-spacing: .4px; }
+.dv-lstat .sv { font-size: 13px; font-weight: 700; color: #1e3a8a; margin-top: 1px; }
+.dv-lstat .sv.or { color: #f59e0b; }
+.dv-lwhy      { font-size: 11.5px; color: #374151; padding: 7px 9px; background: #eff6ff; border-radius: 7px; border-left: 3px solid #93c5fd; margin-left: 6px; }
+.dv-lai       { font-size: 12.5px; color: #1e3a8a; padding: 8px 10px; background: #eff6ff; border-radius: 8px; border-left: 3px solid #1e3a8a; margin-left: 6px; margin-bottom: 6px; line-height: 1.55; }
+.dv-lnote     { font-size: 11px; color: #64748b; margin-top: 6px; padding-left: 6px; font-style: italic; }
+.dv-lcontact  { font-size: 11.5px; color: #047857; margin-top: 7px; padding: 5px 8px; background: #ecfdf5; border-radius: 6px; border-left: 3px solid #10b981; }
+.dv-spills    { display: flex; flex-wrap: wrap; gap: 5px; margin: 7px 0 4px 6px; }
+.dv-spill     { font-size: 10px; border-radius: 99px; padding: 2px 8px; font-weight: 500; }
+.dv-spill.pos { background: #dcfce7; color: #166634; }
+.dv-spill.neg { background: #fee2e2; color: #991b1b; }
+
+/* ── Panel footer / input ── */
+.dv-foot       { padding: 10px 12px; border-top: 1px solid #e2e8f0; background: #fff; display: flex; gap: 8px; flex-shrink: 0; align-items: center; }
+.dv-foot input { flex: 1; padding: 10px 13px; border-radius: 10px; border: 1.5px solid #e2e8f0; font-size: 13.5px; font-family: 'Plus Jakarta Sans', sans-serif; outline: none; color: #1a1a2e; background: #f8faff; transition: border-color .2s, box-shadow .2s; }
+.dv-foot input:focus { border-color: #1e3a8a; background: #fff; box-shadow: 0 0 0 3px rgba(30,58,138,.07); }
+.dv-foot input::placeholder { color: #94a3b8; }
+
+.dv-voice { width: 40px; height: 40px; border-radius: 10px; background: #f1f5f9; border: 1.5px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; color: #64748b; font-size: 16px; }
+.dv-voice:hover { background: #eff6ff; border-color: #1e3a8a; color: #1e3a8a; }
+.dv-voice.listening { background: #fee2e2; border-color: #ef4444; color: #ef4444; animation: voicePulse .8s ease infinite alternate; }
+@keyframes voicePulse { from { box-shadow: 0 0 0 0 rgba(239,68,68,.3); } to { box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
+.dv-voice-not-supported { display: none !important; }
+
+.dv-send       { width: 40px; height: 40px; border-radius: 10px; background: #1e3a8a; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .2s, transform .15s; }
+.dv-send:hover  { background: #1d4ed8; }
+.dv-send:active { transform: scale(.93); }
+.dv-send svg    { width: 16px; height: 16px; fill: white; }
+
+
+/* ════════════════════════════════════════════════════
+   MOBILE
+════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* New popup — full-screen bottom sheet */
+  .dv-popup {
+    bottom: 0; right: 0; left: 0;
+    width: 100%; max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    height: 88vh; max-height: 88vh;
+  }
+
+  .dv-launcher { bottom: 84px; right: 16px; } /* lifts above mobile sticky bar */
+
+  /* Legacy panel */
+  #divaPanel { width: calc(100vw - 20px); right: 10px; height: 80vh; bottom: 80px; }
+  #divaToggle { bottom: 80px; right: 16px; }
+}
+/* ── Popup header avatar fix ── */
+.dv-popup__avatarWrap {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+}
+
+.dv-popup__logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  overflow: hidden;
+}
+
+.dv-popup__pulseRing {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(37, 99, 235, 0.4);
+  animation: popRingPulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dv-popup__onlineDot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  z-index: 2;
+}
+
+@keyframes popRingPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.08); }
+}
+
+/* Popup header layout */
+.dv-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #0f2557, #1e3a8a);
+  border-radius: 16px 16px 0 0;
+  flex-shrink: 0;
+}
+
+.dv-popup__hinfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.dv-popup__hname {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #fff;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dv-popup__hrole {
+  font-size: 11px;
+  color: rgba(255,255,255,0.65);
+  display: block;
+}
+/* ════════════════════════════════════════════════════
+   POPUP IMAGE OVERFLOW FIXES
+════════════════════════════════════════════════════ */
+
+/* Hard clamp ALL images inside popup body */
+.dv-popup__body img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Avatar inside chat message rows */
+.dv-popup__body .dv-av {
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  overflow: hidden !important;
+  flex-shrink: 0 !important;
+  border-radius: 50% !important;
+}
+
+.dv-popup__body .dv-av img {
+  width: 28px !important;
+  height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  border-radius: 50% !important;
+  display: block !important;
+}
+
+/* Input bar avatar — class name fix (HTML uses __inputAvatar, CSS had __iav) */
+.dv-popup__inputAvatar {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  object-position: top center !important;
+  flex-shrink: 0 !important;
+  opacity: 0.70;
+  display: block !important;
+}
+
+/* Ensure popup body clips overflow */
+.dv-popup__body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Ensure popup panel itself clips */
+.dv-popup {
+  overflow: hidden !important;
+}
