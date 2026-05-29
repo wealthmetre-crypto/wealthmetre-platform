@@ -699,6 +699,7 @@
         var popProfile = {};
         var popMode    = 'welcome_mode';
         var isThinking = false;
+        var _lendersShown = false;
         var popSid     = 'diva_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
 
         /* ── Open ── */
@@ -807,15 +808,21 @@
                 return;
             }
 
+            _lendersShown = true;
             var lenders = Array.isArray(result.lenders) ? result.lenders : [];
             var total   = result.total_matches || lenders.length;
+            var profileLenders = lenders.filter(function(l){ return (l.match_reasons||[]).indexOf('Special profile match') > -1; }).slice(0,5);
+            var rateLenders = lenders.filter(function(l){ return (l.match_reasons||[]).indexOf('Special profile match') === -1; }).slice(0,5);
+            var hasPartition = profileLenders.length > 0;
+            var displayLenders = hasPartition ? rateLenders : lenders.slice(0,10);
 
             if (!lenders.length) {
                 popDivaMsg('Abhi exact match nahi mila.<br>\uD83D\uDCDE <strong>+91 7976218596</strong>');
                 return;
             }
 
-            lenders.slice(0, 5).forEach(function (l, i) {
+            if (hasPartition) { var sh=document.createElement('div');sh.className='pop-msg';sh.style.cssText='font-size:11px;font-weight:700;color:#1A3A6B;padding:6px 4px 2px;text-transform:uppercase;letter-spacing:.04em;';sh.textContent='Best Rates for Your Profile';popBody.appendChild(sh); }
+            displayLenders.forEach(function (l, i) {
                 var isTop = i < 3;
                 var r    = parseFloat(l.roi_min || 0), rx = parseFloat(l.roi_max || 0);
                 var roi  = (r > 0 && rx > 0 && rx !== r) ? r + '% \u2013 ' + rx + '%' : (r > 0 ? r + '%+' : 'On request');
@@ -863,11 +870,40 @@
                 popBody.appendChild(card);
             });
 
-            if (total > 5) {
+            if (hasPartition && profileLenders.length > 0) {
+                var sh2=document.createElement('div');sh2.className='pop-msg';sh2.style.cssText='font-size:11px;font-weight:700;color:#059669;padding:6px 4px 2px;text-transform:uppercase;letter-spacing:.04em;';sh2.textContent='Your Profile Specialists';popBody.appendChild(sh2);
+                profileLenders.forEach(function(l,i){
+                    var r2=parseFloat(l.roi_min||0),rx2=parseFloat(l.roi_max||0);
+                    var roi2=(r2>0&&rx2>0&&rx2!==r2)?r2+'% - '+rx2+'%':(r2>0?r2+'%+':'On request');
+                    var ltv2=parseFloat(l.max_ltv||0); var ltvS2=ltv2>0?ltv2+'%':'--';
+                    var ten2=l.max_tenure_months>0?Math.round(l.max_tenure_months/12)+' yrs':'--';
+                    var name2=l.lender_name||'Lender '+(i+1);
+                    var score2=l.score!=null?l.score:'';
+                    var aiR2=l.ai_reason||l.why||'';
+                    var notes2=(l.notes||'').substring(0,120);
+                    var card2=document.createElement('div');card2.className='pop-msg';
+                    var inner2=document.createElement('div');
+                    inner2.style.cssText='background:#fff;border:1px solid #d1fae5;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;overflow:hidden;';
+                    var stripe2=document.createElement('div');stripe2.style.cssText='position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,#059669,#047857);';
+                    var body2=document.createElement('div');body2.style.paddingLeft='8px';
+                    body2.innerHTML='<span style="display:inline-block;font-size:10px;font-weight:700;background:linear-gradient(135deg,#059669,#047857);color:#fff;padding:3px 10px;border-radius:100px;margin-bottom:6px;">#'+(i+1)+(score2?' - Score '+String(score2):'')+' Specialist</span>'
+                        +'<div style="font-size:14px;font-weight:700;color:#0A1628;margin-bottom:8px;">'+popEsc(name2)+'</div>'
+                        +'<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;">'
+                        +'<div style="background:#f0fdf4;border-radius:8px;padding:6px 8px;"><div style="font-size:9.5px;color:#64748B;text-transform:uppercase;margin-bottom:2px;">ROI</div><div style="font-size:13px;font-weight:700;color:#1A3A6B;">'+popEsc(roi2)+'</div></div>'
+                        +'<div style="background:#f0fdf4;border-radius:8px;padding:6px 8px;"><div style="font-size:9.5px;color:#64748B;text-transform:uppercase;margin-bottom:2px;">Max LTV</div><div style="font-size:13px;font-weight:700;color:#059669;">'+popEsc(ltvS2)+'</div></div>'
+                        +'<div style="background:#f0fdf4;border-radius:8px;padding:6px 8px;"><div style="font-size:9.5px;color:#64748B;text-transform:uppercase;margin-bottom:2px;">Tenure</div><div style="font-size:13px;font-weight:700;color:#1A3A6B;">'+popEsc(ten2)+'</div></div>'
+                        +'</div>'
+                        +(aiR2?'<div style="font-size:11.5px;color:#065f46;background:#ecfdf5;border-radius:7px;padding:7px 9px;border-left:3px solid #059669;margin-bottom:6px;">'+popEsc(aiR2)+'</div>':'')
+                        +(notes2?'<div style="font-size:11px;color:#6b7280;font-style:italic;margin-bottom:4px;">'+popEsc(notes2)+'</div>':'');
+                    inner2.appendChild(stripe2);inner2.appendChild(body2);card2.appendChild(inner2);popBody.appendChild(card2);
+                });
+            }
+            var shownCount = hasPartition ? (displayLenders.length + profileLenders.length) : displayLenders.length;
+            if (total > shownCount) {
                 var fn = document.createElement('p');
                 fn.className = 'pop-msg';
                 fn.style.cssText = 'text-align:center;font-size:11.5px;color:#94A3B8;margin:4px 0;';
-                fn.textContent = '+' + (total - 5) + ' more lenders matched';
+                fn.textContent = '+' + (total - shownCount) + ' more lenders matched';
                 popBody.appendChild(fn);
             }
             popScroll();
@@ -945,6 +981,18 @@
             var text = inputEl.value.trim();
             if (!text || isThinking) return;
             inputEl.value = '';
+            if (_lendersShown) {
+                _lendersShown = false;
+                popRemoveChips();
+                popUserMsg(text);
+                popHistory.push({ role: 'user', content: text });
+                popProfile._extra_notes = (popProfile._extra_notes || '') + ' ' + text;
+                popProfile.notes = popProfile._extra_notes;
+                popProfile._quote_step = 'final_search';
+                popDivaMsg('Note add ho gayi! Lenders dhundh raha hoon...');
+                setTimeout(function(){ popCallAPI('find best lenders', false); }, 300);
+                return;
+            }
             popRemoveChips();
             popUserMsg(text);
             popHistory.push({ role: 'user', content: text });
