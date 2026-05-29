@@ -205,7 +205,8 @@ if ($mode === 'flow_mode' && $userMsg !== '' && !empty($profile['_expecting'])) 
             $nextField = getNextRequiredField($loanType, $profile);
             if (!$nextField) {
                 $searchProfile = buildSearchProfile($profile);
-                try { $lenderResult = callDivaHybrid($searchProfile); }
+                if (!function_exists('runHybrid')) { require_once __DIR__ . '/hybrid_query.php'; }
+        try { $lenderResult = runHybrid($searchProfile, $searchProfile['extra_notes'] ?? ''); }
                 catch (\Throwable $e) { $lenderResult = ['type'=>'error','lenders'=>[],'total_matches'=>0]; }
                 if (!isset($lenderResult['lenders'])) $lenderResult['lenders'] = [];
                 $topLenders = array_slice($lenderResult['lenders'], 0, 5);
@@ -505,7 +506,8 @@ if (!$nextField) {
     $searchProfile = buildSearchProfile($profile);
     $lenderResult  = null;
     try {
-        $lenderResult = callDivaHybrid($searchProfile);
+        if (!function_exists('runHybrid')) { require_once __DIR__ . '/hybrid_query.php'; }
+        $lenderResult = runHybrid($searchProfile, $searchProfile['extra_notes'] ?? '');
     } catch (\Throwable $e) {
         error_log('[diva_v3] Hybrid query: ' . $e->getMessage());
         $lenderResult = ['type' => 'error', 'lenders' => [], 'total_matches' => 0];
@@ -1341,7 +1343,8 @@ function handleExactQuoteFlow(string $msg, array $profile, string $sid, string $
             if ($step === 'final_search' || str_contains($lower, 'find') || str_contains($lower, "\ud83d\udd0d")) {
                 $searchProfile = buildSearchProfile($profile);
                 file_put_contents('/var/www/wealthmetre/public_html/diva_fs_debug.txt', date('H:i:s').' notes='.($searchProfile['extra_notes']??'EMPTY').' q_will_be='.($searchProfile['extra_notes']??'')."\n", FILE_APPEND);
-                try { $lenderResult = callDivaHybrid($searchProfile); }
+                if (!function_exists('runHybrid')) { require_once __DIR__ . '/hybrid_query.php'; }
+        try { $lenderResult = runHybrid($searchProfile, $searchProfile['extra_notes'] ?? ''); }
                 catch (\Throwable $e) { $lenderResult = ['type'=>'error','lenders'=>[],'total_matches'=>0]; }
                 if (!isset($lenderResult['lenders'])) $lenderResult['lenders'] = [];
                 $topLenders = array_slice($lenderResult['lenders'], 0, 5);
