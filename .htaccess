@@ -5,3 +5,22 @@ RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
 
 # Existing rewrites (add yours below if any)
+
+RedirectMatch 404 /\.git
+
+# Block backup and sensitive files
+<FilesMatch "\.(bak|bak_|old|orig|backup|sql|log|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+<FilesMatch "\.bak_">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Security Headers
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"

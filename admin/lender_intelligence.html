@@ -204,6 +204,45 @@ textarea.policy-input:focus { outline: none; border-color: var(--accent); }
   .parse-grid { grid-template-columns: 1fr; }
   .stats-row { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Clarification Panel ─────────────────────────── */
+#clarificationPanel .card { border: 2px solid #f59e0b; }
+.clarif-card {
+  border: 1.5px solid var(--border); border-radius: 10px;
+  padding: 16px 20px; margin-bottom: 14px; background: var(--surface);
+  transition: border-color .2s;
+}
+.clarif-card.answered { border-color: #10b981; }
+.clarif-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+.clarif-label { font-weight:700; font-size:13px; }
+.clarif-conf { font-size:11px; font-weight:600; }
+.clarif-question { font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+.clarif-chips { display:flex; flex-wrap:wrap; gap:10px; align-items:flex-start; }
+.chip-btn {
+  display:flex; flex-direction:column; align-items:flex-start;
+  padding:10px 16px; border-radius:10px; border:1.5px solid var(--border);
+  background:var(--bg); cursor:pointer; font-size:13px; font-weight:600;
+  color:var(--text); transition:all .15s; text-align:left; max-width:280px;
+}
+.chip-btn:hover { border-color:var(--accent); }
+.chip-btn.selected { border-color:var(--accent); background:var(--accent); color:#fff; }
+.chip-btn.selected .chip-sub { color:rgba(255,255,255,.75); }
+.chip-sub { font-size:11px; font-weight:400; color:var(--muted); margin-top:4px; line-height:1.4; }
+.chip-other { border-style:dashed; }
+.chip-custom-input {
+  margin-top:8px; padding:8px 12px; border:1.5px solid var(--accent);
+  border-radius:8px; font-size:13px; width:240px;
+  background:var(--bg); color:var(--text); display:none;
+}
+.clarif-progress-bar { height:6px; background:#e5e7eb; border-radius:999px; overflow:hidden; margin-bottom:6px; }
+.clarif-progress-fill { height:100%; background:var(--accent); border-radius:999px; transition:width .3s; }
+.btn-continue-parse {
+  padding:11px 28px; background:var(--accent); color:#fff; border:none;
+  border-radius:10px; font-size:14px; font-weight:700; cursor:pointer;
+  opacity:.35; transition:opacity .2s; pointer-events:none;
+}
+.btn-continue-parse.ready { opacity:1; pointer-events:all; }
+
 </style>
 </head>
 <body>
@@ -341,7 +380,27 @@ Rishi Kumar | 8946963559"></textarea>
     </div>
 
     <!-- REVIEW FORM (shown after parse) -->
-    <div id="reviewForm" style="display:none">
+    
+<!-- ── CLARIFICATION PANEL ────────────────────────── -->
+<div id="clarificationPanel" style="display:none;margin-bottom:20px">
+  <div class="card">
+    <div class="card-title">
+      <i class="fa-solid fa-circle-question" style="color:#f59e0b"></i>
+      AI needs your input on <span id="clarifCount">0</span> fields before parsing
+    </div>
+    <div class="clarif-progress-bar"><div class="clarif-progress-fill" id="clarifFill" style="width:0%"></div></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:18px" id="clarifProgressText">0 of 0 confirmed</div>
+    <div id="clarificationItems"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+      <span style="font-size:12px;color:var(--muted)">Answer all fields to continue</span>
+      <button class="btn-continue-parse" id="continueParse" onclick="submitClarifications()">
+        <i class="fa-solid fa-arrow-right"></i> Continue → Full Parse
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="reviewForm" style="display:none">
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-pen-to-square" style="color:var(--accent)"></i> Review & Edit Before Saving</div>
 
@@ -662,10 +721,133 @@ async function loadDashboard() {
 // ══════════════════════════
 // PARSER
 // ══════════════════════════
+
+// ══════════════════════════════════════════════════
+// PARSER — 2-STEP: PRE-PARSE → CLARIFY → FULL PARSE
+// ══════════════════════════════════════════════════
 async function parsePolicy() {
   const rawText = document.getElementById('policyInput').value.trim();
   if (!rawText) { toast('Please paste a policy message first', 'error'); return; }
 
+  const btn = document.getElementById('parseBtn');
+  btn.innerHTML = '<div class="spinner"></div> Analyzing...';
+  btn.disabled = true;
+
+  document.getElementById('clarificationPanel').style.display = 'none';
+  document.getElementById('resultPanel').classList.remove('show');
+  document.getElementById('reviewForm').style.display = 'none';
+
+  try {
+    const pre = await apiCall('pre_parse', { raw_text: rawText });
+    const clarifs = pre.result?.clarifications || [];
+
+    if (clarifs.length === 0) {
+      await runFullParse(rawText, {});
+    } else {
+      renderClarifications(clarifs, rawText);
+      btn.innerHTML = '<i class="fa-solid fa-robot"></i> Parse with AI';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    toast('Analysis failed: ' + e.message, 'error');
+    btn.innerHTML = '<i class="fa-solid fa-robot"></i> Parse with AI';
+    btn.disabled = false;
+  }
+}
+
+function renderClarifications(clarifs, rawText) {
+  window._cs = { clarifs, rawText, answers: {}, total: clarifs.length };
+  document.getElementById('clarifCount').textContent = clarifs.length;
+
+  document.getElementById('clarificationItems').innerHTML = clarifs.map((c, i) => `
+    <div class="clarif-card" id="cc-${i}">
+      <div class="clarif-header">
+        <span class="clarif-label">${esc(c.label)}</span>
+        <span class="clarif-conf" style="color:${c.confidence>=70?'#f59e0b':'#ef4444'}">
+          ${c.confidence}% confident
+        </span>
+      </div>
+      <div class="clarif-question">⚠️ ${esc(c.question)}</div>
+      <div class="clarif-chips">
+        <button class="chip-btn" data-idx="${i}" data-val="${escAttr(String(c.guess_1_value??''))}" onclick="pickChip(this)">
+          <span>✓ ${esc(c.guess_1_label)}</span>
+          <span class="chip-sub">${esc(c.guess_1_reason||'AI best guess')}</span>
+        </button>
+        ${c.guess_2_label ? `
+        <button class="chip-btn" data-idx="${i}" data-val="${escAttr(String(c.guess_2_value??''))}" onclick="pickChip(this)">
+          <span>${esc(c.guess_2_label)}</span>
+          <span class="chip-sub">${esc(c.guess_2_reason||'')}</span>
+        </button>` : ''}
+        ${c.allow_custom ? `
+        <button class="chip-btn chip-other" data-idx="${i}" data-val="__custom__" onclick="pickChip(this)">
+          <span>✏️ Other</span>
+          <span class="chip-sub">Enter manually</span>
+        </button>
+        <input class="chip-custom-input" id="ci-${i}"
+               placeholder="${esc(c.custom_placeholder||'Type value...')}"
+               oninput="onCustom(${i},this.value)"/>` : ''}
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('clarificationPanel').style.display = 'block';
+  document.getElementById('clarificationPanel').scrollIntoView({ behavior:'smooth' });
+  updateClarifUI();
+}
+
+function pickChip(el) {
+  const i   = parseInt(el.dataset.idx);
+  const val = el.dataset.val;
+  const card = document.getElementById(`cc-${i}`);
+
+  card.querySelectorAll('.chip-btn').forEach(c => c.classList.remove('selected'));
+  const inp = document.getElementById(`ci-${i}`);
+  if (inp) inp.style.display = 'none';
+
+  el.classList.add('selected');
+
+  if (val === '__custom__') {
+    if (inp) { inp.style.display = 'block'; inp.focus(); }
+    delete window._cs.answers[i];
+    card.classList.remove('answered');
+  } else {
+    window._cs.answers[i] = val === 'null' ? null : val;
+    card.classList.add('answered');
+  }
+  updateClarifUI();
+}
+
+function onCustom(i, value) {
+  const card = document.getElementById(`cc-${i}`);
+  if (value.trim()) {
+    window._cs.answers[i] = value.trim();
+    card.classList.add('answered');
+  } else {
+    delete window._cs.answers[i];
+    card.classList.remove('answered');
+  }
+  updateClarifUI();
+}
+
+function updateClarifUI() {
+  const done  = Object.keys(window._cs.answers).length;
+  const total = window._cs.total;
+  const pct   = total ? (done / total) * 100 : 0;
+  document.getElementById('clarifFill').style.width = pct + '%';
+  document.getElementById('clarifProgressText').textContent = `${done} of ${total} confirmed`;
+  const btn = document.getElementById('continueParse');
+  btn.classList.toggle('ready', done >= total);
+}
+
+async function submitClarifications() {
+  const { clarifs, rawText, answers } = window._cs;
+  const confirmed = {};
+  clarifs.forEach((c, i) => { if (answers[i] !== undefined) confirmed[c.field] = answers[i]; });
+  document.getElementById('clarificationPanel').style.display = 'none';
+  await runFullParse(rawText, confirmed);
+}
+
+async function runFullParse(rawText, confirmedFields) {
   const btn = document.getElementById('parseBtn');
   btn.innerHTML = '<div class="spinner"></div> Parsing...';
   btn.disabled = true;
@@ -674,77 +856,54 @@ async function parsePolicy() {
   document.getElementById('reviewForm').style.display = 'none';
 
   try {
-    const r = await apiCall('parse', { raw_text: rawText });
+    const r = await apiCall('parse', {
+      raw_text: rawText,
+      confirmed_fields: JSON.stringify(confirmedFields)
+    });
     const result = r.result;
-    parsedResult = result;
+    parsedResult  = result;
 
-    // Show result panel
     document.getElementById('resultPanel').classList.add('show');
     document.getElementById('resultLenderName').textContent = result.lender_name || 'Unknown Lender';
-    document.getElementById('resultProduct').textContent = result.product || '';
+    document.getElementById('resultProduct').textContent    = result.product || '';
 
-    // Decision badge
     const dec = result.decision || 'unclear';
-    document.getElementById('decisionBadge').className = 'decision-badge decision-' + dec;
+    document.getElementById('decisionBadge').className   = 'decision-badge decision-' + dec;
     document.getElementById('decisionBadge').textContent = dec.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
 
-    // Human review
-    if (result.human_review_required) {
-      document.getElementById('humanReviewBadge').innerHTML = '<span class="review-badge">⚠️ Review Required</span>';
-    } else {
-      document.getElementById('humanReviewBadge').innerHTML = '<span style="font-size:12px;color:#10b981">✅ Auto-approved</span>';
-    }
+    document.getElementById('humanReviewBadge').innerHTML = result.human_review_required
+      ? '<span class="review-badge">⚠️ Review Required</span>'
+      : '<span style="font-size:12px;color:#10b981">✅ Auto-approved</span>';
 
-    // Confidence
     const conf = result.confidence_score || 0;
-    document.getElementById('confidenceText').textContent = conf + '%';
-    document.getElementById('confidenceFill').style.width = conf + '%';
-    document.getElementById('confidenceFill').style.background = conf >= 80 ? '#10b981' : conf >= 60 ? '#f59e0b' : '#ef4444';
+    document.getElementById('confidenceText').textContent   = conf + '%';
+    document.getElementById('confidenceFill').style.width   = conf + '%';
+    document.getElementById('confidenceFill').style.background =
+      conf >= 80 ? '#10b981' : conf >= 60 ? '#f59e0b' : '#ef4444';
 
-    // Change summary
-    const changes = result.change_summary || [];
-    document.getElementById('changeSummary').innerHTML = changes.length ? changes.map(c =>
-      `<div class="change-item"><div class="change-dot changed"></div>${esc(c)}</div>`
-    ).join('') : '';
+    document.getElementById('changeSummary').innerHTML = (result.change_summary||[]).map(c=>
+      `<div class="change-item"><div class="change-dot changed"></div>${esc(c)}</div>`).join('');
+    document.getElementById('riskFlags').innerHTML = (result.risk_flags||[]).map(f=>
+      `<div class="flag-item"><i class="fa-solid fa-triangle-exclamation"></i>${esc(f)}</div>`).join('');
 
-    // Risk flags
-    const flags = result.risk_flags || [];
-    document.getElementById('riskFlags').innerHTML = flags.length ? flags.map(f =>
-      `<div class="flag-item"><i class="fa-solid fa-triangle-exclamation"></i>${esc(f)}</div>`
-    ).join('') : '';
-
-    // Fill form
     fillReviewForm(result);
-    document.getElementById('reviewForm').style.display = 'block';
+    document.getElementById('reviewForm').style.display    = 'block';
+    document.getElementById('existingLenderId').value      = result.matched_lender_id || '';
+    document.getElementById('ragText').textContent         = result.searchable_text || 'Not generated';
 
-    // Existing lender id
-    if (result.matched_lender_id) {
-      document.getElementById('existingLenderId').value = result.matched_lender_id;
-    } else {
-      document.getElementById('existingLenderId').value = '';
-    }
-
-    // RAG text
-    document.getElementById('ragText').textContent = result.searchable_text || 'Not generated';
-
-    // Dual product detection
     if (result.dual_product_note) {
       document.getElementById('dualProductBanner').style.display = 'block';
-      document.getElementById('dualProductNote').textContent = result.dual_product_note;
-      // Prepare second product data by swapping product + ROI
-      const note = result.dual_product_note;
-      // Use structured second_product data from AI
-      secondProductData = JSON.parse(JSON.stringify(result)); // deep copy
+      document.getElementById('dualProductNote').textContent     = result.dual_product_note;
+      secondProductData = JSON.parse(JSON.stringify(result));
       if (result.second_product) {
-        secondProductData.product   = result.second_product.product  || secondProductData.product;
-        secondProductData.roi_min   = result.second_product.roi_min  || secondProductData.roi_min;
-        secondProductData.roi_max   = result.second_product.roi_max  || secondProductData.roi_max;
+        secondProductData.product  = result.second_product.product  || secondProductData.product;
+        secondProductData.roi_min  = result.second_product.roi_min  || secondProductData.roi_min;
+        secondProductData.roi_max  = result.second_product.roi_max  || secondProductData.roi_max;
       }
       secondProductData.dual_product_note = null;
       secondProductData.second_product    = null;
       secondProductData.matched_lender_id = null;
-      secondProductData.decision = 'new_product';
-      secondProductData.dual_product_note = null;
+      secondProductData.decision          = 'new_product';
     } else {
       document.getElementById('dualProductBanner').style.display = 'none';
       secondProductData = null;
@@ -756,9 +915,12 @@ async function parsePolicy() {
   }
 
   btn.innerHTML = '<i class="fa-solid fa-robot"></i> Parse with AI';
-  btn.disabled = false;
+  btn.disabled  = false;
   document.getElementById('parseLoading').style.display = 'none';
 }
+
+// helper: escape for HTML attributes
+function escAttr(s){ return String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 function fillReviewForm(r) {
   const set = (id, val) => {
@@ -813,7 +975,7 @@ function fillReviewForm(r) {
   }
 }
 
-async function savePolicy() {
+async function savePolicy(type) {
   const fields = {
     lender_name: v('f_lender_name'),
     product: v('f_product'),
@@ -853,7 +1015,7 @@ async function savePolicy() {
   const existingId = document.getElementById('existingLenderId').value;
 
   try {
-    const r = await apiCall('save', { fields, existing_id: existingId || null });
+    const r = await apiCall('save', { fields, existing_id: (type === 'update') ? (existingId || null) : null });
     toast(r.message || 'Saved!', 'success');
     clearParser();
     loadDashboard();

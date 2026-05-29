@@ -131,8 +131,8 @@
   max-width: 84%;
   padding: 9px 12px;
   border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 15px;
+  line-height: 1.6;
   font-family: 'Plus Jakarta Sans', sans-serif;
   word-wrap: break-word;
   white-space: pre-wrap;
@@ -164,7 +164,7 @@
   border-radius: 99px;
   border: 1.5px solid #e2e8f0;
   background: #fff;
-  font-size: 12px;
+  font-size: 13.5px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: #334155;
   cursor: default;
@@ -510,7 +510,7 @@
 .dv-widget {
   width: 100%;
   max-width: 420px;
-  height: 548px;           /* ← FIXED. Change only this to resize. */
+  height: 680px;           /* ← FIXED. Change only this to resize. */
   background: #fff;
   border-radius: 22px;
   overflow: hidden;

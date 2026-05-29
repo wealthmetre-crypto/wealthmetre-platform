@@ -147,39 +147,108 @@ if($action==='telecallers_list'){
     echo json_encode(['success'=>true,'data'=>$rows,'pagination'=>['page'=>1,'per_page'=>$limit,'total'=>$total,'total_pages'=>ceil($total/$limit)]]); exit;
 }
 
-if($action==='leads_list'){
+if($action==='partner_leads_list'){
     $page   = max(1,(int)($_GET['page']??1));
     $limit  = 25;
     $offset = ($page-1)*$limit;
-    $status = $_GET['status']??'';
-    $partner= $_GET['partner']??'';
-    $search = '%'.trim($_GET['search']??'').'%';
-
-    $telecaller = intSafe($_GET['telecaller_id']??0);
-    $where = ["1=1"];
+    $status  = $_GET['status']??'';
+    $partner = $_GET['partner']??'';
+    $search  = '%'.trim($_GET['search']??'').'%';
+    $where  = ["1=1"];
     $params = [];
-    if($status){$where[]="cl.current_status=?";$params[]=$status;}
-    if($partner){$where[]="cb.partner_id=?";$params[]=$partner;}
-    if($telecaller){$where[]="cl.assigned_telecaller_id=?";$params[]=$telecaller;}
-    $wSql = implode(' AND ',$where);
-
+    if($status)  { $where[] = "l.status=?";     $params[] = $status; }
+    if($partner) { $where[] = "l.partner_id=?"; $params[] = (int)$partner; }
+    if(trim($_GET['search']??'')) {
+        $where[] = "(l.customer_name LIKE ? OR l.mobile LIKE ? OR l.city LIKE ?)";
+        $params = array_merge($params, [$search, $search, $search]);
+    }
+    $wSql = implode(' AND ', $where);
     $rows = safeQuery($pdo,
-        "SELECT cl.id,cl.customer_name as name,cl.mobile,cl.city,cl.loan_type,cl.loan_amount,
-                cl.current_status as status,cl.followup_at as followup_date,
-                cl.call_notes as notes,cl.created_at,cl.cibil,cl.source,
-                cl.assigned_telecaller_id,
-                p.partner_name as partner_name, t.name as telecaller_name
-         FROM calling_leads cl
-         LEFT JOIN calling_batches cb ON cb.id=cl.batch_id
-         LEFT JOIN partners p ON p.id=cb.partner_id
-         LEFT JOIN telecallers t ON t.id=cl.assigned_telecaller_id
-         WHERE {$wSql} ORDER BY cl.created_at DESC LIMIT {$limit} OFFSET {$offset}",
+        "SELECT l.id, l.customer_name, COALESCE(l.customer_mobile,l.mobile) as mobile,
+                l.city, l.loan_type, l.loan_amount, l.cibil, l.status,
+                l.source, l.created_at, l.notes,
+                p.partner_name, p.first_name, p.last_name, p.mobile as partner_mobile
+         FROM leads l
+         LEFT JOIN partners p ON p.id = l.partner_id
+         WHERE {$wSql}
+         ORDER BY l.created_at DESC
+         LIMIT {$limit} OFFSET {$offset}",
+        $params);
+    $total = safeCount($pdo,
+        "SELECT COUNT(*) FROM leads l LEFT JOIN partners p ON p.id=l.partner_id WHERE {$wSql}",
+        $params);
+    echo json_encode(['success'=>true,'data'=>$rows,
+        'pagination'=>['page'=>$page,'per_page'=>$limit,'total'=>$total,
+                       'total_pages'=>ceil($total/$limit)]]); exit;
+}
+
+if($action==='leads_list'){
+    $page       = max(1,(int)($_GET['page']??1));
+    $limit      = 25;
+    $offset     = ($page-1)*$limit;
+    $status     = $_GET['status']??'';
+    $partner    = $_GET['partner']??'';
+    $telecaller = intSafe($_GET['telecaller_id']??0);
+
+    $whereCL = ["1=1"]; $paramsCL = [];
+    $whereL  = ["1=1"]; $paramsL  = [];
+
+    if($status){
+        $whereCL[] = "cl.current_status=?"; $paramsCL[] = $status;
+        $whereL[]  = "l.status=?";          $paramsL[]  = $status;
+    }
+    if($partner){
+        $whereCL[] = "cb.partner_id=?"; $paramsCL[] = $partner;
+        $whereL[]  = "l.partner_id=?";  $paramsL[]  = $partner;
+    }
+    if($telecaller){
+        $whereCL[] = "cl.assigned_telecaller_id=?"; $paramsCL[] = $telecaller;
+    }
+
+    $wSqlCL = implode(' AND ',$whereCL);
+    $wSqlL  = implode(' AND ',$whereL);
+    $params = array_merge($paramsCL, $paramsL);
+
+    $unionSql = "
+        SELECT cl.id, cl.customer_name AS name, cl.mobile, cl.city, cl.loan_type,
+               cl.loan_amount, cl.current_status AS status,
+               cl.followup_at AS followup_date, cl.call_notes AS notes,
+               cl.created_at, cl.cibil, cl.source,
+               cl.assigned_telecaller_id,
+               p.partner_name, t.name AS telecaller_name, 'calling' AS lead_source
+        FROM calling_leads cl
+        LEFT JOIN calling_batches cb ON cb.id = cl.batch_id
+        LEFT JOIN partners p         ON p.id  = cb.partner_id
+        LEFT JOIN telecallers t      ON t.id  = cl.assigned_telecaller_id
+        WHERE {$wSqlCL}
+
+        UNION ALL
+
+        SELECT l.id, l.customer_name AS name,
+               COALESCE(l.customer_mobile, l.mobile) AS mobile,
+               l.city, l.loan_type, l.loan_amount,
+               l.status AS status,
+               NULL AS followup_date, l.notes AS notes,
+               l.created_at, l.cibil, l.source,
+               NULL AS assigned_telecaller_id,
+               p.partner_name, NULL AS telecaller_name, 'direct' AS lead_source
+        FROM leads l
+        LEFT JOIN partners p ON p.id = l.partner_id
+        WHERE {$wSqlL}
+    ";
+
+    $rows  = safeQuery($pdo,
+        "SELECT * FROM ({$unionSql}) AS combined ORDER BY created_at DESC LIMIT {$limit} OFFSET {$offset}",
+        $params);
+    $total = safeCount($pdo,
+        "SELECT COUNT(*) FROM ({$unionSql}) AS combined",
         $params);
 
-    $total = safeCount($pdo,"SELECT COUNT(*) FROM calling_leads cl LEFT JOIN calling_batches cb ON cb.id=cl.batch_id WHERE {$wSql}",$params);
-
-    echo json_encode(['success'=>true,'data'=>$rows,'pagination'=>['page'=>$page,'per_page'=>$limit,'total'=>$total,'total_pages'=>ceil($total/$limit)]]); exit;
+    echo json_encode(['success'=>true,'data'=>$rows,
+        'pagination'=>['page'=>$page,'per_page'=>$limit,'total'=>$total,
+                       'total_pages'=>ceil($total/$limit)]]); exit;
 }
+
 
 if($action==='lenders_list'){
     $rows = safeQuery($pdo,
@@ -277,7 +346,7 @@ if($action==='find_lender'){
     if(!$name){ echo json_encode(['success'=>false,'message'=>'name required']); exit; }
 
     // Extract key words from lender name for matching (min 4 chars)
-    $nameParts = array_filter(explode(' ', $name), fn($p) => strlen($p) >= 4);
+    $nameParts = array_filter(explode(' ', $name), fn($p) => strlen($p) >= 2 && !in_array(strtolower($p), ['bank','finance','limited','ltd','housing','capital','financial','services','india','home']));
     if(empty($nameParts)){
         echo json_encode(['success'=>false,'data'=>null]); exit;
     }
@@ -466,5 +535,91 @@ if($action==='update_lead_status'){
         echo json_encode(['success'=>true,'message'=>'Updated']);
     } catch(\Throwable $e){ echo json_encode(['success'=>false,'message'=>$e->getMessage()]); }
     exit;
+}
+
+// ═══════════════════════════════════════════════════════
+// LLM CALL LOGS
+// ═══════════════════════════════════════════════════════
+if ($action === 'llm_stats') {
+    $days = intSafe($_GET['days'] ?? 30);
+    $stats = [];
+    // Overall
+    $r = safeQuery($pdo, "SELECT COUNT(*) as calls, SUM(total_tokens) as tokens, SUM(cost_usd) as cost_usd, AVG(latency_ms) as avg_latency, SUM(CASE WHEN status='error' THEN 1 ELSE 0 END) as errors FROM llm_call_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)", [$days]);
+    $stats['overall'] = $r[0] ?? [];
+    // By source
+    $stats['by_source'] = safeQuery($pdo, "SELECT call_source, COUNT(*) as calls, SUM(total_tokens) as tokens, SUM(cost_usd) as cost_usd FROM llm_call_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY) GROUP BY call_source ORDER BY calls DESC", [$days]);
+    // Daily trend
+    $stats['daily'] = safeQuery($pdo, "SELECT DATE(created_at) as date, COUNT(*) as calls, SUM(total_tokens) as tokens, SUM(cost_usd) as cost_usd FROM llm_call_logs WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY) GROUP BY DATE(created_at) ORDER BY date ASC", [$days]);
+    // Today
+    $stats['today'] = safeQuery($pdo, "SELECT COUNT(*) as calls, SUM(total_tokens) as tokens, SUM(cost_usd) as cost_usd FROM llm_call_logs WHERE DATE(created_at) = CURDATE()", []);
+    $stats['today'] = $stats['today'][0] ?? [];
+    echo json_encode(['success' => true, 'data' => $stats]); exit;
+}
+
+if ($action === 'llm_logs') {
+    $page   = max(1, intSafe($_GET['page'] ?? 1));
+    $limit  = 25;
+    $offset = ($page - 1) * $limit;
+    $status = trim($_GET['status'] ?? '');
+    $source = trim($_GET['source'] ?? '');
+    $where  = 'WHERE 1=1';
+    $params = [];
+    if ($status) { $where .= ' AND status = ?'; $params[] = $status; }
+    if ($source) { $where .= ' AND call_source = ?'; $params[] = $source; }
+    $total = safeQuery($pdo, "SELECT COUNT(*) as n FROM llm_call_logs {$where}", $params)[0]['n'] ?? 0;
+    $paramsPage = array_merge($params, [$limit, $offset]);
+    $logs = safeQuery($pdo, "SELECT id, call_source, model, prompt_tokens, completion_tokens, total_tokens, latency_ms, status, cost_usd, prompt_preview, error_message, created_at FROM llm_call_logs {$where} ORDER BY created_at DESC LIMIT ? OFFSET ?", $paramsPage);
+    echo json_encode(['success' => true, 'logs' => $logs, 'total' => (int)$total, 'page' => $page, 'pages' => (int)ceil($total / $limit)]); exit;
+}
+
+// ═══════════════════════════════════════════════════════
+// TECH COSTS
+// ═══════════════════════════════════════════════════════
+if ($action === 'costs_list') {
+    $costs = safeQuery($pdo, "SELECT * FROM tech_costs WHERE is_active=1 ORDER BY category, name", []);
+    // Monthly equivalent for each
+    foreach ($costs as &$c) {
+        $amt = (float)$c['amount'];
+        $cur = $c['currency'] === 'USD' ? $amt * 83 : $amt; // rough INR conversion
+        $c['monthly_inr'] = $c['frequency'] === 'monthly'   ? $cur
+                          : ($c['frequency'] === 'yearly'   ? round($cur / 12, 2)
+                          : ($c['frequency'] === 'one_time' ? 0 : $cur));
+    }
+    unset($c);
+    $total_monthly = array_sum(array_column($costs, 'monthly_inr'));
+    echo json_encode(['success' => true, 'costs' => $costs, 'total_monthly_inr' => round($total_monthly, 2)]); exit;
+}
+
+if ($action === 'costs_add') {
+    $b = getJsonBody();
+    $name    = trim($b['name']    ?? '');
+    $cat     = trim($b['category']  ?? 'other');
+    $amt     = (float)($b['amount'] ?? 0);
+    $cur     = in_array($b['currency'] ?? 'INR', ['INR','USD']) ? $b['currency'] : 'INR';
+    $freq    = in_array($b['frequency'] ?? 'monthly', ['monthly','yearly','one_time','usage_based']) ? $b['frequency'] : 'monthly';
+    $bdate   = trim($b['billing_date'] ?? '') ?: null;
+    $vendor  = trim($b['vendor']  ?? '') ?: null;
+    $notes   = trim($b['notes']   ?? '') ?: null;
+    if (!$name || $amt <= 0) { echo json_encode(['success'=>false,'message'=>'Name and amount required']); exit; }
+    $pdo->prepare("INSERT INTO tech_costs (name,category,amount,currency,frequency,billing_date,vendor,notes) VALUES (?,?,?,?,?,?,?,?)")
+        ->execute([$name,$cat,$amt,$cur,$freq,$bdate,$vendor,$notes]);
+    echo json_encode(['success'=>true,'message'=>'Cost added','id'=>(int)$pdo->lastInsertId()]); exit;
+}
+
+if ($action === 'costs_update') {
+    $b  = getJsonBody();
+    $id = intSafe($b['id'] ?? 0);
+    if (!$id) { echo json_encode(['success'=>false,'message'=>'id required']); exit; }
+    $pdo->prepare("UPDATE tech_costs SET name=?,category=?,amount=?,currency=?,frequency=?,billing_date=?,vendor=?,notes=?,updated_at=NOW() WHERE id=?")
+        ->execute([trim($b['name']??''),trim($b['category']??'other'),(float)($b['amount']??0),$b['currency']??'INR',$b['frequency']??'monthly',trim($b['billing_date']??'')?:null,trim($b['vendor']??'')?:null,trim($b['notes']??'')?:null,$id]);
+    echo json_encode(['success'=>true,'message'=>'Updated']); exit;
+}
+
+if ($action === 'costs_delete') {
+    $b  = getJsonBody();
+    $id = intSafe($b['id'] ?? 0);
+    if (!$id) { echo json_encode(['success'=>false,'message'=>'id required']); exit; }
+    $pdo->prepare("UPDATE tech_costs SET is_active=0 WHERE id=?")->execute([$id]);
+    echo json_encode(['success'=>true,'message'=>'Deleted']); exit;
 }
 echo json_encode(['success'=>false,'message'=>'Unknown action']);

@@ -1,0 +1,163 @@
+LENDER POLICY DOCUMENT
+========================
+Lender: Axis Bank Ltd.
+Product: Working Capital - CC/OD
+Lender Type: bank
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 75.00%
+Loan Range: Rs.100.00L to Rs.10000.00L
+City Coverage: jaipur_only
+Property Accepted: Residential, Commercial, Industrial
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Dealing with DSA/Connectors/RAC
+Special Profiles: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+LENDER POLICY DOCUMENT
+========================
+Lender: Kotak Mahindra Bank
+Product: Working Capital - CC/OD
+Lender Type: bank
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 75.00%
+Loan Range: Rs.200.00L to Rs.3000.00L
+City Coverage: jaipur_only
+Property Accepted: Industrial, Residential, Commercial, Nagar Nigam, Nagar Parishad
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: DSA payout on case to case basis, ROI decided on case to case basis, Min vintage 2 years, Min turnover 5 Crore, Property - All Approved
+Special Profiles: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+LENDER POLICY DOCUMENT
+========================
+Lender: Utkarsh Small Finance Bank
+Product: Working Capital - CC/OD
+Lender Type: sfb
+ROI: % to %
+Min CIBIL: 550
+Max LTV: 100.00%
+Loan Range: Rs.100.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Freehold, Rented, Vacant, Mixed usage, All Approved and Regularize properties, Properties Without Map, 90 B Technical approved
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Commercial Purchase up to 5 CR, LRD up to 25 CR for 15 years, Funding up to 5 Cr in Banking surrogate, 3 Cr on LAP BT Multiplayer, GST Program funding up to 7.5 Cr, Funding up to Rs. 5Cr. Under Utkarsh Elite (LTV up to 80% on SORP), Funding up to 3 cr on LAP Advantage with 90% LTV on land value, Funding up to 100 lac on Low LTV program
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+LENDER POLICY DOCUMENT
+========================
+Lender: DCB Bank
+Product: Overdraft
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 95.00%
+Loan Range: Rs.21.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Mixused, City area property, Society till 2018, Panchayat registered patta
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Loan for commercial purchase, Balance transfers loans facility.*-USP-
+1-OD eligibility 50% Limit of turnover*
+2- Community Dominated Area
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+LENDER POLICY DOCUMENT
+========================
+Lender: Tata Capital Ltd.
+Product: Overdraft
+Lender Type: nbfc
+ROI: 10.75% to 12.75%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.40.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, Mixed Usage, Industrial, NRP, Property(RICCO), Society patta 90B Technical approved, Converted Agricultural Property with SDM order, Open land-industrial, Resi, commercial approved, Gram panchayat approved, Society patta till date
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Gram panchayat approved fund up to 2cr. -SORP, SOCP, SOIP, RRP, RCP. Society patta fund upto 75Lac in Saral. Only Resistance property. We fund on PG, hostel properties also. We also fund on till date society patta property -ROI start from 12%
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+LENDER POLICY DOCUMENT
+========================
+Lender: Indusind Bank
+Product: CGTMSE - Unsecured
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 75.00%
+Loan Range: Rs.35.00L to Rs.70.00L
+City Coverage: rajasthan
+Property Accepted: As per policy
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Min Vintage 3 years, Min Turnover 1.20 Crore, 30% Limit of Turnover
+Special Profiles: Co-applicant income clubbing
+LENDER POLICY DOCUMENT
+========================
+Lender: IDFC Bank
+Product: Institutional Loan
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Mixed Use, Hotel, Hospital, PG, Hostel, Banquet, Godown, Converted Farmhouse
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Processing Fee: 1% Only
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing

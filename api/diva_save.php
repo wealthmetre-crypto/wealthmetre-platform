@@ -108,6 +108,9 @@ try {
             actionZeroResults($b, $sid);
             break;
 
+        case 'quote_request':
+            actionQuoteRequest($b, $sid);
+            break;
         default:
             jsonError('Invalid action', 422, ['action' => $action]);
     }
@@ -356,4 +359,40 @@ function actionZeroResults(array $b, string $sid): void
         'action'     => 'zero_results',
         'session_id' => $sid,
     ]);
+}
+function actionQuoteRequest(array $b, string $sid): void {
+    $pdo      = getDB();
+    $selected = json_encode($b['selected_lenders'] ?? []);
+    $profile  = $b['profile'] ?? [];
+    $mobile   = $profile['customer_mobile'] ?? '';
+    $name     = $profile['customer_name'] ?? '';
+
+    // Save event to diva_conversations
+    $stmt = $pdo->prepare("
+        INSERT INTO diva_conversations (session_id, role, content, created_at)
+        VALUES (?, 'system', ?, NOW())
+    ");
+    $stmt->execute([$sid, json_encode([
+        'event'            => 'quote_request',
+        'selected_lenders' => $b['selected_lenders'] ?? [],
+        'customer_name'    => $name,
+        'customer_mobile'  => $mobile,
+    ])]);
+
+    // Update diva_leads_v2 if mobile exists
+    if ($mobile) {
+        try {
+            $upd = $pdo->prepare("
+                UPDATE diva_leads_v2
+                SET quote_requested = 1, quote_lenders = ?, updated_at = NOW()
+                WHERE customer_mobile = ?
+                ORDER BY id DESC LIMIT 1
+            ");
+            $upd->execute([$selected, $mobile]);
+        } catch (\Throwable $e) {
+            error_log('[diva_save][quote_request] DB update failed: ' . $e->getMessage());
+        }
+    }
+
+    jsonResponse(['success' => true, 'message' => 'Quote request saved']);
 }

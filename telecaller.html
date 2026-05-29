@@ -409,7 +409,7 @@ input,select,textarea{font-family:inherit;outline:none}
 .bottom-sheet-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.5);
   z-index:200;display:none;
-  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
 }
 .bottom-sheet-overlay.open{display:block}
 .bottom-sheet{
@@ -582,6 +582,19 @@ input,select,textarea{font-family:inherit;outline:none}
   animation:spin .6s linear infinite;margin:40px auto;display:block;
 }
 </style>
+<script>
+(function(){
+  if(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches){
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(function(){
+        var el = document.body;
+        el.style.transform = 'translateZ(0)';
+        requestAnimationFrame(function(){ el.style.transform = ''; });
+      }, 50);
+    });
+  }
+})();
+</script>
 </head>
 <body>
 
@@ -620,6 +633,7 @@ input,select,textarea{font-family:inherit;outline:none}
     <button class="auth-btn" onclick="doLogin()" id="loginBtn">
       <i class="fa-solid fa-right-to-bracket"></i> Login
     </button>
+
     <div class="auth-loading" id="loginLoading">
       <div class="spin"></div> Logging in...
     </div>
@@ -800,6 +814,8 @@ input,select,textarea{font-family:inherit;outline:none}
 ════════════════════════════════════ -->
 <script>
 const API_AUTH  = '/api/crm/telecaller_auth.php';
+const API_MSG91_CONFIG = '/api/auth/msg91_widget_config.php';
+const API_MSG91_LOGIN  = '/api/auth/msg91_validate_login.php';
 const API_LEADS = '/api/crm/telecaller_leads.php';
 
 let tcData       = null;
@@ -840,6 +856,139 @@ async function verifyToken() {
 /* ══════════════════════════════════════
    AUTH
 ══════════════════════════════════════ */
+
+function loadMsg91Script(src) {
+  return new Promise((resolve, reject) => {
+    const existing = Array.from(document.scripts).find(x => x.src === src);
+    if (existing) return resolve();
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+}
+
+async function ensureMsg91Sdk() {
+  if (window.initSendOTP || window.sendOtp || window.MSG91OTP) return true;
+
+  try {
+    await loadMsg91Script('https://verify.msg91.com/otp-provider.js');
+    return true;
+  } catch (e) {}
+
+  try {
+    await loadMsg91Script('https://verify.phone91.com/otp-provider.js');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function doMsg91Login() {
+  const mobileEl = document.getElementById('loginMobile');
+  const mobile = mobileEl.value.trim();
+
+  document.getElementById('mobileErr').classList.remove('show');
+  document.getElementById('loginErr').classList.remove('show');
+
+  if (mobile.length !== 10) {
+    document.getElementById('mobileErr').classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('msg91LoginBtn');
+  btn.style.display = 'none';
+  document.getElementById('loginLoading').style.display = 'flex';
+
+  try {
+    const cfgRes = await fetch(API_MSG91_CONFIG);
+    const cfg = await cfgRes.json();
+
+    if (!cfgRes.ok || !cfg.success || !cfg.widget_id || !cfg.widget_token) {
+      showLoginErr(cfg.message || 'MSG91 widget config missing');
+      return;
+    }
+
+    const sdkReady = await ensureMsg91Sdk();
+    if (!sdkReady) {
+      showLoginErr('Could not load MSG91 OTP widget. Try again.');
+      return;
+    }
+
+    const callback = async function(response) {
+      try {
+        const accessToken = response && response.message ? response.message : '';
+
+        if (!accessToken) {
+          showLoginErr('OTP verification failed or cancelled.');
+          return;
+        }
+
+        const apiRes = await fetch(API_MSG91_LOGIN, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            access_token: accessToken,
+            login_type: 'telecaller'
+          })
+        });
+
+        const res = await apiRes.json();
+
+        if (apiRes.ok && (res.status === 'ok' || res.success) && res.token) {
+          tcToken = res.token;
+          tcData  = res.telecaller;
+          localStorage.setItem('tc_token', tcToken);
+          toast('Telecaller login successful','success');
+          showApp();
+        } else {
+          showLoginErr(res.message || 'MSG91 telecaller login failed');
+        }
+      } catch (err) {
+        showLoginErr('Login verification failed. Try again.');
+      } finally {
+        btn.style.display = '';
+        document.getElementById('loginLoading').style.display = 'none';
+      }
+    };
+
+    if (typeof window.initSendOTP === 'function') {
+      window.initSendOTP({
+        widgetId: cfg.widget_id,
+        tokenAuth: cfg.widget_token,
+        success: callback,
+        failure: callback
+      });
+      return;
+    }
+
+    if (typeof window.sendOtp === 'function') {
+      window.sendOtp(cfg.widget_id, cfg.widget_token, callback);
+      return;
+    }
+
+    if (window.MSG91OTP && typeof window.MSG91OTP.init === 'function') {
+      window.MSG91OTP.init({
+        widgetId: cfg.widget_id,
+        tokenAuth: cfg.widget_token,
+        success: callback,
+        failure: callback
+      });
+      return;
+    }
+
+    showLoginErr('MSG91 OTP widget loaded but init function not found.');
+  } catch(e) {
+    showLoginErr('Network error. Please try again.');
+  } finally {
+    btn.style.display = '';
+    document.getElementById('loginLoading').style.display = 'none';
+  }
+}
+
+
 async function doLogin() {
   const mobile = document.getElementById('loginMobile').value.trim();
   const pass   = document.getElementById('loginPass').value;

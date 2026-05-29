@@ -31,6 +31,24 @@ function actionSendOtp(array $b): void {
     $mobile = normMobile($b['mobile'] ?? '');
     if (!$mobile) jsonError('Enter a valid 10-digit mobile number');
 
+    // ── OTP Rate Limiting ─────────────────────────────────
+    $ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $rlDir = __DIR__ . '/../rate_limit_logs';
+    if (!is_dir($rlDir)) @mkdir($rlDir, 0775, true);
+    $now   = time();
+    foreach ([
+        ['otp_mob_'.md5($mobile), 3,  600, 'Too many OTP requests. Please wait 10 minutes.'],
+        ['otp_ip_'.md5($ip),      10, 600, 'Too many requests from your network. Try later.'],
+    ] as [$key, $max, $win, $msg]) {
+        $file = $rlDir.'/'.$key.'.json';
+        $reqs = is_file($file) ? (json_decode(@file_get_contents($file),true) ?: []) : [];
+        $reqs = array_values(array_filter($reqs, fn($t)=>(int)$t>$now-$win));
+        if (count($reqs) >= $max) jsonError($msg, 429);
+        $reqs[] = $now;
+        @file_put_contents($file, json_encode($reqs), LOCK_EX);
+    }
+    // ── End Rate Limiting ─────────────────────────────────
+
     $pdo = getDB();
     $otp = generateOtp();
     saveOtpLocal($pdo, $mobile, $otp);
@@ -91,6 +109,8 @@ function actionVerifyOtp(array $b): void {
 // REGISTER
 // ─────────────────────────────────────────────────────────
 function actionRegister(array $b): void {
+    // ── Self-registration enabled — KYC approval required for portal access ──
+    // Partners can register freely but need admin KYC approval to access dashboard
     $mobile    = normMobile($b['mobile'] ?? '');
     $otpToken  = sanitize($b['otp_token'] ?? '');
     $firstName = trim(sanitize($b['first_name'] ?? ''));
@@ -273,10 +293,10 @@ function requireAuth(): array {
     $stmt = $pdo->prepare("
         SELECT p.id, p.partner_name, p.first_name, p.last_name, p.mobile, p.email,
                p.company_name, p.branch_city, p.partner_code, p.user_id,
-               p.is_registered, p.status, ps.session_id
+               p.is_registered, p.status, p.onboarding_step, p.kyc_status, ps.session_id
         FROM partner_sessions ps
         JOIN partners p ON ps.partner_id = p.id
-        WHERE ps.token = ? AND ps.is_active = 1 AND p.status = 'active'
+        WHERE ps.token = ? AND ps.is_active = 1 AND p.status IN ('active','under_review')
     ");
     $stmt->execute([$token]);
     $p = $stmt->fetch();
@@ -298,6 +318,28 @@ function generateOtp(): string {
 }
 
 function saveOtpLocal(\PDO $pdo, string $mobile, string $otp): void {
+    // Rate limiting: block if OTP was sent less than 2 minutes ago
+    $recent = $pdo->prepare(
+        "SELECT id FROM partner_otps
+         WHERE mobile = ? AND used = 0
+         AND expires_at > DATE_ADD(NOW(), INTERVAL 8 MINUTE)"
+    );
+    $recent->execute([$mobile]);
+    if ($recent->fetch()) {
+        jsonError('OTP already sent. Please wait 2 minutes before requesting again.');
+    }
+
+    // Max 5 OTP requests per hour — brute force protection
+    $hourly = $pdo->prepare(
+        "SELECT COUNT(*) FROM partner_otps
+         WHERE mobile = ?
+         AND expires_at > DATE_SUB(NOW(), INTERVAL 50 MINUTE)"
+    );
+    $hourly->execute([$mobile]);
+    if ($hourly->fetchColumn() >= 5) {
+        jsonError('Too many OTP requests. Please try again after 1 hour.');
+    }
+
     $pdo->prepare("DELETE FROM partner_otps WHERE mobile = ?")->execute([$mobile]);
     $pdo->prepare("INSERT INTO partner_otps (mobile, otp, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 10 MINUTE))")
         ->execute([$mobile, $otp]);
@@ -471,7 +513,7 @@ function updateLastLogin(\PDO $pdo, int $pid): void {
 }
 
 function loadPartnerPublic(\PDO $pdo, int $pid): array {
-    $s = $pdo->prepare("SELECT id,partner_name,first_name,last_name,mobile,email,company_name,branch_city,partner_code,user_id,is_registered FROM partners WHERE id=?");
+    $s = $pdo->prepare("SELECT id,partner_name,first_name,last_name,mobile,email,company_name,branch_city,partner_code,user_id,is_registered,status,onboarding_step,kyc_status FROM partners WHERE id=?");
     $s->execute([$pid]);
     return $s->fetch() ?: [];
 }

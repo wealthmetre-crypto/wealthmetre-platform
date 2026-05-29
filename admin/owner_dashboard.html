@@ -250,6 +250,8 @@ textarea.inp{resize:vertical;min-height:90px}
     <div class="sb-section">AI & Lenders</div>
     <ul class="sb-menu">
       <li class="sb-item"><button class="sb-link" onclick="showPage('diva')"><span class="icon"><i class="fa fa-robot"></i></span>Diva Monitor <span class="sb-badge-new">NEW</span></button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('llmops')"><span class="icon"><i class="fa fa-microchip"></i></span>LLM Intelligence</button></li>
+      <li class="sb-item"><button class="sb-link" onclick="showPage('techcosts')"><span class="icon"><i class="fa fa-receipt"></i></span>Tech Costs</button></li>
       <li class="sb-item"><button class="sb-link" onclick="showPage('lenders')"><span class="icon"><i class="fa fa-building-columns"></i></span>Lender Intelligence</button></li>
       <li class="sb-item"><button class="sb-link" onclick="window.open('/admin/geo_manager.html','_blank')"><span class="icon"><i class="fa fa-map-location-dot"></i></span>Geo Manager</button></li>
       <li class="sb-item"><button class="sb-link" onclick="showPage('parser')"><span class="icon"><i class="fa fa-wand-magic-sparkles"></i></span>AI Policy Parser</button></li>
@@ -461,6 +463,42 @@ textarea.inp{resize:vertical;min-height:90px}
     </div>
   </div>
 
+  <!-- ═══ PARTNER LEADS ═══ -->
+  <div class="page" id="page-partner-leads">
+    <div class="page-head">
+      <div><h2>Partner Leads</h2><p>All leads submitted by partners through the portal</p></div>
+      <div class="page-head-actions">
+        <button class="btn btn-outline btn-sm" onclick="exportPartnerLeads()"><i class="fa fa-download"></i> Export</button>
+      </div>
+    </div>
+    <div class="filters-bar">
+      <input type="text" class="inp" id="plSearch" placeholder="Name or mobile..." style="max-width:170px" onkeyup="if(event.key==='Enter')loadPartnerLeads()"/>
+      <select class="inp" id="plPartner" style="max-width:160px"><option value="">All Partners</option></select>
+      <select class="inp" id="plStatus" style="max-width:140px">
+        <option value="">All Status</option>
+        <option value="new">New</option>
+        <option value="active">Active</option>
+        <option value="disbursed">Disbursed</option>
+        <option value="rejected">Rejected</option>
+        <option value="closed">Closed</option>
+      </select>
+      <button class="btn btn-primary btn-sm" onclick="loadPartnerLeads()"><i class="fa fa-magnifying-glass"></i></button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="padding:0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Customer</th><th>Mobile</th><th>City</th><th>Loan Type</th><th>Amount</th><th>CIBIL</th><th>Partner</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody id="plTable"><tr><td colspan="10" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card-footer" style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--muted)" id="plInfo">—</span>
+        <div style="display:flex;gap:6px" id="plPages"></div>
+      </div>
+    </div>
+  </div>
   <!-- ═══ FOLLOW-UPS ═══ -->
   <div class="page" id="page-followups">
     <div class="page-head"><div><h2>Follow-ups</h2><p>Track and manage all follow-up schedules</p></div></div>
@@ -525,6 +563,86 @@ textarea.inp{resize:vertical;min-height:90px}
     </div>
   </div>
 
+  <!-- LLM INTELLIGENCE -->
+  <div class="page" id="page-llmops">
+    <div class="page-head">
+      <div><h2><i class="fa fa-microchip" style="color:var(--purple);margin-right:8px"></i>LLM Intelligence</h2><p>Token usage, cost and prompt explorer for every AI call</p></div>
+      <div class="page-head-actions"><select class="inp" id="llmDaysFilter" style="max-width:120px" onchange="loadLlmOps()"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select></div>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
+      <div class="stat-card"><div class="ic ic-purple"><i class="fa fa-bolt"></i></div><div class="val" id="llmTotalCalls">—</div><div class="lbl">Total Calls</div></div>
+      <div class="stat-card"><div class="ic ic-navy"><i class="fa fa-coins"></i></div><div class="val" id="llmTotalTokens">—</div><div class="lbl">Total Tokens</div></div>
+      <div class="stat-card"><div class="ic ic-green"><i class="fa fa-dollar-sign"></i></div><div class="val" id="llmTotalCost">—</div><div class="lbl">Total Cost (USD)</div></div>
+      <div class="stat-card"><div class="ic ic-teal"><i class="fa fa-gauge-high"></i></div><div class="val" id="llmAvgLatency">—</div><div class="lbl">Avg Latency</div></div>
+      <div class="stat-card"><div class="ic ic-red"><i class="fa fa-triangle-exclamation"></i></div><div class="val" id="llmErrors">—</div><div class="lbl">Errors</div></div>
+    </div>
+    <div class="chart-grid" style="margin-bottom:20px">
+      <div class="card"><div class="card-header"><h3>Daily Calls &amp; Cost</h3></div><div class="card-body"><div class="chart-wrap"><canvas id="chartLlmDaily"></canvas></div></div></div>
+      <div class="card"><div class="card-header"><h3>Calls by Source</h3></div><div class="card-body"><div class="chart-wrap"><canvas id="chartLlmSource"></canvas></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+        <h3><i class="fa fa-magnifying-glass" style="margin-right:6px"></i>Prompt Explorer</h3>
+        <div style="display:flex;gap:8px">
+          <select class="inp" id="llmStatusFilter" style="max-width:110px;font-size:12px" onchange="loadLlmLogs(1)"><option value="">All Status</option><option value="success">Success</option><option value="error">Error</option><option value="timeout">Timeout</option></select>
+          <select class="inp" id="llmSourceFilter" style="max-width:130px;font-size:12px" onchange="loadLlmLogs(1)"><option value="">All Sources</option><option value="hybrid_query">Diva / RAG</option><option value="config">config (RAG)</option><option value="policy_parser">Policy Parser</option><option value="policy_parser_clarify">Parser Clarify</option></select>
+        </div>
+      </div>
+      <div class="card-body" style="padding:0"><div class="table-wrap"><table>
+        <thead><tr><th>Time</th><th>Source</th><th>Model</th><th>Prompt</th><th>Tokens</th><th>Cost</th><th>Latency</th><th>Status</th></tr></thead>
+        <tbody id="llmLogsTable"><tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i></td></tr></tbody>
+      </table></div></div>
+      <div class="card-footer" style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:12px;color:var(--muted)" id="llmLogsInfo">—</span>
+        <div style="display:flex;gap:6px" id="llmLogPages"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TECH COSTS -->
+  <div class="page" id="page-techcosts">
+    <div class="page-head">
+      <div><h2><i class="fa fa-receipt" style="color:var(--orange);margin-right:8px"></i>Tech Cost Tracker</h2><p>All recurring tech and AI expenses in one place</p></div>
+      <div class="page-head-actions"><button class="btn btn-primary btn-sm" onclick="openAddCost()"><i class="fa fa-plus"></i> Add Cost</button></div>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
+      <div class="stat-card"><div class="ic ic-orange"><i class="fa fa-fire-burner"></i></div><div class="val" id="costMonthlyBurn">—</div><div class="lbl">Monthly Burn (INR)</div></div>
+      <div class="stat-card"><div class="ic ic-red"><i class="fa fa-calendar-days"></i></div><div class="val" id="costYearlyBurn">—</div><div class="lbl">Yearly Projection</div></div>
+      <div class="stat-card"><div class="ic ic-purple"><i class="fa fa-robot"></i></div><div class="val" id="costAiBurn">—</div><div class="lbl">AI Costs / Month</div></div>
+      <div class="stat-card"><div class="ic ic-navy"><i class="fa fa-server"></i></div><div class="val" id="costInfraBurn">—</div><div class="lbl">Infrastructure / Month</div></div>
+    </div>
+    <div class="card"><div class="card-body" style="padding:0"><div class="table-wrap"><table>
+      <thead><tr><th>Service</th><th>Category</th><th>Amount</th><th>Currency</th><th>Frequency</th><th>Monthly (INR)</th><th>Next Billing</th><th>Vendor</th><th>Actions</th></tr></thead>
+      <tbody id="costsTable"><tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i></td></tr></tbody>
+    </table></div></div></div>
+  </div>
+
+  <!-- Cost Modal -->
+  <div class="modal-overlay" id="costModal" style="display:none;align-items:center;justify-content:center">
+    <div class="modal" style="max-width:480px;width:95vw">
+      <div class="modal-head"><h3 id="costModalTitle"><i class="fa fa-receipt" style="color:var(--orange);margin-right:6px"></i> Add Cost</h3><button onclick="closeCostModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="costEditId">
+        <div class="field"><label>Service Name *</label><input class="inp" id="costName" placeholder="e.g. VPS Hosting, OpenAI API"/></div>
+        <div class="form-2col">
+          <div class="field"><label>Category</label><select class="inp" id="costCategory"><option value="infrastructure">Infrastructure</option><option value="ai">AI / ML</option><option value="communication">Communication</option><option value="tools">Tools / SaaS</option><option value="other">Other</option></select></div>
+          <div class="field"><label>Vendor</label><input class="inp" id="costVendor" placeholder="e.g. Hostinger, OpenAI"/></div>
+        </div>
+        <div class="form-2col">
+          <div class="field"><label>Amount *</label><input class="inp" id="costAmount" type="number" step="0.01" placeholder="0.00"/></div>
+          <div class="field"><label>Currency</label><select class="inp" id="costCurrency"><option value="INR">INR ₹</option><option value="USD">USD $</option></select></div>
+        </div>
+        <div class="form-2col">
+          <div class="field"><label>Frequency</label><select class="inp" id="costFrequency"><option value="monthly">Monthly</option><option value="yearly">Yearly</option><option value="one_time">One Time</option><option value="usage_based">Usage Based</option></select></div>
+          <div class="field"><label>Next Billing Date</label><input class="inp" id="costBillingDate" type="date"/></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea class="inp" id="costNotes" rows="2" placeholder="Optional notes…" style="resize:vertical"></textarea></div>
+        <div class="field-error" id="costErr" style="display:none"></div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-outline" onclick="closeCostModal()">Cancel</button><button class="btn btn-primary" onclick="saveCost()"><i class="fa fa-save"></i> Save</button></div>
+    </div>
+  </div>
+
   <!-- ═══ LENDERS ═══ -->
   <div class="page" id="page-lenders">
     <div class="page-head">
@@ -574,6 +692,19 @@ textarea.inp{resize:vertical;min-height:90px}
           </div>
           <div class="field"><label>Product (hint)</label>
             <select class="inp" id="parserProduct"><option value="">Auto-detect</option><option value="home">Home Loan</option><option value="lap">LAP</option><option value="business">Business Loan</option><option value="personal">Personal Loan</option></select>
+          </div>
+          <div class="field" style="margin-bottom:10px">
+            <label>Upload PDF Policy <span style="font-size:11px;color:var(--muted);font-weight:400">(optional — extracts text automatically)</span></label>
+            <label class="btn btn-ghost btn-sm" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;margin:0">
+              <i class="fa fa-file-pdf" style="color:#e53e3e"></i> Choose PDF
+              <input type="file" id="policyPdfInput" accept=".pdf" style="display:none" onchange="handlePdfUpload(this)">
+            </label>
+            <span id="pdfFileName" style="font-size:12px;color:var(--muted);margin-left:8px">No file chosen</span>
+            <span id="pdfSpinner" style="display:none;margin-left:8px;font-size:12px;color:var(--navy)"><i class="fa fa-spinner fa-spin"></i> Extracting text...</span>
+          </div>
+          <div class="field">
+            <label>Lender Name <span style="font-size:11px;color:var(--muted);font-weight:400">(required — type if AI can&#39;t detect from PDF)</span></label>
+            <input type="text" class="inp" id="parserLenderName" placeholder="e.g. ICICI Bank, HDFC Bank, Bajaj Finance...">
           </div>
           <div class="field"><label>Paste WhatsApp / Email Policy Text <span style="color:var(--red)">*</span></label>
             <textarea class="inp" id="policyText" rows="12" placeholder="Paste lender policy here...&#10;&#10;Example:&#10;HDFC Bank — LAP Policy&#10;ROI: 9.5% – 11%&#10;Max LTV: 65%&#10;Min CIBIL: 700&#10;Processing Fee: 0.5%&#10;SM: Rahul Sharma – 9876543210"></textarea>
@@ -977,6 +1108,9 @@ textarea.inp{resize:vertical;min-height:90px}
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost btn-sm" onclick="closeModal('lenderDiffModal')">Cancel</button>
+      <button class="btn btn-ghost btn-sm" id="diffEditBtn" onclick="toggleDiffEdit()" style="border:1.5px solid var(--navy);color:var(--navy)">
+        <i class="fa fa-pencil"></i> Edit New Data
+      </button>
       <button class="btn btn-orange btn-sm" id="diffSaveBtn" onclick="confirmDiffSave()">
         <i class="fa fa-floppy-disk"></i> Confirm Update
       </button>
@@ -1399,10 +1533,367 @@ function waSM(mobile, name, lender) {
   const msg = encodeURIComponent(`Namaste ${name}! 🙏\nWealthMetre se baat kar raha hoon.\nEk ${lender} ke liye quality lead hai share karna chahta hoon.\nKya aap available hain?`);
   window.open(`https://wa.me/91${mobile}?text=${msg}`, '_blank');
 }
+
+// ═══ PARTNER LEADS ═══
+let plPage = 1;
+async function loadPartnerLeads(pg=1) {
+  plPage = pg;
+  const search  = document.getElementById('plSearch').value.trim();
+  const partner = document.getElementById('plPartner').value;
+  const status  = document.getElementById('plStatus').value;
+  const tbody   = document.getElementById('plTable');
+  tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</td></tr>';
+  try {
+    const r = await fetch(`${API}?action=partner_leads_list&page=${pg}&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}&partner=${encodeURIComponent(partner)}`, {credentials:'include'}).then(d=>d.json());
+    if (!r.success || !r.data.length) {
+      tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--muted)">No partner leads found</td></tr>';
+      document.getElementById('plInfo').textContent = '0 leads';
+      document.getElementById('plPages').innerHTML = '';
+      return;
+    }
+    const statusColor = {new:'b-navy',active:'b-active',disbursed:'b-green',rejected:'b-red',closed:'b-muted'};
+    tbody.innerHTML = r.data.map((l,i) => `<tr>
+      <td style="color:var(--muted);font-size:11px">${((pg-1)*25)+i+1}</td>
+      <td><div style="font-weight:700;font-size:13px">${l.customer_name||'—'}</div></td>
+      <td style="font-size:12px">${l.mobile||'—'}</td>
+      <td style="font-size:12px">${l.city||'—'}</td>
+      <td><span class="badge b-navy" style="font-size:10px">${l.loan_type||'—'}</span></td>
+      <td style="font-size:12px;font-weight:700">${l.loan_amount ? '₹'+fmtNum(l.loan_amount) : '—'}</td>
+      <td style="font-size:12px">${l.cibil||'—'}</td>
+      <td style="font-size:12px;color:var(--navy);font-weight:600">${l.partner_name||l.first_name||'—'}</td>
+      <td><span class="badge ${statusColor[l.status]||'b-muted'}" style="font-size:10px">${l.status||'—'}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${l.created_at ? l.created_at.split(' ')[0] : '—'}</td>
+    </tr>`).join('');
+    const pg_ = r.pagination;
+    document.getElementById('plInfo').textContent = `Showing ${((pg_.page-1)*pg_.per_page)+1}–${Math.min(pg_.page*pg_.per_page,pg_.total)} of ${fmtNum(pg_.total)} leads`;
+    const pages = document.getElementById('plPages');
+    pages.innerHTML = '';
+    for (let p=1; p<=pg_.total_pages; p++) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-sm ' + (p===pg ? 'btn-primary' : 'btn-outline');
+      btn.textContent = p;
+      btn.onclick = () => loadPartnerLeads(p);
+      pages.appendChild(btn);
+    }
+  } catch(e) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--red)">Error loading leads</td></tr>'; }
+}
+
+async function populatePartnerLeadsFilter() {
+  try {
+    const r = await fetch(`${API}?action=partners_list`, {credentials:'include'}).then(d=>d.json());
+    const sel = document.getElementById('plPartner');
+    if (r.success && r.data) {
+      r.data.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.id; o.textContent = p.partner_name || (p.first_name+' '+p.last_name);
+        sel.appendChild(o);
+      });
+    }
+  } catch(e) {}
+}
+
+function exportPartnerLeads() {
+  const search  = document.getElementById('plSearch').value.trim();
+  const partner = document.getElementById('plPartner').value;
+  const status  = document.getElementById('plStatus').value;
+  window.open(`${API}?action=partner_leads_list&export=csv&search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}&partner=${encodeURIComponent(partner)}&limit=9999`,'_blank');
+}
 </script>
 <style>
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+
+.kyc-doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:12px}
+.kyc-doc-card{border:1px solid var(--border);border-radius:10px;padding:14px;background:#fafbfd}
+.kyc-doc-card.s-approved{border-color:#86efac;background:#f0fdf4}
+.kyc-doc-card.s-rejected{border-color:#fca5a5;background:#fff5f5}
+.kyc-chip{font-size:10px;font-weight:800;padding:2px 8px;border-radius:12px;text-transform:uppercase}
+.kyc-chip.pending{background:#fef3c7;color:#92400e}
+.kyc-chip.approved{background:#dcfce7;color:#166534}
+.kyc-chip.rejected{background:#fee2e2;color:#991b1b}
+.kyc-notes{width:100%;box-sizing:border-box;font-size:12px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;resize:vertical;min-height:44px;font-family:inherit;margin-top:8px}
+.kyc-act-row{display:flex;gap:6px;margin-top:8px}
+.btn-kyc-approve{flex:1;padding:5px 8px;background:var(--green);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+.btn-kyc-reject{flex:1;padding:5px 8px;background:#ef4444;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer}
+
+.b-warn{background:#fff3cd;color:#856404;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700}
 </style>
+
+<!-- KYC Review Modal -->
+<div class="modal-overlay" id="kycModal" style="display:none;align-items:center;justify-content:center">
+  <div class="modal" style="max-width:700px;width:95vw;max-height:90vh;overflow-y:auto">
+    <div class="modal-head">
+      <h3><i class="fa fa-id-card" style="color:var(--orange);margin-right:6px"></i> KYC Documents — <span id="kycModalPartnerName"></span></h3>
+      <button onclick="closeKycModal()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="kycModalStatus" style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:13px;font-weight:600"></div>
+      <div id="kycModalLoading" style="text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading documents…</div>
+      <div id="kycModalEmpty" style="display:none;text-align:center;padding:24px;color:var(--muted)"><i class="fa fa-folder-open"></i> No KYC documents uploaded yet.</div>
+      <div id="kycModalError" style="display:none;background:#fff5f5;border:1px solid #fecaca;color:#dc2626;padding:10px;border-radius:6px;font-size:13px;margin-bottom:10px"></div>
+      <div class="kyc-doc-grid" id="kycDocGrid" style="display:none"></div>
+      <div id="kycApproveAllWrap" style="display:none;margin-top:12px">
+        <button onclick="kycAdminApproveAll()" style="background:var(--green);color:#fff;border:none;padding:8px 20px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer"><i class="fa fa-check-double"></i> Approve All Pending</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let _kycAdminPartnerId = null;
+let _kycAdminDocs = [];
+
+async function openKycModal(partnerId, partnerName) {
+  _kycAdminPartnerId = partnerId;
+  document.getElementById('kycModalPartnerName').textContent = partnerName;
+  document.getElementById('kycModal').style.display = 'flex';
+  document.getElementById('kycModalLoading').style.display = 'block';
+  document.getElementById('kycModalEmpty').style.display = 'none';
+  document.getElementById('kycModalError').style.display = 'none';
+  document.getElementById('kycDocGrid').style.display = 'none';
+  document.getElementById('kycApproveAllWrap').style.display = 'none';
+  document.getElementById('kycModalStatus').innerHTML = '';
+  await _kycAdminLoad(partnerId);
+}
+
+function closeKycModal() {
+  document.getElementById('kycModal').style.display = 'none';
+  _kycAdminPartnerId = null; _kycAdminDocs = [];
+}
+
+async function _kycAdminLoad(partnerId) {
+  try {
+    const res  = await fetch(`/api/admin/partner_kyc_api.php?partner_id=${partnerId}`, {credentials:'include'});
+    const data = await res.json();
+    document.getElementById('kycModalLoading').style.display = 'none';
+    if (!data.success) { _kycAdminShowErr(data.message||'Failed to load'); return; }
+    _kycAdminDocs = data.documents || [];
+    const p = data.partner || {};
+    const statusColors = {pending:'#92400e',submitted:'#1e40af',approved:'#166534',rejected:'#991b1b'};
+    const statusBg = {pending:'#fef3c7',submitted:'#dbeafe',approved:'#dcfce7',rejected:'#fee2e2'};
+    const ks = p.kyc_status||'pending';
+    document.getElementById('kycModalStatus').innerHTML =
+      `<span style="background:${statusBg[ks]||'#f3f4f6'};color:${statusColors[ks]||'#374151'};padding:3px 10px;border-radius:12px;font-size:11px;font-weight:800;text-transform:uppercase">${ks}</span>
+       <span style="color:var(--muted);font-size:12px;font-weight:400">${p.kyc_submitted_at ? 'Submitted '+_kycFmtDate(p.kyc_submitted_at) : 'Not yet submitted'}</span>`;
+    if (!_kycAdminDocs.length) { document.getElementById('kycModalEmpty').style.display='block'; return; }
+    _kycAdminRender();
+  } catch(e) {
+    document.getElementById('kycModalLoading').style.display='none';
+    _kycAdminShowErr('Network error. Please try again.');
+  }
+}
+
+const _kycDocLabels = {pan_card:'PAN Card',aadhaar_card:'Aadhaar Card',cancelled_cheque:'Cancelled Cheque',gst:'GST Certificate',other:'Other Document'};
+const _kycDocIcons  = {pan_card:'fa-id-card',aadhaar_card:'fa-address-card',cancelled_cheque:'fa-money-check',gst:'fa-file-invoice',other:'fa-file'};
+
+function _kycAdminRender() {
+  const grid = document.getElementById('kycDocGrid');
+  grid.innerHTML = '';
+  grid.style.display = 'grid';
+  _kycAdminDocs.forEach(doc => {
+    const isPend = doc.status==='pending', isApp = doc.status==='approved', isRej = doc.status==='rejected';
+    const card = document.createElement('div');
+    card.id = `kadmin-doc-${doc.id}`;
+    card.className = `kyc-doc-card${isApp?' s-approved':isRej?' s-rejected':''}`;
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="font-weight:700;font-size:13px;color:var(--navy);display:flex;align-items:center;gap:6px">
+          <i class="fa ${_kycDocIcons[doc.document_type]||'fa-file'}" style="color:var(--orange)"></i>
+          ${_kycDocLabels[doc.document_type]||doc.document_type}
+        </div>
+        <span class="kyc-chip ${doc.status}" id="kchip-${doc.id}">${doc.status}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
+        <div>Uploaded: ${_kycFmtDate(doc.uploaded_at)}</div>
+        ${doc.reviewed_at ? `<div>Reviewed by ${doc.reviewed_by||'Admin'} on ${_kycFmtDate(doc.reviewed_at)}</div>` : ''}
+        ${doc.notes ? `<div style="color:#dc2626;margin-top:3px">Note: ${doc.notes}</div>` : ''}
+      </div>
+      <a href="${doc.download_url}" target="_blank" style="display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#fff;background:var(--navy);padding:4px 10px;border-radius:6px;text-decoration:none;margin-bottom:${isPend?'8px':'0'}">
+        <i class="fa fa-eye"></i> View Document
+      </a>
+      ${isPend ? `
+        <textarea class="kyc-notes" id="knotes-${doc.id}" placeholder="Rejection reason (required if rejecting)…"></textarea>
+        <div class="kyc-act-row">
+          <button class="btn-kyc-approve" id="kapp-${doc.id}" onclick="kycAdminReview(${doc.id},'approve')"><i class="fa fa-check"></i> Approve</button>
+          <button class="btn-kyc-reject"  id="krej-${doc.id}" onclick="kycAdminReview(${doc.id},'reject')"><i class="fa fa-times"></i> Reject</button>
+        </div>` : `
+        <div style="font-size:11px;color:${isApp?'var(--green)':'#ef4444'};display:flex;align-items:center;gap:4px;margin-top:4px">
+          <i class="fa ${isApp?'fa-check-circle':'fa-times-circle'}"></i>
+          Document ${doc.status}
+        </div>`}`;
+    grid.appendChild(card);
+  });
+  const hasPending = _kycAdminDocs.some(d=>d.status==='pending');
+  document.getElementById('kycApproveAllWrap').style.display = hasPending ? 'block' : 'none';
+}
+
+async function kycAdminReview(docId, action) {
+  const notes = (document.getElementById(`knotes-${docId}`)?.value||'').trim();
+  if (action==='reject' && !notes) { alert('Please enter a rejection reason.'); return; }
+  const appBtn = document.getElementById(`kapp-${docId}`);
+  const rejBtn = document.getElementById(`krej-${docId}`);
+  if(appBtn) appBtn.disabled=true; if(rejBtn) rejBtn.disabled=true;
+  try {
+    const res  = await fetch('/api/admin/partner_kyc_api.php', {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action, document_id:docId, notes})
+    });
+    const data = await res.json();
+    if (data.success) { await _kycAdminLoad(_kycAdminPartnerId); }
+    else { alert(data.message||'Action failed.'); if(appBtn) appBtn.disabled=false; if(rejBtn) rejBtn.disabled=false; }
+  } catch(e) { alert('Network error.'); if(appBtn) appBtn.disabled=false; if(rejBtn) rejBtn.disabled=false; }
+}
+
+async function kycAdminApproveAll() {
+  if (!confirm('Approve all pending documents?')) return;
+  for (const doc of _kycAdminDocs.filter(d=>d.status==='pending')) {
+    await kycAdminReview(doc.id,'approve');
+  }
+}
+
+function _kycAdminShowErr(msg) {
+  const el = document.getElementById('kycModalError');
+  el.textContent = msg; el.style.display = 'block';
+}
+function _kycFmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})
+       + ' ' + d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+</script>
+
+<script>
+async function loadLlmOps() {
+  const days = document.getElementById('llmDaysFilter')?.value||30;
+  try {
+    const r = await fetch(API+'?action=llm_stats&days='+days,{credentials:'include'}).then(d=>d.json());
+    if(!r.success) return;
+    const ov = r.data.overall||{};
+    document.getElementById('llmTotalCalls').textContent  = fmtNum(ov.calls||0);
+    document.getElementById('llmTotalTokens').textContent = fmtNum(ov.tokens||0);
+    document.getElementById('llmTotalCost').textContent   = '$'+parseFloat(ov.cost_usd||0).toFixed(4);
+    document.getElementById('llmAvgLatency').textContent  = Math.round(ov.avg_latency||0)+'ms';
+    document.getElementById('llmErrors').textContent      = fmtNum(ov.errors||0);
+    const daily = r.data.daily||[];
+    destroyChart('chartLlmDaily');
+    charts.chartLlmDaily = new Chart(document.getElementById('chartLlmDaily'),{type:'bar',data:{labels:daily.map(x=>x.date),datasets:[{label:'Calls',data:daily.map(x=>x.calls),backgroundColor:'rgba(99,102,241,0.7)',yAxisID:'y'},{label:'Cost $',data:daily.map(x=>parseFloat(x.cost_usd||0).toFixed(5)),type:'line',borderColor:'#f97316',backgroundColor:'transparent',yAxisID:'y1'}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true},y1:{beginAtZero:true,position:'right',grid:{drawOnChartArea:false}}}}});
+    const src = r.data.by_source||[];
+    destroyChart('chartLlmSource');
+    charts.chartLlmSource = new Chart(document.getElementById('chartLlmSource'),{type:'doughnut',data:{labels:src.map(x=>x.call_source),datasets:[{data:src.map(x=>x.calls),backgroundColor:['#6366f1','#f97316','#22c55e','#3b82f6','#a855f7']}]},options:{responsive:true,maintainAspectRatio:false}});
+  } catch(e){console.error(e);}
+  loadLlmLogs(1);
+}
+async function loadLlmLogs(pg=1){
+  const status=document.getElementById('llmStatusFilter')?.value||'';
+  const source=document.getElementById('llmSourceFilter')?.value||'';
+  const tbody=document.getElementById('llmLogsTable');
+  tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i></td></tr>';
+  try{
+    const r=await fetch(API+'?action=llm_logs&page='+pg+'&status='+status+'&source='+source,{credentials:'include'}).then(d=>d.json());
+    if(!r.success||!r.logs.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--muted)">No logs found</td></tr>';return;}
+    tbody.innerHTML=r.logs.map(l=>`<tr>
+      <td style="font-size:11px;color:var(--muted);white-space:nowrap">${timeAgo(l.created_at)}</td>
+      <td><span style="background:#ede9fe;color:#6d28d9;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px">${l.call_source||'—'}</span></td>
+      <td style="font-size:11px">${l.model||'—'}</td>
+      <td style="font-size:11px;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escHtml(l.prompt_preview||'')}">${escHtml((l.prompt_preview||'—').substring(0,80))}</td>
+      <td style="text-align:right;font-size:12px">${fmtNum(l.total_tokens||0)}</td>
+      <td style="text-align:right;font-size:12px;color:var(--green)">$${parseFloat(l.cost_usd||0).toFixed(5)}</td>
+      <td style="text-align:right;font-size:12px">${l.latency_ms||'—'}ms</td>
+      <td><span class="badge ${l.status==='success'?'b-active':l.status==='error'?'b-inactive':'b-warn'}">${l.status}</span></td>
+    </tr>`).join('');
+    document.getElementById('llmLogsInfo').textContent=r.logs.length+' of '+r.total+' calls';
+    renderPagination('llmLogPages',{page:r.page,pages:r.pages,total:r.total,per_page:25},loadLlmLogs);
+  }catch(e){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--red)">Error</td></tr>';}
+}
+const CAT_COLORS={infrastructure:'#3b82f6',ai:'#6366f1',communication:'#22c55e',tools:'#f97316',other:'#9ca3af'};
+const CAT_LABELS={infrastructure:'Infrastructure',ai:'AI / ML',communication:'Communication',tools:'Tools / SaaS',other:'Other'};
+async function loadTechCosts(){
+  const tbody=document.getElementById('costsTable');
+  try{
+    const r=await fetch(API+'?action=costs_list',{credentials:'include'}).then(d=>d.json());
+    if(!r.success)return;
+    const costs=r.costs||[],total=r.total_monthly_inr||0;
+    document.getElementById('costMonthlyBurn').textContent='₹'+fmtNum(Math.round(total));
+    document.getElementById('costYearlyBurn').textContent='₹'+fmtNum(Math.round(total*12));
+    const ai=costs.filter(c=>c.category==='ai').reduce((s,c)=>s+parseFloat(c.monthly_inr||0),0);
+    const infra=costs.filter(c=>c.category==='infrastructure').reduce((s,c)=>s+parseFloat(c.monthly_inr||0),0);
+    document.getElementById('costAiBurn').textContent='₹'+fmtNum(Math.round(ai));
+    document.getElementById('costInfraBurn').textContent='₹'+fmtNum(Math.round(infra));
+    if(!costs.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--muted)">No costs yet. Click + Add Cost.</td></tr>';return;}
+    const today=new Date();
+    tbody.innerHTML=costs.map(c=>{
+      const bd=c.billing_date?new Date(c.billing_date):null;
+      const dl=bd?Math.ceil((bd-today)/(864e5)):null;
+      const bb=dl!==null?(dl<=0?'<span style="color:#ef4444;font-weight:700">Overdue</span>':dl<=7?`<span style="color:#f97316;font-weight:700">${dl}d left</span>`:`<span style="font-size:11px;color:var(--muted)">${c.billing_date}</span>`):'<span style="color:var(--muted)">—</span>';
+      const cc=CAT_COLORS[c.category]||'#9ca3af';
+      return `<tr>
+        <td><div style="font-weight:600;font-size:13px">${escHtml(c.name)}</div>${c.notes?`<div style="font-size:11px;color:var(--muted)">${escHtml(c.notes)}</div>`:''}</td>
+        <td><span style="background:${cc}22;color:${cc};font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase">${CAT_LABELS[c.category]||c.category}</span></td>
+        <td style="font-weight:700">${c.currency==='USD'?'$':'₹'}${parseFloat(c.amount).toLocaleString('en-IN')}</td>
+        <td style="font-size:12px">${c.currency}</td>
+        <td style="font-size:12px;text-transform:capitalize">${(c.frequency||'').replace('_',' ')}</td>
+        <td style="font-weight:600;color:var(--navy)">₹${fmtNum(Math.round(parseFloat(c.monthly_inr)||0))}</td>
+        <td>${bb}</td>
+        <td style="font-size:12px;color:var(--muted)">${escHtml(c.vendor||'—')}</td>
+        <td><div class="td-actions">
+          <button class="btn btn-outline btn-xs" onclick='openEditCost(${JSON.stringify(c)})'><i class="fa fa-pen"></i></button>
+          <button class="btn btn-outline btn-xs" style="color:var(--red)" onclick="deleteCost(${c.id},'${escHtml(c.name)}')"><i class="fa fa-trash"></i></button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }catch(e){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--red)">Error</td></tr>';}
+}
+function openAddCost(){
+  document.getElementById('costEditId').value='';
+  document.getElementById('costModalTitle').innerHTML='<i class="fa fa-receipt" style="color:var(--orange);margin-right:6px"></i> Add Cost';
+  ['costName','costVendor','costNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('costAmount').value='';
+  document.getElementById('costCategory').value='infrastructure';
+  document.getElementById('costCurrency').value='INR';
+  document.getElementById('costFrequency').value='monthly';
+  document.getElementById('costBillingDate').value='';
+  document.getElementById('costErr').style.display='none';
+  document.getElementById('costModal').style.display='flex';
+}
+function openEditCost(c){
+  document.getElementById('costEditId').value=c.id;
+  document.getElementById('costModalTitle').innerHTML='<i class="fa fa-pen" style="color:var(--orange);margin-right:6px"></i> Edit Cost';
+  document.getElementById('costName').value=c.name||'';
+  document.getElementById('costCategory').value=c.category||'other';
+  document.getElementById('costAmount').value=c.amount||'';
+  document.getElementById('costCurrency').value=c.currency||'INR';
+  document.getElementById('costFrequency').value=c.frequency||'monthly';
+  document.getElementById('costBillingDate').value=c.billing_date||'';
+  document.getElementById('costVendor').value=c.vendor||'';
+  document.getElementById('costNotes').value=c.notes||'';
+  document.getElementById('costErr').style.display='none';
+  document.getElementById('costModal').style.display='flex';
+}
+function closeCostModal(){document.getElementById('costModal').style.display='none';}
+async function saveCost(){
+  const id=document.getElementById('costEditId').value;
+  const name=document.getElementById('costName').value.trim();
+  const amount=parseFloat(document.getElementById('costAmount').value);
+  const errEl=document.getElementById('costErr');
+  errEl.style.display='none';
+  if(!name){errEl.textContent='Service name required';errEl.style.display='flex';return;}
+  if(!amount||amount<=0){errEl.textContent='Valid amount required';errEl.style.display='flex';return;}
+  const body={name,amount,category:document.getElementById('costCategory').value,currency:document.getElementById('costCurrency').value,frequency:document.getElementById('costFrequency').value,billing_date:document.getElementById('costBillingDate').value||null,vendor:document.getElementById('costVendor').value.trim()||null,notes:document.getElementById('costNotes').value.trim()||null};
+  if(id)body.id=parseInt(id);
+  try{
+    const r=await fetch(API,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:id?'costs_update':'costs_add',...body})}).then(d=>d.json());
+    if(r.success){closeCostModal();loadTechCosts();toast(r.message||'Saved','success');}
+    else{errEl.textContent=r.message||'Error';errEl.style.display='flex';}
+  }catch(e){errEl.textContent='Network error';errEl.style.display='flex';}
+}
+async function deleteCost(id,name){
+  if(!confirm('Delete "'+name+'"?'))return;
+  const r=await fetch(API,{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'costs_delete',id})}).then(d=>d.json());
+  if(r.success){loadTechCosts();toast('Deleted','success');}
+  else alert(r.message||'Error');
+}
+</script>
 </body>
 </html>

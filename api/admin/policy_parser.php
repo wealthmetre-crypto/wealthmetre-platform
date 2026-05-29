@@ -95,6 +95,38 @@ function postProcessResult(array $r): array {
         }
     }
 
+    // Fix 5: Correct AI lender match — if matched_lender_id points to wrong lender, fix it
+    file_put_contents("/var/www/wealthmetre/public_html/uploads/fix5.txt", json_encode(["mid"=>($r["matched_lender_id"]??null),"name"=>($r["lender_name"]??null)])."\n", FILE_APPEND);
+    if (!empty($r['matched_lender_id']) && !empty($r['lender_name'])) {
+        try {
+            $pdo = getDB();
+            $chk = $pdo->prepare("SELECT lender_name FROM lenders_products WHERE id=? LIMIT 1");
+            $chk->execute([$r['matched_lender_id']]);
+            $row = $chk->fetch(PDO::FETCH_ASSOC);
+            if ($row) {
+                $dbWords  = explode(' ', strtolower(trim($row['lender_name'])));
+                $newWords = array_filter(explode(' ', strtolower(trim($r['lender_name']))),
+                    fn($w) => strlen($w) >= 2 && !in_array($w, ['bank','finance','limited','ltd','housing','capital','financial','services','india','home']));
+                $match = false;
+                foreach ($newWords as $w) { if (in_array($w, $dbWords)) { $match = true; break; } }
+                if (!$match) {
+                    // Find correct record by name + product
+                    $fix = $pdo->prepare("SELECT id FROM lenders_products WHERE LOWER(lender_name) LIKE ? AND (product=? OR product_type=?) AND status='active' LIMIT 1");
+                    $fix->execute(['%'.strtolower($r['lender_name']).'%', $r['product']??'', $r['product_type']??'']);
+                    $correct = $fix->fetch(PDO::FETCH_ASSOC);
+                    if ($correct) {
+                        $r['matched_lender_id'] = (int)$correct['id'];
+                        $r['decision'] = 'policy_update';
+                        $r['_match_corrected'] = true;
+                    } else {
+                        $r['matched_lender_id'] = null;
+                        $r['decision'] = 'new_lender';
+                        $r['_match_corrected'] = true;
+                    }
+                }
+            }
+        } catch (\Throwable $e) { /* non-blocking */ }
+    }
     return $r;
 }
 
@@ -106,6 +138,17 @@ function parsePolicy(array $b): void {
     $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $lenderList = array_map(fn($l) => ['id'=>$l['id'],'name'=>$l['lender_name'],'product'=>$l['product']], $existing);
     $systemPrompt = buildSystemPrompt($lenderList);
+    // Inject owner-confirmed fields
+    $body2 = json_decode(file_get_contents('php://input'),true)??[];
+    $confirmedFields = json_decode($body2['confirmed_fields']??'{}',true)??[];
+    if(!empty($confirmedFields)){
+        $prefix = "=== OWNER CONFIRMED — USE EXACTLY, NEVER OVERRIDE ===\n";
+        foreach($confirmedFields as $fld=>$val){
+            $prefix .= strtoupper($fld).': '.($val===null?'NULL (leave blank/null)':$val)."\n";
+        }
+        $prefix .= "=== END CONFIRMED ===\n\n";
+        $rawText = $prefix.$rawText;
+    }
     $result = callOpenAIStructured($systemPrompt, $rawText);
     if (!$result) jsonError('AI parsing failed'); 
 
@@ -118,7 +161,10 @@ function parsePolicy(array $b): void {
 function savePolicy(array $b): void {
     $fields = $b['fields'] ?? [];
     try {
-    if (empty($fields['lender_name'])) jsonError('lender_name required');
+    if (empty($fields['lender_name']) && !empty($body['lender_name_hint'])) {
+        $fields['lender_name'] = trim((string)$body['lender_name_hint']);
+    }
+    if (empty($fields['lender_name'])) jsonError('lender_name required — please type the lender name in the Lender Name field');
     $pdo = getDB();
     $key = makeSlug($fields['lender_name'].' '.($fields['product']??''));
     $existingId = intSafe($b['existing_id'] ?? 0);
@@ -139,12 +185,19 @@ function savePolicy(array $b): void {
                 strlen($w) >= 5 && !in_array($w, $genericWords)
             );
             if (!empty($newWords)) {
+                $dbWords = explode(' ', $dbName);
                 $matchCount = 0;
                 foreach ($newWords as $word) {
-                    if (str_contains($dbName, $word)) $matchCount++;
+                    // Exact word match (not substring) — prevents 'au' matching 'auto'
+                    if (in_array($word, $dbWords)) $matchCount++;
                 }
                 if ($matchCount === 0) {
-                    jsonError("Lender name mismatch: DB record is '{$dbRow['lender_name']}' but policy is for '{$fields['lender_name']}'. Use Save as New instead.", 409);
+                    // Also try: look for correct record by name similarity
+                    $stmt2 = $pdo->prepare("SELECT id FROM lenders_products WHERE LOWER(lender_name) LIKE ? AND (product=? OR product_type=?) LIMIT 1");
+                    $stmt2->execute(['%'.strtolower($fields['lender_name']).'%', $fields['product']??'', $fields['product_type']??'']);
+                    $correct = $stmt2->fetch(PDO::FETCH_ASSOC);
+                    $hint = $correct ? " Correct record may be ID: {$correct['id']}." : '';
+                    jsonError("Lender name mismatch: DB record is '{$dbRow['lender_name']}' but policy is for '{$fields['lender_name']}'.{$hint} Use Save as New instead.", 409);
                 }
             }
         }
@@ -155,6 +208,13 @@ function savePolicy(array $b): void {
         $qdrantResult = syncToQdrant($pdo, $existingId);
         jsonResponse(['type'=>'updated','id'=>$existingId,'message'=>'Lender policy updated','qdrant_synced'=>$qdrantResult]);
     } else {
+        $dupCheck = $pdo->prepare("SELECT id, lender_name FROM lenders_products WHERE lender_key=? LIMIT 1");
+        $dupCheck->execute([$key]);
+        $dupRow = $dupCheck->fetch(PDO::FETCH_ASSOC);
+        if ($dupRow) {
+            http_response_code(409);
+            jsonError("'{$fields['lender_name']}' already exists (ID: {$dupRow['id']}). Use 'Update Existing' to modify it.", 409);
+        }
         $id = insertLenderRecord($pdo, $fields, $key);
         saveSpecialConditions($pdo, $id, $fields['confirmed_special_conditions'] ?? []);
         // Return response immediately — don't make user wait for Qdrant sync
@@ -456,8 +516,14 @@ function buildSystemPrompt(array $lenders): string {
 You are WealthMetre's Lender Intelligence Parser for Indian NBFC/Bank loan policies.
 You extract structured data from unstructured WhatsApp/email lender policy messages.
 
-EXISTING LENDERS IN DB:
+EXISTING LENDERS IN DB (id | lender_name | product):
 {$lj}
+
+LENDER MATCHING RULE — CRITICAL:
+Match ONLY on lender_name. Name must match EXACTLY or near-exactly.
+"DCB Bank" → find name="DCB Bank" NOT "IDFC Bank". "AU Bank" → name="AU Bank" only.
+Short names like DCB, AU, SBI, PNB must match letter-for-letter — never guess.
+If unsure, set matched_lender_id=null and decision="new_lender".
 
 ═══════════════════════════════════════════════
 ABSOLUTE RULES — NEVER VIOLATE THESE
@@ -845,18 +911,36 @@ PROMPT;
 
 
 function callOpenAIStructured(string $sys, string $user): ?array {
-    if (!openAiEnabled()) return null;
-    $payload=['model'=>'gpt-4o','temperature'=>0.1,'max_tokens'=>4000,
-        'messages'=>[['role'=>'system','content'=>$sys],['role'=>'user','content'=>"Parse:\n\n".$user]],
-        'response_format'=>['type'=>'json_object']];
-    $ch=curl_init('https://api.openai.com/v1/chat/completions');
+    $apiKey = getenv('WM_CLAUDE_KEY');
+    if (!$apiKey) return null;
+    $model = 'claude-sonnet-4-6';
+    $payload = [
+        'model'      => $model,
+        'max_tokens' => 4000,
+        'system'     => $sys . "\n\nIMPORTANT: Return ONLY valid JSON. No markdown, no explanation, no code fences.",
+        'messages'   => [['role'=>'user','content'=>"Parse:\n\n".$user]],
+    ];
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_POST=>true,
-        CURLOPT_POSTFIELDS=>json_encode($payload),CURLOPT_TIMEOUT=>60,
-        CURLOPT_HTTPHEADER=>['Content-Type: application/json','Authorization: Bearer '.OPENAI_API_KEY]]);
-    $raw=curl_exec($ch); $code=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
+        CURLOPT_POSTFIELDS=>json_encode($payload),CURLOPT_TIMEOUT=>120,
+        CURLOPT_HTTPHEADER=>['Content-Type: application/json','x-api-key: '.$apiKey,'anthropic-version: 2023-06-01']]);
+    $t0=microtime(true); $raw=curl_exec($ch); $ms=(int)round((microtime(true)-$t0)*1000);
+    $curlErr=curl_error($ch); $code=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
+    $data=json_decode($raw??'',true)??[];
+    $usage=$data['usage']??[];
+    $pTok=(int)($usage['input_tokens']??0); $cTok=(int)($usage['output_tokens']??0);
+    // Claude Sonnet 4.6 pricing: $3/1M input, $15/1M output
+    $costUsd=round(($pTok*0.000003)+($cTok*0.000015),8);
+    $status=($code===200&&$raw&&!$curlErr)?'success':($curlErr?'timeout':'error');
+    try { getDB()->prepare("INSERT INTO llm_call_logs (call_source,model,prompt_tokens,completion_tokens,total_tokens,latency_ms,status,cost_usd,prompt_preview) VALUES (?,?,?,?,?,?,?,?,?)")
+        ->execute(['policy_parser',$model,$pTok?:null,$cTok?:null,($pTok+$cTok)?:null,$ms,$status,$costUsd?:null,substr($user,0,300)]); } catch(\Throwable $e){}
     if($code!==200) return null;
-    $data=json_decode($raw,true);
-    return json_decode($data['choices'][0]['message']['content']??'{}',true);
+    $text = $data['content'][0]['text'] ?? '{}';
+    $text = preg_replace('/^```(?:json)?\s*/i','',$text);
+    $text = preg_replace('/\s*```$/i','',$text);
+    $text = trim($text);
+    $decoded = json_decode($text, true);
+    return $decoded;
 }
 
 
@@ -1060,7 +1144,7 @@ function syncToQdrant(PDO $pdo, int $id): bool {
     if (empty($points)) return false;
     $ch = curl_init(rtrim(QDRANT_URL,'/').'/collections/lender_policies/points?wait=true');
     curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_CUSTOMREQUEST=>'PUT',
-        CURLOPT_POSTFIELDS=>json_encode(['points'=>$points]),CURLOPT_TIMEOUT=>60,
+        CURLOPT_POSTFIELDS=>json_encode(['points'=>$points]),CURLOPT_TIMEOUT=>120,
         CURLOPT_HTTPHEADER=>['Content-Type: application/json','api-key: '.QDRANT_API_KEY]]);
     $raw=curl_exec($ch); $code=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
     if ($code!==200) { error_log('[WealthMetre] Qdrant upsert failed: '.$raw); $allOk=false; }
@@ -1073,7 +1157,7 @@ function generateQdrantEmbedding(string $text): ?array {
     $ch = curl_init('https://api.openai.com/v1/embeddings');
     curl_setopt_array($ch,[
         CURLOPT_RETURNTRANSFER=>true, CURLOPT_POST=>true,
-        CURLOPT_POSTFIELDS=>json_encode($payload), CURLOPT_TIMEOUT=>60,
+        CURLOPT_POSTFIELDS=>json_encode($payload), CURLOPT_TIMEOUT=>120,
         CURLOPT_HTTPHEADER=>['Content-Type: application/json','Authorization: Bearer '.OPENAI_API_KEY]
     ]);
     $raw=curl_exec($ch); $code=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
@@ -1088,3 +1172,96 @@ function makeSlug(string $s): string {
     $s=preg_replace('/[\s-]+/','-',$s);
     return trim($s,'-');
 }
+if($action === 'pre_parse'){
+    $body    = json_decode(file_get_contents('php://input'),true)??[];
+    $rawText = trim($body['raw_text']??'');
+    if(!$rawText){ echo json_encode(['success'=>false,'error'=>'No text']); exit; }
+
+    $stmt    = $pdo->query("SELECT id,lender_name,product FROM lenders_products WHERE status='active' ORDER BY lender_name");
+    $existing= $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $lj      = json_encode(array_map(fn($l)=>['id'=>$l['id'],'name'=>$l['lender_name'],'product'=>$l['product']],$existing));
+
+    $prePrompt = <<<PROMPT
+You are a loan policy pre-analyzer for WealthMetre, an Indian loan advisory platform.
+
+EXISTING LENDERS IN DB:
+{$lj}
+
+Analyze the policy text below. Identify ONLY fields where your confidence is below 85%.
+Return confident fields separately — do NOT ask about things you are sure of.
+
+FIELDS TO CHECK FOR UNCERTAINTY:
+1. product — Is the loan product (Home Loan/LAP/Business Loan etc.) EXPLICITLY stated in the text? If only implied by context, flag it.
+2. roi — Is the ROI a general headline rate OR found only inside a specific program (NIP/surrogate/BT/banking)? If program-specific only, flag it.
+3. lender_match — Does the lender name match an existing DB entry with >85% certainty? If ambiguous, flag it.
+4. decision — new_lender / new_product / policy_update / duplicate. Flag if unsure.
+5. city_coverage — Is coverage clearly rajasthan / specific_cities / pan_india? Flag if ambiguous.
+6. income_types — Are salaried/SENP/SEP/NIP explicitly named or just implied?
+7. surrogate_programs — Are banking/GST/ITR surrogates explicitly offered as a program or just mentioned in passing?
+8. ltv_structure — Is LTV a single flat value or a tiered structure by property type or income slab?
+
+CONFIDENCE RULE: If >85% sure → put in confident_fields. If <85% → put in clarifications.
+
+Return ONLY this JSON (no explanation, no markdown):
+{
+  "clarifications": [
+    {
+      "field": "product",
+      "label": "Loan Product",
+      "question": "Product not explicitly named. What is this policy for?",
+      "guess_1_label": "Home Loan",
+      "guess_1_value": "Home Loan",
+      "guess_1_reason": "Mentions salaried LTV slabs by income, 20yr tenure, house purchase norms",
+      "guess_2_label": "LAP",
+      "guess_2_value": "LAP",
+      "guess_2_reason": "Mentions P+C, top-up, BT — common LAP terms",
+      "allow_custom": true,
+      "custom_placeholder": "e.g. Business Loan - Secured",
+      "confidence": 62
+    }
+  ],
+  "confident_fields": {
+    "lender_name": "IDFC First Bank",
+    "max_tenure_months": 240
+  },
+  "summary": "2 fields need your confirmation before parsing."
+}
+
+NOTES:
+- guess_2_label/value/reason are optional — omit if only one alternative exists
+- For roi uncertainty: guess_1 should be null (recommended), guess_2 the program value found
+- For lender_match: show matched DB name as guess_1, "New Lender" as guess_2
+- confidence is your % certainty for guess_1 being correct
+PROMPT;
+
+    $clarifyApiKey = getenv('WM_CLAUDE_KEY');
+    $clarifyModel  = 'claude-haiku-4-5-20251001';
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch,[
+        CURLOPT_RETURNTRANSFER=>true,
+        CURLOPT_POST=>true,
+        CURLOPT_HTTPHEADER=>['Content-Type: application/json','x-api-key: '.$clarifyApiKey,'anthropic-version: 2023-06-01'],
+        CURLOPT_POSTFIELDS=>json_encode([
+            'model'      => $clarifyModel,
+            'max_tokens' => 1200,
+            'system'     => $prePrompt . "\n\nIMPORTANT: Return ONLY valid JSON. No markdown, no code fences.",
+            'messages'   => [['role'=>'user','content'=>$rawText]],
+        ])
+    ]);
+    $t0=microtime(true); $resp=curl_exec($ch); $ms2=(int)round((microtime(true)-$t0)*1000);
+    $curlErr2=curl_error($ch); $code2=curl_getinfo($ch,CURLINFO_HTTP_CODE); curl_close($ch);
+    $parsed=json_decode($resp??'',true)??[];
+    $usage2=$parsed['usage']??[];
+    $pTok2=(int)($usage2['input_tokens']??0); $cTok2=(int)($usage2['output_tokens']??0);
+    $costUsd2=round(($pTok2*0.0000008)+($cTok2*0.000004),8);
+    $status2=($code2===200&&$resp&&!$curlErr2)?'success':($curlErr2?'timeout':'error');
+    try { getDB()->prepare("INSERT INTO llm_call_logs (call_source,model,prompt_tokens,completion_tokens,total_tokens,latency_ms,status,cost_usd,prompt_preview) VALUES (?,?,?,?,?,?,?,?,?)")
+        ->execute(['policy_parser_clarify',$clarifyModel,$pTok2?:null,$cTok2?:null,($pTok2+$cTok2)?:null,$ms2,$status2,$costUsd2?:null,substr($rawText??'',0,300)]); } catch(\Throwable $e){}
+    $text=$parsed['content'][0]['text']??'{}';
+    $text=preg_replace('/^```(?:json)?\s*/i','',$text);
+    $text=preg_replace('/\s*```$/i','',$text);
+    $result=json_decode(trim($text),true)??['clarifications'=>[],'confident_fields'=>[],'summary'=>''];
+    echo json_encode(['success'=>true,'result'=>$result]); exit;
+}
+
+

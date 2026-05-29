@@ -43,6 +43,9 @@ function searchLenders(array $p): array {
         $propWord = explode(' ', $propWord)[0];               // first word only
     }
 
+    // COVID DPD flag from profile
+    $covidDpd = !empty($p['covid_dpd_hint']);
+
     // Loan type → SQL search keywords
     $loanKeywords = loanTypeToKeywords($loanType);
 
@@ -57,21 +60,21 @@ function searchLenders(array $p): array {
     }
 
     // Try with increasing relaxation until we get enough results
-    $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, $propWord);
+    $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, $propWord, 60, $covidDpd);
 
     if (count($rows) < 3) {
         // Relax: remove property filter
-        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, '');
+        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, '', 60, $covidDpd);
     }
 
     if (count($rows) < 3) {
         // Relax: remove city + property filter
-        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, '', '', '');
+        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, '', '', '', 60, $covidDpd);
     }
 
     if (count($rows) < 3) {
         // Fully relax: only loan type
-        $rows = queryDB($pdo, $loanKeywords, 0, 0, '', '', '');
+        $rows = queryDB($pdo, $loanKeywords, 0, 0, '', '', '', 60, $covidDpd);
     }
 
     return array_map('normalizeLenderRow', $rows);
@@ -93,7 +96,8 @@ function queryDB(
     string $city,
     string $state,
     string $propWord,     // kept for signature compat — not used in WHERE
-    int    $limit = 60
+    int    $limit = 60,
+    bool   $covidDpd = false
 ): array {
     $where  = ["status = 'active'"];
     $params = [];
@@ -137,6 +141,11 @@ function queryDB(
         }
         $cityClause .= ')';
         $where[] = $cityClause;
+    }
+
+    // COVID DPD — only show lenders accepting negative bureau / DPD profiles
+    if ($covidDpd) {
+        $where[] = "(negative_bureau_allowed = 1 OR special_profiles LIKE '%covid%' OR special_profiles LIKE '%dpd%')";
     }
 
     // ── Property title: NOT filtered in SQL ──────────────────
@@ -284,5 +293,31 @@ function normalizeLenderRow(array $row): array {
         'surrogate_low_ltv'        => (int)($row['surrogate_low_ltv']        ?? 0),
         'surrogate_lip'            => (int)($row['surrogate_lip']            ?? 0),
         'needs_itr'                => (int)($row['needs_itr']                ?? 0),
+        // Income type flags
+        'salaried_allowed'         => isset($row['salaried_allowed'])   ? (int)$row['salaried_allowed']   : null,
+        'senp_allowed'             => isset($row['senp_allowed'])        ? (int)$row['senp_allowed']        : null,
+        'sep_allowed'              => isset($row['sep_allowed'])         ? (int)$row['sep_allowed']         : null,
+        'nip_allowed'              => isset($row['nip_allowed'])         ? (int)$row['nip_allowed']         : null,
+        'cash_income_allowed'      => isset($row['cash_income_allowed']) ? (int)$row['cash_income_allowed'] : null,
+        'co_applicant_allowed'     => (int)($row['co_applicant_allowed']     ?? 0),
+        // Property title flags
+        'title_jda'                => isset($row['title_jda'])               ? (int)$row['title_jda']               : null,
+        'title_rhb'                => isset($row['title_rhb'])               ? (int)$row['title_rhb']               : null,
+        'title_society_patta'      => isset($row['title_society_patta'])     ? (int)$row['title_society_patta']     : null,
+        'title_gram_panchayat'     => isset($row['title_gram_panchayat'])    ? (int)$row['title_gram_panchayat']    : null,
+        'title_nagar_nigam'        => isset($row['title_nagar_nigam'])       ? (int)$row['title_nagar_nigam']       : null,
+        'title_riico'              => isset($row['title_riico'])             ? (int)$row['title_riico']             : null,
+        'title_freehold'           => isset($row['title_freehold'])          ? (int)$row['title_freehold']          : null,
+        'title_agriculture'        => isset($row['title_agriculture'])       ? (int)$row['title_agriculture']       : null,
+        'title_society_patta_year' => (int)($row['title_society_patta_year'] ?? 0),
+        // LTV by property type
+        'ltv_sorp'                 => (float)($row['ltv_sorp']  ?? 0),
+        'ltv_socp'                 => (float)($row['ltv_socp']  ?? 0),
+        'ltv_rented'               => (float)($row['ltv_rented']?? 0),
+        'ltv_land'                 => (float)($row['ltv_land']  ?? 0),
+        'ltv_max_overall'          => (float)($row['ltv_max_overall'] ?? 0),
+        // DPD / bureau
+        'negative_bureau_allowed'  => isset($row['negative_bureau_allowed']) ? (int)$row['negative_bureau_allowed'] : null,
+        'max_dpd_allowed'          => (int)($row['max_dpd_allowed'] ?? 0),
     ];
 }

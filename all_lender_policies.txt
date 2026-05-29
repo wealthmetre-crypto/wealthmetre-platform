@@ -1,0 +1,2325 @@
+WEALTHMETRE LENDER POLICY DATABASE - ALL LENDERS
+=================================================
+
+LENDER POLICY DOCUMENT
+========================
+Lender: AU Small Finance Bank
+Product: LAP
+Lender Type: sfb
+ROI: 11.00% to 13.00%
+Min CIBIL: 550
+Max LTV: 75.00%
+Loan Range: Rs.15.00L to Rs.150.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, SOIP, Rented, Open land-Vacant, Mix use, Hotel, Hostel, Society patta, Panchayat patta, School property, JDA, RHB, Nagar Palika, Nagar Nigam, Open land - JDA/NAGAR PALIKA, RIICO PATTA, agriculture title SORP/SOCP/SOIP, Latest Society patta till 2021, Old Registry title, Private khatedar with Registry, RHB part property, Still parking and pent house
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Payout - 1.5%+GST, Open land - JDA/NAGAR PALIKA, RIICO PATTA upto 50 lakh, Latest Society patta till 2021
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Aadhar Housing Finance
+Product: Home Loan
+Lender Type: hfc
+ROI: 8.99% to 10.99%
+Min CIBIL: 642
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.75.00L
+City Coverage: rajasthan
+Property Accepted: Approved properties
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Processing fee for LAP: 1 & 1.5, IMD for LAP: 1499+GST, DSA payouts applicable for corporate and retail channels.
+Special Profiles: Cash income considered, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Aadhar Housing Finance
+Product: LAP
+Lender Type: hfc
+ROI: 12.50% to 14.50%
+Min CIBIL: 642
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.75.00L
+City Coverage: rajasthan
+Property Accepted: Approved properties
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Processing fee for LAP: 1 & 1.5, IMD for LAP: 1499+GST, DSA payouts applicable for corporate and retail channels.
+Special Profiles: Cash income considered, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Aavas Financiers Ltd
+Product: Home Loan
+Lender Type: hfc
+ROI: 9.50% to 11.50%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: all Residential/Commercial/Multi tenant & PG Properties
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Higher FOIR (Upto 500%) - More loan amount eligibility, Best TAT - Approval in 4 to 5 days, Statewise property deviation accepted
+Special Profiles: Co-applicant income clubbing, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Aavas Financiers Ltd
+Product: LAP
+Lender Type: hfc
+ROI: 11.50% to 13.50%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: all Residential/Commercial/Multi tenant & PG Properties
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Higher FOIR (Upto 500%) - More loan amount eligibility, Best TAT - Approval in 4 to 5 days, Statewise property deviation accepted
+Special Profiles: Co-applicant income clubbing, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Adani Housing Finance
+Product: Home Loan
+Lender Type: hfc
+ROI: % to %
+Min CIBIL: 650
+Max LTV: 85.00%
+Loan Range: Rs.10.00L to Rs.40.00L
+City Coverage: rajasthan
+Property Accepted: Current date patta 6 months old, Agricultural to Registry
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD-2360/-, TAT-5-7 days, Taking CIBIL calls
+Special Profiles: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Adani Housing Finance
+Product: LAP
+Lender Type: hfc
+ROI: % to %
+Min CIBIL: 650
+Max LTV: 85.00%
+Loan Range: Rs.10.00L to Rs.40.00L
+City Coverage: rajasthan
+Property Accepted: Current date patta 6 months old, Agricultural to Registry
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD-2360/-, TAT-5-7 days, Taking CIBIL calls
+Special Profiles: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Aditya Birla Finance Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 9.50% to 12.00%
+Min CIBIL: Case to case
+Max LTV: 85.00%
+Loan Range: Rs.50.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Approved plot, Society plot, Commercial plot, Industrial plot
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Builder profile SORP/SOCP funding available
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Special Property: Hotel, Hostel, nursing home, farm house, Land Lap, Mixed used, PG & Resort.
+Special Profiles: Builder profile SORP/SOCP funding available
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Altum credo Home Finance Ltd
+Product: Home Loan
+Lender Type: hfc
+ROI: 12.00% to 14.00%
+Min CIBIL: 650
+Max LTV: 90.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, GP Patta, Agriculture Land, All Approved Property, Pvt Colonisers Patta
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cash salary max loan 20 lakh, Channel payout 0.80%, Login fees 999
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Altum credo Home Finance Ltd
+Product: LAP
+Lender Type: hfc
+ROI: 12.00% to 14.00%
+Min CIBIL: 650
+Max LTV: 90.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, GP Patta, Agriculture Land, All Approved Property, Pvt Colonisers Patta
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cash salary max loan 20 lakh, Channel payout 0.80%, Login fees 999
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Anand Rathi Housing Finance Ltd.
+Product: Home Loan
+Lender Type: hfc
+ROI: 11.50% to 13.50%
+Min CIBIL: 650
+Max LTV: 90.00%
+Loan Range: Rs.10.00L to Rs.L
+City Coverage: rajasthan
+Property Accepted: Society Patta till 2024, JDA Patta, Nagar Nigam Patta, RHB Patta, Nagar Palika Patta, Panchayat Patta
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: None
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Anand Rathi Housing Finance Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 12.00% to 15.00%
+Min CIBIL: 650
+Max LTV: 70.00%
+Loan Range: Rs.50.00L to Rs.450.00L
+City Coverage: rajasthan
+Property Accepted: JDA, Society Patta, Open Land
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Flexible structuring, Quick decisioning, Quick payout
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Minimum 3 years vintage, No cash losses in last 2 FYs, Max 1 bounce/loan in last 6 months, Banking inward return ≤3%, Monthly rent credit mandatory, Rent to reflect in ITR, Alternate income required, 5+ monthly banking transactions, Max 3 bounces/year, Existing loan must be 12+ MOB, Society patta (year before 1999), Open Land(approved) for 1crore loan
+Special Profiles: Flexible structuring, Quick decisioning, Quick payout
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Arka Fincap Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 11.50% to 12.50%
+Min CIBIL: 600
+Max LTV: 80.00%
+Loan Range: Rs.25.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residence, Commercial, Industrial, Commercial Purchase
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF: 1% + GST, Plot taken only with other built up collateral, Not allowed as primary collateral, Society Patta valued till 2018
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Auxilo Finserve Pvt. Ltd.
+Product: Business Loan - Secured
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Converted property, Open Plot with Boundary, Agriculture in Periphery of Nagar Palika, Nagar Parishad, UIT, Nagar Nigam, JDA
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Minimum 13-Year Chain + Latest Revenue Records, CA-Certified or Audited Financials, Eligible Institutes: Nursery to 10th/12th Schools, Colleges offering B.Ed/Nursing/Pharmacy/Basic Degree Courses/Coaching Classes/Paramedical courses, Affiliation: School – CBSE/State/ICSE, College – National Council Approved (B.Ed, Pharma, Nursing), Funding to Coaching Institutes with strength of 700 students.Minimum Student Strength:
+•⁠  ⁠State Board – 600+
+•⁠  ⁠CBSE – 400+
+•⁠  ⁠Colleges – As per course seats allotment 
+Loan Amount (Assessment Based):
+•⁠  ⁠Up to 05 Cr. 
+
+(Audited Based)
+•⁠  ⁠Up to ₹10 Cr (Income Based)
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Auxilo Finserve Pvt. Ltd.
+Product: Business Loan - Unsecured
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Converted property, Open Plot with Boundary, Agriculture in Periphery of Nagar Palika, Nagar Parishad, UIT, Nagar Nigam, JDA
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Minimum 13-Year Chain + Latest Revenue Records, CA-Certified or Audited Financials, Eligible Institutes: Nursery to 10th/12th Schools, Colleges offering B.Ed/Nursing/Pharmacy/Basic Degree Courses/Coaching Classes/Paramedical courses, Affiliation: School – CBSE/State/ICSE, College – National Council Approved (B.Ed, Pharma, Nursing), Funding to Coaching Institutes with strength of 700 students
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Axis Bank Ltd.
+Product: Home Loan
+Lender Type: bank
+ROI: 9.00% to 11.00%
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Mixed Usage, Rented, Open Land, RIICO, Residential cum commercial, JDA, Nagar Nigam, Nagar Palika, Free Hold, RHB, Society (date Before 1999 JDA list submit), Society Patta before 2016 only Lap loan Upto 75 lakh, Registered Gram Panchayat (within 10 km of Axis Branch)
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: No
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate, RTR surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Processing Fee: Up to 1%, Society Property Before 2016 Only Lap, Society (date Before 1999 JDA list submit), Society Patta before 2016 only Lap loan Upto 75 lakh
+Special Profiles: Cash income considered, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate, RTR surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Axis Bank Ltd.
+Product: LAP
+Lender Type: bank
+ROI: 9.50% to 11.50%
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Mixed Usage, Rented, Open Land, RIICO, Residential cum commercial, JDA, Nagar Nigam, Nagar Palika, Free Hold, RHB, Society (date Before 1999 JDA list submit), Society Patta before 2016 only Lap loan Upto 75 lakh, Registered Gram Panchayat (within 10 km of Axis Branch)
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: No
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate, RTR surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Processing Fee: Up to 1%, Society Property Before 2016 Only Lap, Society (date Before 1999 JDA list submit), Society Patta before 2016 only Lap loan Upto 75 lakh
+Special Profiles: Cash income considered, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate, RTR surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Axis Bank Ltd.
+Product: Working Capital - CC/OD
+Lender Type: bank
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 75.00%
+Loan Range: Rs.100.00L to Rs.10000.00L
+City Coverage: jaipur_only
+Property Accepted: Residential, Commercial, Industrial
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Dealing with DSA/Connectors/RAC
+Special Profiles: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Axis Finance Limited
+Product: Home Loan
+Lender Type: nbfc
+ROI: 10.75% to 12.95%
+Min CIBIL: 600
+Max LTV: 90.00%
+Loan Range: Rs.10.00L to Rs.75.00L
+City Coverage: rajasthan
+Property Accepted: Row House, Flat Purchase, Resale, Plot Purchase + Construction, Under Construction Balance Transfer + Enhancement, Agriculture Land Property, GP Property, Society Patta Upto 2024
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, ITR surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Loan tenure is dependent on age limit, No Min loan seasoning/track record is required for BT+TOP UP, LTV as per regulatory requirement up to 90%, No Margin Money required, Loan Maturity - 70 Yrs for both Salaried and SENP, Quick Loan Processing, Cash Rental Income is allowed, Assessment is to be done by dedicated affordable credit team, All locations are fully operative with Sales+Risk+ Operation support, No file movement to ensure fastest TAT, Relook/Re-appeal of cases is available basis on case merits, Consider only CIBIL & No internal App based scores, Booking in One HL account of market value based funding in Plot Purchase +Construction cases, Amenities Funding is allowed to customer's favoring as well Third Party/Contractor favoring, OTP Based advance loan processing from Login to disb, PD/Assessment/NO income Proof Program Based funding is Max 50 lac, Multiple Cash Salaried income in family can be considered with Max Loan up to 50 lac, TOP Up for 20 Yrs
+Special Profiles: Cash income considered, NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, ITR surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Bajaj Finserv Limited
+Product: LAP
+Lender Type: nbfc
+ROI: 9.15% to 10.50%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.100.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, JDA, Nagar Nigam, Nagar Parishad, Nagar Palika, Agricultural
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Payout 1.45%
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Bajaj Markets
+Product: Business Loan - Unsecured
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.2.00L to Rs.40.00L
+City Coverage: jaipur_only
+Property Accepted: As per policy
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Final approval as per Bajaj Markets Credit Policy. More than 3 USL allowed subject to conditions & credit approval.BUSINESS VINTAGE
+•⁠  ⁠Proprietorship: 1 Year+
+•⁠  ⁠Partnership / LLP: 3 Years+
+•⁠  ⁠Pvt Ltd: 3 Years+
+
+💰 LOAN PROGRAMS
+•⁠  ⁠ABB Program: ₹2 – ₹22 Lacs
+•⁠  ⁠OE Program: ₹3 – ₹40 Lacs 
+
+📊 BANKING NORMS
+•⁠  ⁠Banking History: 6 Months
+•⁠  ⁠Minimum BTO: ₹40 Lacs
+•⁠  ⁠Minimum ABB: ₹50,000
+
+📈 LEVERAGE
+•⁠  ⁠More than 3 USL allowed*
+(*subject to conditions & credit approval)
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: CAPRI GLOBAL CAPITAL LTD.
+Product: LAP
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.L
+City Coverage: jaipur_only
+Property Accepted: JDA Patta, Society Patta (Till 2018), Panchayat Patta (Registered), Nagar Nigam Patta, Agriculture Property (Gift Deed)
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: ZERO IMD,School Funding-Area – Jaipur se 70 KM tak
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: CLIX Capital
+Product: Business Loan - Secured
+Lender Type: nbfc
+ROI: 12.50% to 18.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Commercial (SOCP and Rented / Commercial Purchase), Residential (SORP & Rented), Society, Agriculture, Industrial Floor, Multi-Dwelling Units, Single Title Deed upto 50L, Mixed Usage Property, Multi tenanted properties, Lal Dora properties, 3rd floor properties without plan, Gram Panchayat, Baccha Flat/Unauthorized Flat/Pent House, Road Widening, Property Near Railway Track, Property with approach road width up to 4 feet, Property under Demolition / Red Stamp, Small time school, hospitals & Clinics, Society Patta, Registered Gram Panchayat, Agriculture and all approved properties
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF: 1.5-2%, Leading Assessed Income Program, up to 75L, Daily Average Bank Balance considered in Banking Surrogate, Agri Collateral (upto 1cr)
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: CLIX Capital
+Product: LAP
+Lender Type: nbfc
+ROI: 12.50% to 18.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Commercial (SOCP and Rented / Commercial Purchase), Residential (SORP & Rented), Society, Agriculture, Industrial Floor, Multi-Dwelling Units, Single Title Deed upto 50L, Mixed Usage Property, Multi tenanted properties, Lal Dora properties, 3rd floor properties without plan, Gram Panchayat, Baccha Flat/Unauthorized Flat/Pent House, Road Widening, Property Near Railway Track, Property with approach road width up to 4 feet, Property under Demolition / Red Stamp, Small time school, hospitals & Clinics, Society Patta, Registered Gram Panchayat, Agriculture and all approved properties
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF: 1.5-2%, Leading Assessed Income Program, up to 75L, Daily Average Bank Balance considered in Banking Surrogate, Agri Collateral (upto 1cr)
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Capital India finance limited
+Product: LAP
+Lender Type: nbfc
+ROI: 11.50% to 13.50%
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.20.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, SOIP, Rented, Vacant, Mix use, School, Hotel, Society Patta
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Payout - 1.75%
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Credit Saison
+Product: LAP
+Lender Type: nbfc
+ROI: 11.00% to 13.00%
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.30.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Schools, Colleges, Industrial Properties, Hospitals, Plot Mortgage
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Loan against Property up to 5 Crores, Lap on all collateral up to 2 Crores, Decision in 2 days, Fast TAT of 5 days, Special property up to 75 Lacs
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: DCB Bank
+Product: LAP
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 95.00%
+Loan Range: Rs.21.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Mixused, City area property, Society till 2018, Panchayat registered patta
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Loan for commercial purchase, Balance transfers loans facility.*-USP-
+1-OD eligibility 50% Limit of turnover*
+2- Community Dominated Area
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: DCB Bank
+Product: Overdraft
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 95.00%
+Loan Range: Rs.21.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Mixused, City area property, Society till 2018, Panchayat registered patta
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Loan for commercial purchase, Balance transfers loans facility.*-USP-
+1-OD eligibility 50% Limit of turnover*
+2- Community Dominated Area
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Easy home finance
+Product: Home Loan
+Lender Type: hfc
+ROI: % to %
+Min CIBIL: 500
+Max LTV: 80.00%
+Loan Range: Rs.1.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, JDA, Housing Board, Nagar Nigam, Kachhi Basti, Panchayati Patta, Khatedari Patta, Private Colonizer, Gift Deed, Registry
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cibil call with proper justification, No negative areas, All pattas including 2025 pattas, Penthouse, Steel parking, Society flats, Colonizer patta, Negative patta
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Easy home finance
+Product: LAP
+Lender Type: hfc
+ROI: % to %
+Min CIBIL: 500
+Max LTV: 80.00%
+Loan Range: Rs.1.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, JDA, Housing Board, Nagar Nigam, Kachhi Basti, Panchayati Patta, Khatedari Patta, Private Colonizer, Gift Deed, Registry
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cibil call with proper justification, No negative areas, All pattas including 2025 pattas, Penthouse, Steel parking, Society flats, Colonizer patta, Negative patta
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Edelweiss Finance
+Product: LAP
+Lender Type: nbfc
+ROI: 12.50% to 14.50%
+Min CIBIL: 675
+Max LTV: 100.00%
+Loan Range: Rs.50.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Panchayati Patta (Registered), JDA, Nagar Nigam, Housing Board, Converted agriland, Approved Open Land, Industrial Property
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: No
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Approved Open Land (LTV upto 70%), Industrial Property (LTV upto 70%),RTR-12 EMIs – 120%
+18 EMIs – 130%
+24 EMIs – 140%
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: GRIHUM HOUSING FINANCE LTD
+Product: Home Loan
+Lender Type: hfc
+ROI: 10.50% to 11.50%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.3.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: Stilt Parking, Paint House, Road Winding, High Tension Line, Jai Singh Khor, Agra Road, Non Transferable Patta, Negative Society Before Black Listed
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: DSA Payout: HL-2%, LAP-2.25%
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: GRIHUM HOUSING FINANCE LTD
+Product: LAP
+Lender Type: hfc
+ROI: 13.25% to 15.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.3.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: Stilt Parking, Pent House, Road Winding, High Tension Line, Jai Singh Khor, Agra Road, Non Transferable Patta, Negative Society Before Black Listed
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: DSA Payout: HL-2%, LAP-2.25%
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Godrej Capital
+Product: LAP
+Lender Type: nbfc
+ROI: 10.75% to 14.00%
+Min CIBIL: Case to case
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.L
+City Coverage: specific_cities
+Property Accepted: SORP, SOCP, Rented/Vacant, Industrial Purchase, Open land (Approved), Commercial Purchase
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Salaried LAP, Cash Rental, OD Limit, Upto 50 lakh without ITR, Upto 80 Lakh on Single ITR, LIP, Single Women loans
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Special Collateral: Hotel, Hospital, Mixed used, Gram Panchayat (Reg. Or non registered), Agriculture (Commercial & Industrial), Non Transferable Patta subject to, Society patte -2024, Road winding Subject to.
+Special Profiles: Salaried LAP, Cash Rental, OD Limit, Upto 50 lakh without ITR, Upto 80 Lakh on Single ITR, LIP, Single Women loans
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: HDB Financial Services
+Product: LAP
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.1500.00L
+City Coverage: jaipur_only
+Property Accepted: Self-operated Nursing Home, Clinic, Hotel, Pre Primary Kinder Garden School, Hostels, Plot funding
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Plot funding allowed up to 2 Cr LTV 50% only for Jaipur. PLIC for imperfect collateral, EBL for imperfect technical reports.Residential rented property one tenant  70%,Vacant Rented Property ltv 50%, Vacant commercial property LTV 25%, JEWELLER, M profile,PLIC & EBL Policy:-
+PLIC – Imperfect Collateral – This is the product Offered to Customers with Imperfect/ fractured  Legal Title – EBL This is the product Offered to Customers with Imperfect/ fractured Technical  reports
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: HSBC Bank
+Product: Home Loan
+Lender Type: bank
+ROI: 7.25% to 7.85%
+Min CIBIL: 700
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.150.00L
+City Coverage: jaipur_only
+Property Accepted: Residential Property (SORP, Rented, Vacant)
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Property insurance is mandatory for 5 years. Saving account will be opened in HSBC with Zero balance. 15BPS premium in Non-BT.
+Special Profiles: Co-applicant income clubbing, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: HSBC Bank
+Product: LAP
+Lender Type: bank
+ROI: 7.75% to 8.50%
+Min CIBIL: 700
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.150.00L
+City Coverage: jaipur_only
+Property Accepted: Residential Property (SORP, Rented, Vacant)
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Property insurance is mandatory for 5 years. Saving account will be opened in HSBC with Zero balance. 15BPS premium in Non-BT.
+Special Profiles: Co-applicant income clubbing, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Hero Fincorp Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 10.50% to 12.00%
+Min CIBIL: 600
+Max LTV: 80.00%
+Loan Range: Rs.20.00L to Rs.750.00L
+City Coverage: rajasthan
+Property Accepted: Residential, vacant residential, Commercial, industrial, converted land, school property, open land approved property, commercial purchase, Industrial Purchase
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Case to Case Basis ROI
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Hiranandani Financial Services
+Product: LAP
+Lender Type: nbfc
+ROI: 13.00% to 15.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.5.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: JDA, Society Patta till 2021, Nagar Nigam, Nagar Palika, Agriculture Patta, Panchayat Patta, RHB, Agriculture title SORP/SOCP/SOIP, Old Registry title, Private Khatedar with Registry
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Fast decision, Best rates in segment, Current date gift deed considered
+Special Profiles: Cash income considered, NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Home Credit India Finance Pvt. Ltd
+Product: LAP
+Lender Type: nbfc
+ROI: 14.00% to 18.00%
+Min CIBIL: 650
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.75.00L
+City Coverage: rajasthan
+Property Accepted: Gram Panchayat Patta, Agriculture Jamabandi to Gift Deed, Latest Sale Deed, All Standard Properties, Small Hotels, Agri Industrial, Rented
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing, Rental income considered
+Processing Fee: 1.500%
+Foreclosure Charges: As per policy
+Notes: PF: 1.50%, IMD: ZERO
+Special Profiles: Cash income considered, Co-applicant income clubbing, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: ICICI Bank
+Product: Business Loan - Unsecured
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 725
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: As per policy
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: No
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Loan Amount: Up to ₹75 Lakhs, Tenure: Up to 4 Years, Zero Collateral, Quick approval, Minimum documentation, 100% transparent pricing, Max 1 PL/BIL in last 6 months, Minimum Average Monthly Balance: Last 3 months: ₹25,000, Last 12 months: ₹50,000, Limit Eligibility: Higher of Leverage or MAB or ABB to EMI, Drop in Turnover: Max 20% in last 2 years, PAT: Must be positive
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: ICICI HFC
+Product: Home Loan
+Lender Type: hfc
+ROI: 9.50% to 10.55%
+Min CIBIL: 700
+Max LTV: 80.00%
+Loan Range: Rs.20.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta before 2022
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Standard PF - 0.1% PF, Minimum salary 40k with statutory deduction, Vintage salaried - minimum 3 years of total experience and minimum 1 year with current company, Vintage self-employed - minimum 5 years of total vintage and minimum 3 years in current business
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: IDFC Bank
+Product: Institutional Loan
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Mixed Use, Hotel, Hospital, PG, Hostel, Banquet, Godown, Converted Farmhouse
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Processing Fee: 1% Only
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: IDFC Bank
+Product: LAP
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Mixed Use, Hotel, Hospital, PG, Hostel, Banquet, Godown, Converted Farmhouse
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: 1.000%
+Foreclosure Charges: Nil
+Notes: Processing Fee: 1% Only
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: IIFL Home Loans
+Product: Home Loan
+Lender Type: hfc
+ROI: 8.90% to 11.85%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: JDA, Society
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cash salary 50k considered
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: IIFL Home Loans
+Product: LAP
+Lender Type: hfc
+ROI: 12.00% to 16.50%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: JDA, Society
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cash salary 50k considered
+Special Profiles: Co-applicant income clubbing, Banking surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: InCred Financial
+Product: LAP
+Lender Type: nbfc
+ROI: 12.50% to 15.00%
+Min CIBIL: 650
+Max LTV: 65.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Institutional property, Commercial Property, Residential Property, Mixed Use Property
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: COVID time DPD's and Restructure cases considered
+Processing Fee: 1.000%
+Foreclosure Charges: Nil
+Notes: Standard PF – 1.00%
+Special Profiles: COVID time DPD's and Restructure cases considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: IndusInd Bank
+Product: Home Loan
+Lender Type: bank
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Self-occupied Residential Property, Mixed Use, Rental Property with SORP
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash Salaried Profiles, Agri/Dairy Income Clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: NO ITR Required upto 25 Lakh Loan, 1 ITR for Loan amount 25 - 50 Lakh Loan
+Special Profiles: Cash Salaried Profiles, Agri/Dairy Income Clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Indusind Bank
+Product: CGTMSE - Unsecured
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 75.00%
+Loan Range: Rs.35.00L to Rs.70.00L
+City Coverage: rajasthan
+Property Accepted: As per policy
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Min Vintage 3 years, Min Turnover 1.20 Crore, 30% Limit of Turnover
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Jana Small Finance Bank
+Product: Home Loan
+Lender Type: sfb
+ROI: 9.75% to 10.25%
+Min CIBIL: 550
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.300.00L
+City Coverage: jaipur_only
+Property Accepted: JDA, Society Patta till 2022, Nagar Nigam Patta, Nagar Palika Patta, Panchayat Patta, Housing Board, Agricultural
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD charges: 5 Lac to 10 Lac - 1000+GST, Upto 20 Lac - 1500+GST, Upto 3 Cr - 2000+GST. Legal & Technical: 2950/- Only. Special: 30 Lac without ITR, 70 Lac on single ITR.
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Jana Small Finance Bank
+Product: LAP
+Lender Type: sfb
+ROI: 10.25% to 12.00%
+Min CIBIL: 550
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.300.00L
+City Coverage: jaipur_only
+Property Accepted: JDA, Society Patta till 2022, Nagar Nigam Patta, Nagar Palika Patta, Panchayat Patta, Housing Board, Agricultural
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD charges: 5 Lac to 10 Lac - 1000+GST, Upto 20 Lac - 1500+GST, Upto 3 Cr - 2000+GST. Legal & Technical: 2950/- Only. Special: 30 Lac without ITR, 70 Lac on single ITR.
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Jio Credit LTD
+Product: Home Loan
+Lender Type: nbfc
+ROI: 7.99% to 9.99%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.50.00L to Rs.5000.00L
+City Coverage: pan_india
+Property Accepted: Residential property, Mixed use property
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Plot Purchase, Plot Purchase + Equity, BT and Topup on HL ROI & PF, No limit Funding as Topup & Equity for HL ROI & PF, Login Fee- Only 1500/-(inclusive GST), Residential property with full commercial end use, Mixed use property (if commercial >50%), Plot BT > 36 months from agreement date.For SALARIED 
+-FOIR up to 70% & Tenure upto 25yrs, Retirement age consider-65yr.
+-Average of Bonus, Incentive and Rent considered 100% but not above Actual Income.
+
+#For SENP eligibility programmes. 
+-*Normal Income Program.(FOIR-100% & LTV-20yrs)
+*Average Banking Program.
+*GST Program.
+*BT RTR Program.
+*Gross Profit
+*Low LTV
+*Income Multiplier.
+
+#Gross Profit
+Upto 2cr & FOIR upto70%.
+
+#Low LTV upto 3CR
+LTV 50% & ABB = 1 EMI
+
+#Income multiplier upto 1CR.
+(FOIR UPTO- 140%)
+
+#Banking Surrogate upto 7.5cr: 
+
+#RTR program multiplier upto 2.5Cr.:
+•⁠  ⁠<12 months    - 0
+•⁠  ⁠12-17 months - 115%
+•⁠  ⁠18-23 months- 120%
+•⁠  ⁠24-35 months- 125%
+•⁠  ⁠36-47 months- 130%
+•⁠  ⁠> 48 months   - 140%
+
+
+-ADDONS
+•⁠  ⁠Residential property with full commercial end use *
+•⁠  ⁠⁠Mixed use property (if commercial >50%)
+•⁠  ⁠⁠Plot BT > 36 months from agreement date.
+•⁠  ⁠ROI - Starts from 9.5%
+•⁠  ⁠PF.- 1%+GST
+•⁠  ⁠⁠Home loan payout applicable.
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Karur Vysya Bank
+Product: LAP
+Lender Type: bank
+ROI: % to %
+Min CIBIL: 700
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.2000.00L
+City Coverage: jaipur_only
+Property Accepted: Residential, Commercial, Rented, Open Land commercial residential, RIICO, Hotel, Hostel, Hospital, School, College, JDA, Nagar Nigam, Nagar Palika, Free Hold
+JDA Accepted: Yes
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Doing 20 cr proposal at DSCR of .80 / 125% FOIR and considering other income also like rental, interest etc while calculating DSCR/FOIR.
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Kogta Financial India Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 13.00% to 15.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Gram Panchayat, Industrial Property, Mixed Use Property, RHB, JDA, Nagar Nigam, Freehold, Society Patta till date, Agriculture title property through Registered Sale Deed or gift deed
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF 1%-2%+GST based on Loan Amount, Login Fees 2000,
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Kotak Mahindra Bank
+Product: Working Capital - CC/OD
+Lender Type: bank
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 75.00%
+Loan Range: Rs.200.00L to Rs.3000.00L
+City Coverage: jaipur_only
+Property Accepted: Industrial, Residential, Commercial, Nagar Nigam, Nagar Parishad
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: DSA payout on case to case basis, ROI decided on case to case basis, Min vintage 2 years, Min turnover 5 Crore, Property - All Approved
+Special Profiles: Co-applicant income clubbing, Overdraft / OD available, Working capital facility
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: MAS Financial Services Ltd
+Product: LAP
+Lender Type: nbfc
+ROI: 11.00% to 13.00%
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: None
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Mahindra Finance
+Product: LAP
+Lender Type: nbfc
+ROI: 11.00% to 12.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: JDA, Nagar Nigam, RHB Approved, 90 A/B, Industrial, Society patta till 1998, DM converted, RIICO, Industrial on society
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+Processing Fee: 1.000%
+Foreclosure Charges: As per policy
+Notes: Processing Fee: 1%, PF sharing of 70% any PF above 1%, Approved plot/Small Hotels/PG/Hospital (25 bedded) LTV up to 55%
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Gross profit surrogate, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Motilal Oswal Home Finance ltd.
+Product: Home Loan
+Lender Type: hfc
+ROI: 9.99% to 13.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta till date, JDA Patta, Nagar Nigam, Nagar Palika, RHB, Gram Panchayat Patta, Agriculture
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: No
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Special pricing above 25 lakh as per scheme. Legal and technical issues property, still parking flat, high tension line, Nale ke pass wali property, low habitation cases book in the Saral program.
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Motilal Oswal Home Finance ltd.
+Product: LAP
+Lender Type: hfc
+ROI: 13.00% to 16.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta till date, JDA Patta, Nagar Nigam, Nagar Palika, RHB, Gram Panchayat Patta, Agriculture
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: No
+Self Employed Allowed: No
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Special pricing above 25 lakh as per scheme. Legal and technical issues property, still parking flat, high tension line, Nale ke pass wali property, low habitation cases book in the Saral program.Profiles - All Types Profiles are also 
+ 
+Kacchi puccki income consider ,
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Muthoot Housing Finance Company Limited
+Product: Home Loan
+Lender Type: hfc
+ROI: 10.45% to 13.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta Current Date 2026, Panchayati Patta Registered, Residential, Agriculture Registry
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Ecological Zone property (Agra Road, Delhi Road) Funding, Low Development 5-10%
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Muthoot Housing Finance Company Limited
+Product: LAP
+Lender Type: hfc
+ROI: 12.00% to 13.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta Current Date 2026, Panchayati Patta Registered, Residential, Agriculture Registry
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Ecological Zone property (Agra Road, Delhi Road) Funding, Low Development 5-10%
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Nido Home Finance Limited
+Product: Home Loan
+Lender Type: hfc
+ROI: 11.70% to 12.20%
+Min CIBIL: 650
+Max LTV: 90.00%
+Loan Range: Rs.20.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, JDA, Nagar Nigam, Panchayati Patta
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD 20 lac to 1.5 cr 1180 rs, Above 1.50 cr 1770,
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Nido Home Finance Limited
+Product: LAP
+Lender Type: hfc
+ROI: 11.70% to 12.20%
+Min CIBIL: 650
+Max LTV: 90.00%
+Loan Range: Rs.20.00L to Rs.500.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta, JDA, Nagar Nigam, Panchayati Patta
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: IMD 20 lac to 1.5 cr 1180 rs, Above 1.50 cr 1770, DSA payout HL - 1.0%, PF - 0.65% HL
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: PROTIUM FINANCE LTD
+Product: LAP
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: Case to case
+Max LTV: 70.00%
+Loan Range: Rs.50.00L to Rs.500.00L
+City Coverage: specific_cities
+Property Accepted: All Society, Agri Constructed, Approved JDA/RHB/Nagar Nigam, Nagar Parishad, Nagar palika, Gram Panchayat, RIICO (Open plot), Converted properties, Hotel, Hospital, Hostel, Resort, PG, Multi Tenented Property
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Commercial & Industrial Purchase and construction, School & College LAP and Purchase and construction
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Piramal Finance Ltd
+Product: LAP
+Lender Type: hfc
+ROI: 11.60% to 14.50%
+Min CIBIL: 650
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: Society patta, plot in MC limits, Gram panchayat properties, Sub Divided Properties, Industrial Properties, Mixed Use Properties, Amalgamated Properties, School/ Play School in the Name of Individual, Farm House, Hospital/ Nursing Home upto 20 Beds, Multi Tenant Properties, Godown properties, Agriculture property
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: LOGIN FEE: 2360, 10% additional LTV on LAP Cases under business loan up to 5 yrs on 15%
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Poonawalla Fincorp
+Product: LAP
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.51.00L to Rs.2500.00L
+City Coverage: rajasthan
+Property Accepted: Approved & Freehold properties, Residential, Commercial, Industrial, Warehouse, Land, Hotel, Hospital, PG, Gym, Hostel, Mix Use, Vacant, Restaurant
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, Low LTV surrogate, LIP surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Initial login fees is Rs.2950 with applicable taxes. Additional funding available up to 75 lacs in form of Business loan for 7 year tenure on selected collaterals.Funding against plots also available alongwith other approved constructed property.
+➡️ Standlone funding against open plots -only with sound business profile.
+NOTE - Not doing commercial or industrial open plot purchase case)
+
+➡️Tenure - Till 15 yrs
+➡️(Program 
+•⁠  ⁠EBITA
+•⁠  ⁠Gross profit
+•⁠  ⁠Avg Banking (upto 7.5 Cr)
+•⁠  ⁠Pure Rental (upto 7.5 Cr)
+•⁠  ⁠Repayment track FT BT (upto 5 Cr.)
+•⁠  ⁠Low LTV Program (51 lacs to 300 lacs)
+•⁠  ⁠LIP upto 200 lacs
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, Gross profit surrogate, Low LTV surrogate, LIP surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: REPCO HOME FINANCE LTD
+Product: Home Loan
+Lender Type: hfc
+ROI: 8.75% to 10.90%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: All kind of property Approved & unapproved, Society patta considered till 2014 (fresh) & transfer till 2024, Agriculture plot with development
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF 1.50% to 2%+ Tax, IMD- Rs 6490/-
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: REPCO HOME FINANCE LTD
+Product: LAP
+Lender Type: hfc
+ROI: 13.00% to 15.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: All kind of property Approved & unapproved, Society patta considered till 2014 (fresh) & transfer till 2024, Agriculture plot with development
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF 1.50% to 2%+ Tax, IMD- Rs 6490/-
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Ratnaafin Capital Private Ltd
+Product: Business Loan - Unsecured
+Lender Type: nbfc
+ROI: 15.00% to 19.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.75.00L
+City Coverage: rajasthan
+Property Accepted: As per policy
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF 2.00% - 1.50%, Insurance applicable based on age calculation, 3 years business vintage, Margins on GST Program: Service 10%, Manufacturer 10%, Retail traders 5%, Wholesaler traders 2%
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: SAMMAAN CAPITAL LTD
+Product: Home Loan
+Lender Type: nbfc
+ROI: 8.75% to 10.75%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.2000.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, RIICO, Industrial Property, Hotel, Resort, Farmhouse, Hostel, Open Land, Commercial Purchase, Society Patta till Dec2024
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Society Patta till Dec2024
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: SAMMAAN CAPITAL LTD
+Product: LAP
+Lender Type: nbfc
+ROI: 10.50% to 12.50%
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.1000.00L
+City Coverage: jaipur_only
+Property Accepted: SORP, SOCP, RIICO, Industrial, Hotel, Resort, Society Patta till 2023
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, LIP surrogate
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Society Patta till 2023 considered up to 75% of MV. Land LAP up to 5CR.
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, Gross profit surrogate, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: SK Finance
+Product: LAP
+Lender Type: nbfc
+ROI: % to %
+Min CIBIL: 600
+Max LTV: 75.00%
+Loan Range: Rs.10.00L to Rs.40.00L
+City Coverage: rajasthan
+Property Accepted: GP - REGISTERED PATTA, APPROVED, SOCIETY TILL 2018, Nagar Palika, Nagar Parishad, Agriculture to Sale Deed / Gift Deed (Minimum 6 Months Old & 30% Development), GRAM PANCHYAT, 90 b technical approved, All Approved Properties
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Under Construction Properties Accepted, TAT OF 5 DAYS, Best Payouts we are giving
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, ITR surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: SMFG India Home Finance
+Product: Home Loan
+Lender Type: hfc
+ROI: 10.00% to 13.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: Residential (Society / Approved), Agriculture Registry, Gram Panchayat, Commercial Properties, Industrial Properties, Society Patta till 2023, Nagar Nigam, Nagar Palika, Panchayat Patta, All Approved Properties,Private Builder Patta (90B)
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cases invited from CA / Property Dealer / Builder / Connector Network
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: SMFG India Home Finance
+Product: LAP
+Lender Type: hfc
+ROI: 11.00% to 15.00%
+Min CIBIL: 650
+Max LTV: 80.00%
+Loan Range: Rs.5.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: Residential (Society / Approved), Agriculture Registry, Gram Panchayat, Commercial Properties, Industrial Properties, Society Patta till 2023, Nagar Nigam, Nagar Palika, Panchayat Patta, All Approved Properties,Private Builder Patta (90B)
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Cases invited from CA / Property Dealer / Builder / Connector Network
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Shubham Housing Finance
+Product: LAP
+Lender Type: hfc
+ROI: 14.50% to 16.50%
+Min CIBIL: 650
+Max LTV: 87.00%
+Loan Range: Rs.5.00L to Rs.50.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Warehouse, Society Patta (2025), Agriculture with one Registered deed, Registered Gram Panchayat Patta
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Highest LTV in market, Society Patta till 2025.✓ Doing M profile and Delhi/Agra road, jaisinghpura khor
+
+✓ We are also funding Agriculture to Sale deed Commercial/Industrial uses property.
+Special Profiles: Cash income considered, Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Suryoday Small Finance Bank Ltd
+Product: Home Loan
+Lender Type: sfb
+ROI: 10.00% to 11.00%
+Min CIBIL: 550
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.150.00L
+City Coverage: rajasthan
+Property Accepted: RIICO, Industrial, Commercial, Residential
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Commercial Purchase, Land LAP, Industrial Purchase & Industrial LAP
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Suryoday Small Finance Bank Ltd
+Product: LAP
+Lender Type: sfb
+ROI: 9.00% to 11.50%
+Min CIBIL: 550
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.150.00L
+City Coverage: rajasthan
+Property Accepted: RIICO, Industrial, Commercial, Residential
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Commercial Purchase, Land LAP, Industrial Purchase & Industrial LAP
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Tata Capital Ltd.
+Product: Home Loan
+Lender Type: nbfc
+ROI: 9.99% to 14.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.5.00L to Rs.150.00L
+City Coverage: jaipur_only
+Property Accepted: Approved, Society Patta till 2025, Nagarpalika, Gram Panchayat Registered Patta, Nagar Nigam, RIICO, JDA commercials, Private colonizer patta, Eco zone, Special zone, Green zone
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing, Banking surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: PF 1.13%+GST for HL, PF 1.13%+5900+GST for HE, IMD 1180 in HL & LAP 2950, FOIR 60% to 65%, Society Patta till 2025, Built up purchase pvt colonizer min 30% development with 90B/90A letter, Jaisinghpura khore area considered for LAP & Ready purchase case & BT -top-up case, G+3 & penthouse in approved Property Purchase, Attractive ROI due to market compression, Seller BT considered, Temporary setup (thadi, thela etc), Minimum development - 10%
+Special Profiles: Cash income considered, Co-applicant income clubbing, Banking surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Tata Capital Ltd.
+Product: LAP
+Lender Type: nbfc
+ROI: 12.00% to 14.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.5.00L to Rs.150.00L
+City Coverage: jaipur_only
+Property Accepted: Approved, Society Patta till 2025, Nagarpalika, Gram Panchayat Registered Patta, Nagar Nigam, RIICO, JDA commercials, Private colonizer patta, Eco zone, Special zone, Green zone
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: No
+Agriculture Income: Yes
+Surrogate Programs: Cash income considered, Co-applicant income clubbing, Banking surrogate program, Low LTV surrogate
+Processing Fee: 1.130%
+Foreclosure Charges: As per policy
+Notes: PF 1.13%+GST for HL, PF 1.13%+5900+GST for HE, IMD 1180 in HL & LAP 2950, FOIR 60% to 65%, Society Patta till 2025, Built up purchase pvt colonizer min 30% development with 90B/90A letter, Jaisinghpura khore area considered for LAP & Ready purchase case & BT -top-up case, G+3 & penthouse in approved Property Purchase, Attractive ROI due to market compression, Seller BT considered, Temporary setup (thadi, thela etc), Minimum development - 10%
+Special Profiles: Cash income considered, Co-applicant income clubbing, Banking surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Tata Capital Ltd.
+Product: Overdraft
+Lender Type: nbfc
+ROI: 10.75% to 12.75%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.40.00L to Rs.1000.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, Mixed Usage, Industrial, NRP, Property(RICCO), Society patta 90B Technical approved, Converted Agricultural Property with SDM order, Open land-industrial, Resi, commercial approved, Gram panchayat approved, Society patta till date
+JDA Accepted: No
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Gram panchayat approved fund up to 2cr. -SORP, SOCP, SOIP, RRP, RCP. Society patta fund upto 75Lac in Saral. Only Resistance property. We fund on PG, hostel properties also. We also fund on till date society patta property -ROI start from 12%
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, GST surrogate program, RTR surrogate program, Low LTV surrogate, LIP surrogate, Rental income considered
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Truhome Finance Ltd. (Shriram Housing Finance Ltd)
+Product: Home Loan
+Lender Type: hfc
+ROI: 11.00% to 15.00%
+Min CIBIL: Case to case
+Max LTV: 65.00%
+Loan Range: Rs.10.00L to Rs.L
+City Coverage: rajasthan
+Property Accepted: All Type Approved Properties, Society Patta Open Land Properties Till 2022, Society Built Up Property Till 2024, Agriculture built up property (gift deed and registry), 90B Technical Approved, Pure Society Property, JDA Patta, Nagar Nigam, Riico, Nagar Palika, Registered Panchayat Patta, RHB, Tin Shed, Godowns, Industrial Property, Free hold Wall City Properties, Sorp, Socp, Industrial, Collectorate Converted Property
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, LIP surrogate
+Processing Fee: 1.250%
+Foreclosure Charges: Nil
+Notes: Agriculture built up property (gift deed and registry) Upto 80Lac, Processing Fees - 1.25% + GST, Funding also on fresh built up properties & BT case of Agra Road (Ecological)
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Truhome Finance Ltd. (Shriram Housing Finance Ltd)
+Product: LAP
+Lender Type: hfc
+ROI: 11.00% to 15.00%
+Min CIBIL: Case to case
+Max LTV: 65.00%
+Loan Range: Rs.10.00L to Rs.100.00L
+City Coverage: rajasthan
+Property Accepted: All Type Approved Properties, Society Patta Open Land Properties Till 2018, Society Built Up Property Till 2024, Agriculture built up property (registry/gift deed), 90B Technical Approved, Pure Society Property, JDA Patta, Nagar Nigam, Riico, Nagar Palika, Registered Panchayat Patta, RHB, Tin Shed, Godowns, Industrial Property, Free hold Wall City Properties, Sorp, Socp, Industrial, Collectorate Converted Property
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, LIP surrogate
+Processing Fee: 1.500%
+Foreclosure Charges: Nil
+Notes: Processing Fees - 1.5% + GST. Funding also on fresh built up properties & BT case of Agra Road (Ecological)
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing, Banking surrogate program, RTR surrogate program, LIP surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Ujjivan Small Finance Bank Ltd.
+Product: LAP
+Lender Type: sfb
+ROI: 10.50% to 12.50%
+Min CIBIL: 550
+Max LTV: 80.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: Society Patta (Min. 3 years old with possession), JDA Approved Property, Nagar Nigam Property, RHB Property, City Properties, Gram Panchayat Property, Industrial Property, Agricultural Property (Only in SORP, SOCP & SOIP with clear demarcation)
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: No
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Interest Rate depends on CIBIL Score, Loan Amount, Income Profile
+Special Profiles: Co-applicant income clubbing
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Utkarsh Small Finance Bank
+Product: LAP
+Lender Type: sfb
+ROI: % to %
+Min CIBIL: 550
+Max LTV: 100.00%
+Loan Range: Rs.100.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Freehold, Rented, Vacant, Mixed usage, All Approved and Regularize properties, Properties Without Map, 90 B Technical approved
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Commercial Purchase up to 5 CR, LRD up to 25 CR for 15 years, Funding up to 5 Cr in Banking surrogate, 3 Cr on LAP BT Multiplayer, GST Program funding up to 7.5 Cr, Funding up to Rs. 5Cr. Under Utkarsh Elite (LTV up to 80% on SORP), Funding up to 3 cr on LAP Advantage with 90% LTV on land value, Funding up to 100 lac on Low LTV program
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Utkarsh Small Finance Bank
+Product: Working Capital - CC/OD
+Lender Type: sfb
+ROI: % to %
+Min CIBIL: 550
+Max LTV: 100.00%
+Loan Range: Rs.100.00L to Rs.1500.00L
+City Coverage: rajasthan
+Property Accepted: Residential, Commercial, Industrial, Freehold, Rented, Vacant, Mixed usage, All Approved and Regularize properties, Properties Without Map, 90 B Technical approved
+JDA Accepted: No
+Society Patta: No
+Gram Panchayat: No
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+Processing Fee: As per policy
+Foreclosure Charges: As per policy
+Notes: Commercial Purchase up to 5 CR, LRD up to 25 CR for 15 years, Funding up to 5 Cr in Banking surrogate, 3 Cr on LAP BT Multiplayer, GST Program funding up to 7.5 Cr, Funding up to Rs. 5Cr. Under Utkarsh Elite (LTV up to 80% on SORP), Funding up to 3 cr on LAP Advantage with 90% LTV on land value, Funding up to 100 lac on Low LTV program
+Special Profiles: Co-applicant income clubbing, Banking surrogate program, GST surrogate program, Low LTV surrogate
+
+---
+
+LENDER POLICY DOCUMENT
+========================
+Lender: Vastu Finserv India Private Limited
+Product: LAP
+Lender Type: nbfc
+ROI: 14.00% to 16.00%
+Min CIBIL: 600
+Max LTV: 70.00%
+Loan Range: Rs.10.00L to Rs.300.00L
+City Coverage: rajasthan
+Property Accepted: SORP, SOCP, SOIP, Rented, Vacant, Mix use, Society patta, Panchayat patta, School property, Hotel, Hostel, JDA, RHB, Nagar Palika, Nagar Nigam, agriculture title SORP/SOCP/SOIP, Old Registry title specially in developed market, Private khatedar with Registry
+JDA Accepted: Yes
+Society Patta: Yes
+Gram Panchayat: Yes
+Freehold: Yes
+Salaried Allowed: Yes
+Self Employed Allowed: Yes
+Agriculture Income: Case to case
+Surrogate Programs: NIP profiles accepted, Co-applicant income clubbing
+Processing Fee: As per policy
+Foreclosure Charges: Nil
+Notes: Fast decision, Latest Society patta till 2023, Best Rates in our segment
+Special Profiles: NIP profiles accepted, Co-applicant income clubbing
+
+---
+

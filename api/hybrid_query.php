@@ -20,6 +20,7 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/lender_search.php';   // provides: searchLenders(), normalizeLenderRow(), cityToState(), loanTypeToKeywords()
 
+if (basename($_SERVER['PHP_SELF'] ?? '') === 'hybrid_query.php') {
 // ── Route ─────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $body      = getJsonBody();
@@ -33,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 jsonResponse(runHybrid($profile, $freeQuery));
+}
 
 
 // ═══════════════════════════════════════════════════════════
@@ -167,7 +169,7 @@ function runHybrid(array $profile, string $freeQuery = ''): array {
     $priority = strtolower(trim($profile['priority'] ?? 'balanced'));
 
     foreach ($lenders as &$l) {
-        $result              = scoreLenderV2($l, $cibil, $ltv, $foir, $amountLakh, $propClean, $city, $occ, $incSrc, $needsSurrogate, $priority, $isUnsecured);
+        $result              = scoreLenderV2($l, $cibil, $ltv, $foir, $amountLakh, $propClean, $city, $occ, $incSrc, $needsSurrogate, $priority, $isUnsecured, $freeQuery);
         $l['score']          = $result['score'];
         $l['eligible']       = $result['eligible'];
         $l['rejection_risk'] = $result['rejection_risk'];
@@ -199,7 +201,34 @@ function runHybrid(array $profile, string $freeQuery = ''): array {
     }
     unset($l);
 
+    // Pin special-profile-matched lenders into results
+    $pinned = [];
+    if (!empty($freeQuery)) {
+        $stopWords = ['profile','loan','home','property','bank','finance','case','need','want','good','best','please','lender','jaipur','delhi','mumbai','india'];
+        $qWords = array_filter(
+            preg_split('/\s+/', strtolower(trim($freeQuery))),
+            fn($w) => strlen($w) > 4 && !in_array($w, $stopWords)
+        );
+        foreach ($lenders as $idx => $pl) {
+            if (empty($pl['special_profiles'])) continue;
+            $sp = strtolower(($pl['special_profiles'] ?? '') . ' ' . ($pl['profile_allowed'] ?? ''));
+            foreach ($qWords as $w) {
+                if (strlen($w) > 3 && str_contains($sp, $w)) {
+                    $pinned[$pl['lender_name']] = $idx;
+                    break;
+                }
+            }
+        }
+    }
     $top = array_slice($lenders, 0, MAX_LENDERS_RETURN);
+    // Inject pinned lenders missing from top
+    foreach ($pinned as $pName => $pIdx) {
+        $alreadyIn = false;
+        foreach ($top as $t) { if ($t['lender_name'] === $pName) { $alreadyIn = true; break; } }
+        if (!$alreadyIn && isset($lenders[$pIdx])) {
+            $top[] = $lenders[$pIdx];
+        }
+    }
 
     // ── Step 6: Generate rich top-3 AI explanations ───────
     if (openAiEnabled() && count($top) >= 1) {
@@ -254,7 +283,7 @@ function runHybrid(array $profile, string $freeQuery = ''): array {
 // ═══════════════════════════════════════════════════════════
 //  SCORING ENGINE V2 — UPGRADED (7 Components, Bifurcated)
 // ═══════════════════════════════════════════════════════════
-function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amountLakh, string $propClean, string $city, string $occ, string $incSrc, bool $needsSurrogate, string $priority = 'balanced', bool $isUnsecured = false): array {
+function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amountLakh, string $propClean, string $city, string $occ, string $incSrc, bool $needsSurrogate, string $priority = 'balanced', bool $isUnsecured = false, string $freeQuery = ''): array {
     $s = 0; $eligible = true; $rejRisk = 'low'; $matchReasons = []; $warnFlags = []; $breakdown = [];
     $minCib = (int)($l['min_cibil'] ?? 0);
     $minL = (float)($l['loan_min_lakh'] ?? 0);
@@ -422,9 +451,13 @@ function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amoun
     $isSalaried=str_contains($incLower,'salaried')||str_contains($incLower,'salary');
     $isSenp=str_contains($incLower,'senp')||str_contains($incLower,'self')||str_contains($incLower,'cash');
     $isSep=str_contains($incLower,'sep')||str_contains($incLower,'professional')||str_contains($incLower,'doctor')||str_contains($incLower,'ca');
-    $isNipInc=str_contains($incLower,'nip')||str_contains($incLower,'no income')||str_contains($incLower,'no itr');
-    $flagOk=true;
-    if ($isNipInc) $flagOk=(bool)(int)($l['nip_allowed']??0);
+    $isNipInc = str_contains($incLower,'nip')||str_contains($incLower,'no income')||str_contains($incLower,'no itr');
+    $isAgri   = str_contains($incLower,'agri')||str_contains($incLower,'farm')||str_contains($incLower,'kisan');
+    $flagOk = true;
+    if ($isAgri) {
+        // Agriculture — check cash_income or nip or senp (treated case-to-case by most)
+        $flagOk = ((int)($l['cash_income_allowed']??0) || (int)($l['nip_allowed']??0) || (int)($l['senp_allowed']??1)) ? true : false;
+    } elseif ($isNipInc) $flagOk=(bool)(int)($l['nip_allowed']??0);
     elseif ($isSenp) $flagOk=((int)($l['senp_allowed']??1)||(int)($l['cash_income_allowed']??0))?true:false;
     elseif ($isSep) $flagOk=(bool)(int)($l['sep_allowed']??1);
     elseif ($isSalaried) $flagOk=(bool)(int)($l['salaried_allowed']??1);
@@ -445,6 +478,64 @@ function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amoun
     }
     $s += $incPts;
     $breakdown['income_profile'] = ['label'=>$isUnsecured?'Business Profile':'Income Type','points'=>"+{$incPts}",'max'=>$maxIncComp,'note'=>$incNote?:'Income type accepted'];
+    // ── Property Title — title_* columns se hard match ──
+    $titleColMap = [
+        'jda'        => 'title_jda',
+        'society'    => 'title_society_patta',
+        'patta'      => 'title_society_patta',
+        'flat'       => 'title_society_patta',
+        'freehold'   => 'title_freehold',
+        'registry'   => 'title_freehold',
+        'rhb'        => 'title_rhb',
+        'bda'        => 'title_rhb',
+        'panchayat'  => 'title_gram_panchayat',
+        'gram'       => 'title_gram_panchayat',
+        'nagar'      => 'title_nagar_nigam',
+        'nigam'      => 'title_nagar_nigam',
+        'riico'      => 'title_riico',
+        'agriculture'=> 'title_agriculture',
+        'agri'       => 'title_agriculture',
+    ];
+    $propTitlePts = 0; $propTitleNote = ''; $titleColUsed = null;
+    foreach ($titleColMap as $keyword => $col) {
+        if (str_contains($propClean, $keyword)) { $titleColUsed = $col; break; }
+    }
+    if ($titleColUsed && array_key_exists($titleColUsed, $l)) {
+        $titleVal = $l[$titleColUsed];
+        if ($titleVal === null || $titleVal === '') {
+            $propTitlePts = 2; $propTitleNote = 'Title policy not specified';
+        } elseif ((int)$titleVal === 1) {
+            $propTitlePts = 18; $propTitleNote = 'Property title accepted';
+            $matchReasons[] = ucfirst(str_replace('_',' ',$propClean)) . ' title accepted';
+        } else {
+            // Check if property_allowed text overrides the 0 flag
+            $propText = strtolower(($l['property_allowed'] ?? '') . ' ' . ($l['notes'] ?? '') . ' ' . ($l['special_profiles'] ?? ''));
+            $isAllProperties = str_contains($propText, 'all') || 
+                               str_contains($propText, 'deviation') ||
+                               str_contains($propText, 'any property') ||
+                               str_contains($propText, 'all residential') ||
+                               str_contains($propText, 'case to case');
+            if ($isAllProperties) {
+                $propTitlePts = 5; $propTitleNote = 'Flexible property policy';
+                $matchReasons[] = 'Flexible property acceptance';
+            } else {
+                $propTitlePts = -20; $propTitleNote = 'Title NOT accepted';
+                $warnFlags[]  = ucfirst(str_replace('_',' ',$propClean)) . ' title not accepted by lender';
+                $eligible = false; $rejRisk = 'high';
+            }
+        }
+    } elseif ($propClean) {
+        $pa = strtolower(($l['property_allowed'] ?? '') . ' ' . ($l['notes'] ?? ''));
+        if ($pa && str_contains($pa, $propClean)) {
+            $propTitlePts = 10; $propTitleNote = 'Found in property notes';
+            $matchReasons[] = ucfirst($propClean) . ' title mentioned';
+        } else {
+            $propTitlePts = 0; $propTitleNote = 'Title not specified';
+        }
+    }
+    $s += $propTitlePts;
+    $breakdown['property_title'] = ['label'=>'Property Title','points'=>($propTitlePts>=0?"+{$propTitlePts}":"{$propTitlePts}"),'max'=>18,'note'=>$propTitleNote];
+
     $lenderType=strtolower($l['lender_type']??'nbfc');
     $cleanProf=($cibil>=700&&($foir===-1.0||$foir<=45)&&!$needsSurrogate);
     $bonusPts=0;
@@ -454,6 +545,19 @@ function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amoun
     if ($lenderType==='nbfc'&&$cleanProf&&$roi>13) $warnFlags[]="Better rates available from banks";
     $s += $bonusPts;
     if ($bonusPts>0) $breakdown['lender_type']=['label'=>'Lender Type','points'=>"+{$bonusPts}",'max'=>3,'note'=>strtoupper($lenderType).' preference'];
+    // --- Special Profile Boost (+15) ---
+    if (!empty($freeQuery) && (!empty($l['special_profiles']) || !empty($l['profile_allowed']))) {
+        $spLower = strtolower(($l['special_profiles'] ?? '') . ' ' . ($l['profile_allowed'] ?? ''));
+        $stopWords2 = ['profile','loan','home','property','bank','finance','case','need','want','good','best','please','lender'];
+        $words   = preg_split('/\s+/', strtolower(trim($freeQuery)));
+        foreach ($words as $w) {
+            if (strlen($w) > 4 && !in_array($w, $stopWords2) && str_contains($spLower, $w)) {
+                $s += 15;
+                $matchReasons[] = 'Special profile match';
+                break;
+            }
+        }
+    }
     $finalScore=min(100,max(5,$s));
     if (!$eligible) { $rejRisk='high'; $finalScore=min($finalScore,38); }
     elseif ($finalScore<35) { $rejRisk='high'; }
@@ -841,6 +945,13 @@ function ragEnrichment(string $query, array $lenders): ?string {
     usort($byLender, fn($a, $b) => $b['score'] <=> $a['score']);
     $topHits = array_slice($byLender, 0, 5);
 
+    // Calculate confidence from top hit scores
+    $rawScores   = array_column($topHits, 'score');
+    $maxScore    = !empty($rawScores) ? max($rawScores) : 0;
+    $avgScore    = !empty($rawScores) ? array_sum($rawScores) / count($rawScores) : 0;
+    // Remove boost (0.2) to get real Qdrant score
+    $confidence  = max(0, min(1, $maxScore - 0.1));
+
     // Build context
     $ctx = '';
     foreach ($topHits as $h) {
@@ -859,6 +970,65 @@ function ragEnrichment(string $query, array $lenders): ?string {
         ['role' => 'user',   'content' => "Shortlisted lenders: {$names}\n\nPolicy evidence:\n{$ctx}\nCustomer query: {$query}\n\nWrite 2 specific sentences using actual policy details above."],
     ];
     return chatCompletion($msgs, 200);
+}
+
+// ── RAG Confidence Checker ──────────────────────────────
+function getRagConfidence(string $query): float {
+    $emb  = getEmbedding($query);
+    if (!$emb) return 0.0;
+    $hits = qdrantSearch($emb, 5);
+    if (!$hits) return 0.0;
+    $scores = array_map(fn($h) => (float)($h['score'] ?? 0), $hits);
+    return !empty($scores) ? max($scores) : 0.0;
+}
+
+// ── Dify Fallback ───────────────────────────────────────
+function callDifyFallback(string $query, string $loanType = 'home'): ?string {
+    $keys = [
+        'home' => defined('DIFY_HOME_KEY') ? DIFY_HOME_KEY : '',
+        'lap'  => defined('DIFY_LAP_KEY')  ? DIFY_LAP_KEY  : '',
+    ];
+    $apiKey = $keys[$loanType] ?? $keys['home'];
+    if (!$apiKey) return null;
+    $ch = curl_init('https://api.dify.ai/v1/chat-messages');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 15,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json'
+        ],
+        CURLOPT_POSTFIELDS => json_encode([
+            'inputs'          => [],
+            'query'           => $query,
+            'response_mode'   => 'blocking',
+            'conversation_id' => '',
+            'user'            => 'wealthmetre_diva'
+        ])
+    ]);
+    $res  = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode((string)$res, true);
+    return $data['answer'] ?? null;
+}
+
+// ── Smart RAG Router ────────────────────────────────────
+function smartRagQuery(string $query, array $lenders, string $loanType = 'home'): array {
+    $confidence = getRagConfidence($query);
+    if ($confidence >= 0.75) {
+        $answer = ragEnrichment($query, $lenders);
+        return ['answer' => $answer, 'source' => 'php_rag', 'confidence' => $confidence];
+    }
+    if ($confidence >= 0.50) {
+        $answer = ragEnrichment($query, $lenders);
+        return ['answer' => $answer, 'source' => 'php_rag_low', 'confidence' => $confidence];
+    }
+    $difyAnswer = callDifyFallback($query, $loanType);
+    if ($difyAnswer) {
+        return ['answer' => $difyAnswer, 'source' => 'dify_fallback', 'confidence' => 0.85];
+    }
+    return ['answer' => ragEnrichment($query, $lenders), 'source' => 'php_rag_fallback', 'confidence' => $confidence];
 }
 
 function generateAiNote(array $lenders, int $cibil, int $income, int $emi, string $city, string $prop, string $loanType): ?string {

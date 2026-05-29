@@ -68,6 +68,8 @@ function showPage(id) {
   if (id === 'leads') { loadLeads(); populatePartnerFilter(); }
   if (id === 'lenders') loadLenders();
   if (id === 'diva') loadDiva();
+  if (id === 'llmops') loadLlmOps();
+  if (id === 'techcosts') loadTechCosts();
   if (id === 'dataquality') loadDataQuality();
   if (id === 'auditlogs') loadAuditLogs();
   if (id === 'smsharing') loadSMDirectory();
@@ -282,6 +284,7 @@ async function loadPartners(page=1) {
         <td><div class="td-actions">
           <button class="btn btn-outline btn-xs" title="View Leads" onclick="viewPartnerLeads('${p.id}','${(p.partner_name||p.name||'').replace(/'/g,'')}')"><i class="fa fa-eye"></i></button>
           ${p.mobile||p.phone ? `<a href="https://wa.me/91${(p.mobile||p.phone||'').replace(/\D/g,'')}" target="_blank" class="btn btn-ghost btn-xs"><i class="fab fa-whatsapp"></i></a>` : ''}
+          <button class="btn btn-outline btn-xs" title="KYC Documents" onclick="openKycModal(${p.id},'${(p.partner_name||p.name||'Partner').replace(/'/g,'')}')" style="color:var(--orange);border-color:var(--orange)"><i class="fa fa-id-card"></i></button>
         </div></td>
       </tr>`;
     }).join('');
@@ -655,6 +658,42 @@ function renderMatchResults(r, debug) {
     }).join('')}`;
 }
 
+
+// === PDF UPLOAD HANDLER ===
+async function handlePdfUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  document.getElementById('pdfFileName').textContent = file.name;
+  document.getElementById('pdfSpinner').style.display = 'inline';
+  try {
+    if (!window.pdfjsLib) {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+        s.onload = resolve; s.onerror = reject;
+        document.head.appendChild(s);
+      });
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
+        'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+    const buf = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+    let fullText = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page    = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      fullText += content.items.map(it => it.str).join(' ') + '\n';
+    }
+    const extracted = fullText.trim();
+    if (!extracted) { toast('PDF has no extractable text (scanned image PDF?)', 'error'); return; }
+    document.getElementById('policyText').value = extracted;
+    toast('PDF text extracted — review and click Parse with AI', 'success');
+  } catch(e) {
+    toast('PDF read failed: ' + e.message, 'error');
+  }
+  document.getElementById('pdfSpinner').style.display = 'none';
+}
+
 // ═══ POLICY PARSER ═══
 async function parsePolicy() {
   const text = document.getElementById('policyText').value.trim();
@@ -668,10 +707,17 @@ async function parsePolicy() {
   try {
     let r = await fetch('/api/admin/policy_parser.php', {
       method:'POST', headers:{'Content-Type':'application/json', 'X-Admin-Key':'WM_ADMIN_2025'},
-      body: JSON.stringify({action:'parse', raw_text: text, lender_type: document.getElementById('parserLenderType').value, product: document.getElementById('parserProduct').value})
+      body: JSON.stringify({action:'parse', raw_text: text, lender_type: document.getElementById('parserLenderType').value, product: document.getElementById('parserProduct').value, lender_name_hint: (document.getElementById('parserLenderName').value||'').trim()})
     }).then(d=>d.json());
     if (r.type !== 'parsed' && !r.success) { toast(r.message||'Parse failed', 'error'); return; }
     const result = r.result || r.data || r;
+    if (!result.lender_name) {
+      const hint = (document.getElementById('parserLenderName').value||'').trim();
+      if (hint) result.lender_name = hint;
+    }
+    if (result.lender_name && !document.getElementById('parserLenderName').value) {
+      document.getElementById('parserLenderName').value = result.lender_name;
+    }
     window._lastParsed = result; // Store for save functions
     // Check for dual product
     if (result.second_product && result.second_product.product) {
@@ -925,19 +971,24 @@ async function savePolicy(mode) {
   // For save as new — direct save
   let btn = document.querySelector('[onclick="savePolicy(\'new\')"]');
   if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner"></div> Saving...'; }
+  let _saved = false;
   try {
     let r = await fetch('/api/admin/policy_parser.php', {
       method: 'POST',
       headers: {'Content-Type':'application/json','X-Admin-Key':'WM_ADMIN_2025'},
-      body: JSON.stringify({action:'save', fields: {...parsed, confirmed_special_conditions: window._confirmedSpecialConditions || []}, existing_id: 0, raw_text: text})
+      body: JSON.stringify({action:'save', fields: {...parsed, confirmed_special_conditions: window._confirmedSpecialConditions || []}, existing_id: 0, raw_text: text, lender_name_hint: (document.getElementById('parserLenderName').value||'').trim()})
     }).then(d => d.json());
     if (r.type === 'created') {
       toast('✅ New lender saved! ID: ' + r.id + (r.qdrant_synced ? ' + Qdrant synced' : ''), 'success');
+      _saved = true;
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa fa-check"></i> Saved'; btn.style.opacity = '0.6'; btn.title = 'Already saved — use Update Existing to modify'; }
+    } else if (r.status === 409 || (r.message && r.message.includes('already exists'))) {
+      toast('⚠️ ' + (r.message || 'Duplicate — use Update Existing'), 'warning');
     } else {
       toast(r.message || 'Save failed', 'error');
     }
   } catch(e) { toast('Save error: ' + e.message, 'error'); }
-  if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-plus"></i> Save as New'; }
+  if (!_saved && btn) { btn.disabled = false; btn.innerHTML = '<i class="fa fa-plus"></i> Save as New'; btn.style.opacity = ''; }
 }
 
 // ═══ AUDIT LOGS ═══
@@ -1173,12 +1224,87 @@ const DIFF_FIELDS = [
   {k:'notes',l:'Notes'},{k:'special_profiles',l:'Special Profiles'},
 ];
 
+var _diffCurrent = {};
+var _diffEditMode = false;
+
+function toggleDiffEdit() {
+    _diffEditMode = !_diffEditMode;
+    const btn = document.getElementById('diffEditBtn');
+    if (_diffEditMode) {
+        btn.innerHTML = '<i class="fa fa-eye"></i> View Mode';
+        btn.style.background = 'var(--navy)';
+        btn.style.color = '#fff';
+    } else {
+        btn.innerHTML = '<i class="fa fa-pencil"></i> Edit New Data';
+        btn.style.background = '';
+        btn.style.color = 'var(--navy)';
+    }
+    rebuildNewCol();
+}
+
+function rebuildNewCol() {
+    let newHTML = '';
+    let changedCount = 0;
+    DIFF_FIELDS.forEach(f => {
+        const curVal = _diffCurrent[f.k];
+        const newVal = _diffData[f.k];
+        const curStr = (curVal===null||curVal===undefined||curVal==='') ? '—' : String(curVal);
+        const newStr = (newVal===null||newVal===undefined||newVal==='') ? '—' : String(newVal);
+        const cN=parseFloat(curStr), nN=parseFloat(newStr);
+        const isChanged=(()=>{
+            if(curStr===newStr) return false;
+            if(newStr==='—') return false;
+            if(!isNaN(cN)&&!isNaN(nN)) return cN!==nN;
+            return curStr!==newStr;
+        })();
+        const isNew=(curStr==='—'||curStr==='0')&&newStr!=='—'&&newStr!=='0';
+        if(isChanged||isNew) changedCount++;
+        const rowBg=isNew?'background:rgba(22,163,74,.08)':isChanged?'background:rgba(217,119,6,.08)':'';
+        const icon=isNew?'<i class="fa fa-plus-circle" style="color:var(--green);margin-right:4px"></i>':
+                   isChanged?'<i class="fa fa-arrow-right" style="color:var(--amber);margin-right:4px"></i>':'';
+        const rowStyle='display:flex;align-items:center;padding:7px 12px;border-bottom:1px solid var(--border);gap:8px;'+rowBg;
+        const dispVal = newStr==='—'?'':newStr;
+        if (_diffEditMode) {
+            newHTML += '<div style="'+rowStyle+'">'+
+                '<span style="font-size:10.5px;font-weight:700;color:var(--muted);min-width:140px">'+icon+f.l+'</span>'+
+                '<input data-key="'+f.k+'" value="'+dispVal.replace(/"/g,'&quot;')+'" '+
+                'onchange="_diffData[this.dataset.key]=this.value;rebuildCurrentCount();" '+
+                'style="font-size:12px;border:1.5px solid '+(isChanged||isNew?'var(--amber)':'var(--border)')+';'+
+                'border-radius:4px;padding:3px 7px;flex:1;background:#fffdf5;"/>'+
+                '</div>';
+        } else {
+            newHTML += '<div style="'+rowStyle+'">'+
+                '<span style="font-size:10.5px;font-weight:700;color:var(--muted);min-width:140px">'+icon+f.l+'</span>'+
+                '<span style="font-size:12px;font-weight:'+(isChanged||isNew?'700':'400')+';color:'+(isNew?'var(--green)':isChanged?'var(--amber-dk)':'var(--text-soft)')+'">'+newStr+'</span>'+
+                '</div>';
+        }
+    });
+    document.getElementById('diffNewCol').innerHTML = newHTML;
+    document.getElementById('diffSaveBtn').innerHTML=
+        '<i class="fa fa-floppy-disk"></i> Confirm Update ('+changedCount+' changes)';
+}
+
+function rebuildCurrentCount(){
+    let count=0;
+    DIFF_FIELDS.forEach(f=>{
+        const curVal=_diffCurrent[f.k]; const newVal=_diffData[f.k];
+        const curStr=(curVal===null||curVal===undefined||curVal==='')?'—':String(curVal);
+        const newStr=(newVal===null||newVal===undefined||newVal==='')?'—':String(newVal);
+        const cN=parseFloat(curStr),nN=parseFloat(newStr);
+        const isChanged=(()=>{if(curStr===newStr)return false;if(newStr==='—')return false;if(!isNaN(cN)&&!isNaN(nN))return cN!==nN;return curStr!==newStr;})();
+        const isNew=(curStr==='—'||curStr==='0')&&newStr!=='—'&&newStr!=='0';
+        if(isChanged||isNew) count++;
+    });
+    document.getElementById('diffSaveBtn').innerHTML='<i class="fa fa-floppy-disk"></i> Confirm Update ('+count+' changes)';
+}
+
 async function showDiffView(newData, existingId) {
   _diffData = newData;
   _diffExistingId = existingId;
   try {
     let r = await fetch(API + '?action=get_lender&id=' + existingId).then(d=>d.json());
     const current = r.data || {};
+    _diffCurrent = current;
     document.getElementById('diffLenderTitle').textContent =
       (newData.lender_name||'?') + ' — ' + (newData.product_type||newData.product||'?') +
       ' (DB ID: ' + existingId + ') — updating correct product record';
@@ -1192,7 +1318,14 @@ async function showDiffView(newData, existingId) {
       const newVal = newData[f.k];
       const curStr = (curVal === null || curVal === undefined || curVal === '') ? '—' : String(curVal);
       const newStr = (newVal === null || newVal === undefined || newVal === '') ? '—' : String(newVal);
-      const isChanged = curStr !== newStr && newStr !== '—';
+      // Numeric-aware comparison — 12.50 == 12.5, 1.000 == 1
+      const isChanged = (() => {
+        if (curStr === newStr) return false;
+        if (newStr === '—') return false;
+        const cN = parseFloat(curStr), nN = parseFloat(newStr);
+        if (!isNaN(cN) && !isNaN(nN)) return cN !== nN;
+        return curStr !== newStr;
+      })();
       const isNew = (curStr === '—' || curStr === '0') && newStr !== '—' && newStr !== '0';
       const rowBg = isNew ? 'background:rgba(22,163,74,.08)' : isChanged ? 'background:rgba(217,119,6,.08)' : '';
       const icon = isNew ? '<i class="fa fa-plus-circle" style="color:var(--green);margin-right:4px"></i>' :
@@ -1229,6 +1362,8 @@ async function confirmDiffSave() {
     if (r.type === 'updated') {
       toast('✅ Lender updated! ID: ' + r.id + (r.qdrant_synced?' + Qdrant synced':''), 'success');
       closeModal('lenderDiffModal');
+      _diffEditMode=false;
+      const eb=document.getElementById('diffEditBtn'); if(eb){eb.innerHTML='<i class="fa fa-pencil"></i> Edit New Data';eb.style.background='';eb.style.color='var(--navy)';}
       loadLenders();
     } else { toast(r.message||'Update failed','error'); }
   } catch(e) { toast('Error: '+e.message,'error'); }

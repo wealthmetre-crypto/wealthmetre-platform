@@ -66,9 +66,9 @@ if ($act === 'activate_telecaller' || $act === 'activate') {
 }
 
 // reset_telecaller_password
-if ($act === 'reset_telecaller_password' || $act === 'reset_password') {
-    $tid  = (int)($body['id']       ?? 0);
-    $pass = trim($body['password']   ?? $body['new_password'] ?? '');
+if (in_array($act, ['reset_telecaller_password','reset_password','reset_tc_password'])) {
+    $tid  = (int)($body['id'] ?? $body['telecaller_id'] ?? 0);
+    $pass = trim($body['password'] ?? $body['new_password'] ?? '');
     if (!$tid || !$pass) jsonError('ID and password required');
     $hash = password_hash($pass, PASSWORD_DEFAULT);
     $db   = getDB();
@@ -86,8 +86,7 @@ if ($act === 'update_telecaller' || $act === 'update') {
     $target = (int)($body['daily_target'] ?? 50);
     $db     = getDB();
     $s      = $db->prepare("UPDATE telecallers SET name=?,status=?,target_calls=? WHERE id=? AND partner_id=?");
-    $s->bind_param('ssiii', $name,$status,$target,$tid,$pid);
-    $s->execute();
+    $s->execute([$name,$status,$target,$tid,$pid]);
     jsonOk(['message' => 'Updated']);
 }
 

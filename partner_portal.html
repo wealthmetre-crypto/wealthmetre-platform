@@ -134,7 +134,7 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
 .topbar-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.02em}
 .topbar-actions{display:flex;align-items:center;gap:8px}
 .page-content{flex:1;padding:24px;overflow-y:auto}
-.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:998;backdrop-filter:blur(2px)}.sidebar-backdrop.open{display:block}.mob-logout-btn{display:none}.mob-menu-btn{display:none;background:none;border:none;color:var(--navy);font-size:19px;padding:6px;cursor:pointer}
+.sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:998;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}.sidebar-backdrop.open{display:block}.mob-logout-btn{display:none}.mob-menu-btn{display:none;background:none;border:none;color:var(--navy);font-size:19px;padding:6px;cursor:pointer}
 
 /* ── AUTH ── */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#e8f0fe,#f0f4ff 60%,#fef9f0);padding:20px}
@@ -239,7 +239,7 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
 .kanban-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
 
 /* ── LEAD DETAIL DRAWER ── */
-.drawer-overlay{position:fixed;inset:0;background:rgba(15,32,96,.35);backdrop-filter:blur(3px);z-index:200;opacity:0;pointer-events:none;transition:opacity .28s ease}
+.drawer-overlay{position:fixed;inset:0;background:rgba(15,32,96,.35);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:200;opacity:0;pointer-events:none;transition:opacity .28s ease}
 .drawer-overlay.open{opacity:1;pointer-events:all}
 .lead-drawer{position:fixed;top:0;right:0;bottom:0;width:820px;max-width:100vw;background:#fff;z-index:201;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1)}
 .lead-drawer.open{transform:translateX(0)}
@@ -431,7 +431,7 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
 .dw-lead-meta{font-size:12px;color:var(--muted);margin-top:3px}
 
 /* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-overlay.show{display:flex}
 .modal{background:#fff;border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
 .modal.wide{max-width:760px}
@@ -503,6 +503,22 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
 .lsc-value.highlight{color:var(--navy)}
 .lsc-value.orange{color:var(--orange-dk)}
 </style>
+<script>
+// PWA blur fix — force repaint on iOS standalone launch
+(function(){
+  if(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches){
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(function(){
+        var el = document.body;
+        el.style.transform = 'translateZ(0)';
+        requestAnimationFrame(function(){
+          el.style.transform = '';
+        });
+      }, 50);
+    });
+  }
+})();
+</script>
 </head>
 <body>
 <div class="toast-wrap" id="toastWrap"></div>
@@ -534,8 +550,8 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
           <div class="field-error" id="mobileErr"><i class="fa-solid fa-circle-exclamation"></i><span></span></div>
           <div class="field-hint">Enter number registered with WealthMetre</div>
         </div>
-        <button class="btn btn-primary btn-full btn-lg" onclick="sendOTP()" id="sendOtpBtn"><i class="fa-brands fa-whatsapp"></i> Send OTP via WhatsApp</button>
-        <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px">New partner? <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="switchAuthTab('register')">Register here</span></p>
+        <button class="btn btn-primary btn-full btn-lg" onclick="sendOTP()" id="sendOtpBtn"><i class="fa-solid fa-key"></i> Generate OTP</button>
+        
       </div>
       <div id="otpStep2" class="hidden">
         <div class="otp-sent-msg"><i class="fa-brands fa-whatsapp" style="font-size:15px"></i><span id="otpSentMsg">OTP sent</span></div>
@@ -581,6 +597,42 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
     </div>
 
     <!-- REGISTER -->
+    <div id="onboardFlow" class="hidden">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:28px;margin-bottom:6px">🎉</div>
+        <h3 style="font-size:17px;font-weight:800;color:var(--navy);margin:0">Welcome to WealthMetre!</h3>
+        <p style="font-size:12.5px;color:var(--muted);margin-top:4px">Complete your profile to get started — takes 30 seconds.</p>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>First Name <span class="req">*</span></label><input class="inp" id="obFirst" type="text" placeholder="First name"/></div>
+        <div class="field"><label>Last Name <span class="req">*</span></label><input class="inp" id="obLast" type="text" placeholder="Last name"/></div>
+      </div>
+      <div class="field">
+        <label>Firm / Company Name <span style="font-size:11px;color:var(--muted);font-weight:400">(optional)</span></label>
+        <input class="inp" id="obFirm" type="text" placeholder="e.g. Sharma Associates"/>
+        <div style="margin-top:5px"><label style="font-size:12px;color:var(--muted);cursor:pointer"><input type="checkbox" id="obFirmSkip" onchange="document.getElementById('obFirm').disabled=this.checked;if(this.checked)document.getElementById('obFirm').value='';"> Not applicable / Individual</label></div>
+      </div>
+      <div class="field">
+        <label>Date of Birth <span class="req">*</span></label>
+        <input class="inp" id="obDob" type="date" min="1940-01-01" max="2008-05-23" onchange="validateDobField(this)" onblur="validateDobField(this)"/>
+        <span id="dobErr" style="display:none;font-size:11px;color:#dc2626;margin-top:4px">Please enter a valid date of birth (year between 1940 and 2008).</span>
+      </div>
+      <div class="field">
+        <label>PIN Code <span class="req">*</span></label>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="inp" id="obPin" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit PIN" style="flex:1" oninput="handlePinInput(this)"/>
+          <span id="obPinSpinner" style="display:none;font-size:12px;color:var(--navy)"><i class="fa fa-spinner fa-spin"></i></span>
+        </div>
+      </div>
+      <div class="form-2col" id="obLocationRow" style="display:none">
+        <div class="field"><label>City</label><input class="inp" id="obCity" type="text" readonly style="background:#f8faff"/></div>
+        <div class="field"><label>State</label><input class="inp" id="obState" type="text" readonly style="background:#f8faff"/></div>
+      </div>
+      <div class="field-error" id="obErr" style="margin-bottom:8px"><i class="fa-solid fa-circle-exclamation"></i><span></span></div>
+      <button class="btn btn-primary btn-full btn-lg" onclick="submitOnboarding()" id="obSubmitBtn">
+        <i class="fa-solid fa-rocket"></i> Complete Setup & Enter Portal
+      </button>
+    </div>
     <div id="registerFlow" class="hidden">
       <div class="form-2col">
         <div class="field"><label>First Name <span class="req">*</span></label><input class="inp" id="regFirst" type="text" placeholder="First name"/></div>
@@ -590,6 +642,42 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
       <div class="field"><label>Confirm Password <span class="req">*</span></label><input class="inp" id="regConfirm" type="password" placeholder="Repeat password"/><div class="field-error" id="regErr"><i class="fa-solid fa-circle-exclamation"></i><span></span></div></div>
       <button class="btn btn-orange btn-full btn-lg" onclick="register()"><i class="fa-solid fa-user-plus"></i> Create Account</button>
       <p style="text-align:center;font-size:12px;color:var(--muted);margin-top:12px">Already registered? <span style="color:var(--navy);font-weight:700;cursor:pointer" onclick="switchAuthTab('otp')">Login</span></p>
+    </div>
+
+    <!-- UNDER REVIEW SCREEN -->
+    <div id="underReviewFlow" class="hidden">
+      <div style="text-align:center;padding:10px 0 20px">
+        <div style="font-size:48px;margin-bottom:12px">⏳</div>
+        <h3 style="font-size:18px;font-weight:800;color:var(--navy);margin:0 0 8px">Application Under Review</h3>
+        <p style="font-size:13px;color:var(--muted);margin:0 0 20px;line-height:1.6">Your KYC documents and agreement have been submitted successfully.<br>Our team will review and activate your account within <strong>24-48 hours</strong>.</p>
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:12px;padding:16px;margin-bottom:20px;text-align:left">
+          <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:10px">✅ SUBMISSION COMPLETE</div>
+          <div style="font-size:12px;color:#166534;line-height:2">
+            ✓ Registration completed<br>
+            ✓ KYC documents uploaded<br>
+            ✓ Agreement signed
+          </div>
+        </div>
+        <div style="background:#fef3c7;border:1px solid #fcd34d;border-radius:12px;padding:14px;margin-bottom:20px;text-align:left">
+          <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:6px">⏳ PENDING</div>
+          <div style="font-size:12px;color:#92400e">Admin KYC verification (24-48 hours)</div>
+        </div>
+        <p style="font-size:12px;color:var(--muted)">Questions? Call us at <strong>+91 7976218596</strong></p>
+        <button class="btn btn-outline" onclick="actionLogout()" style="margin-top:8px;font-size:13px">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- KYC UPLOAD STEP -->
+    <div id="kycFlow" class="hidden">
+      <div style="text-align:center;margin-bottom:16px"><div style="font-size:26px">📋</div><h3 style="font-size:16px;font-weight:800;color:var(--navy);margin:0 0 4px">KYC Document Upload</h3><p style="font-size:12px;color:var(--muted);margin:0">Upload your documents to complete verification.</p></div>
+      <div class="form-steps" style="margin-bottom:16px"><div class="form-step"><div class="step-circle done" style="font-size:13px">✓</div><span class="step-label done">Registration</span></div><div class="step-line done"></div><div class="form-step"><div class="step-circle active">2</div><span class="step-label active">KYC</span></div><div class="step-line"></div><div class="form-step"><div class="step-circle pending">3</div><span class="step-label">Agreement</span></div></div>
+      <div id="kycErrBanner" style="display:none;background:#fff5f5;border:1px solid #fecaca;color:#dc2626;padding:8px 12px;border-radius:6px;font-size:12px;margin-bottom:12px;align-items:center;gap:6px"><i class="fa-solid fa-circle-exclamation"></i><span id="kycErrText"></span></div>
+      <div class="field"><label style="font-size:13px;font-weight:700">PAN Card <span class="req">*</span></label><div class="kyc-upload-box" id="kycBoxPan" onclick="kycTrigger('kyc_pan_card')" tabindex="0"><i class="fa-solid fa-cloud-arrow-up" style="font-size:20px;color:var(--orange);margin-bottom:4px"></i><div style="font-size:12.5px;font-weight:600;color:var(--navy)">Click to upload or drag &amp; drop</div><div style="font-size:11px;color:var(--muted)">JPG, PNG, PDF — max 5 MB</div></div><input type="file" id="kyc_pan_card" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="kycFileSelect(this,'pan')"><div class="kyc-preview" id="kycPreviewPan" style="display:none"><i class="fa-solid fa-file-lines" style="color:var(--green)"></i><span id="kycNamePan" style="flex:1;font-size:12px;font-weight:600;color:var(--navy);word-break:break-all"></span><span id="kycSizePan" style="font-size:11px;color:var(--muted)"></span><button type="button" onclick="kycRemove('pan')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">✕</button></div><div class="field-error" id="kycErrPan" style="display:none"></div></div>
+      <div class="field"><label style="font-size:13px;font-weight:700">Aadhaar Card <span class="req">*</span></label><div class="kyc-upload-box" id="kycBoxAadhaar" onclick="kycTrigger('kyc_aadhaar_card')" tabindex="0"><i class="fa-solid fa-cloud-arrow-up" style="font-size:20px;color:var(--orange);margin-bottom:4px"></i><div style="font-size:12.5px;font-weight:600;color:var(--navy)">Click to upload or drag &amp; drop</div><div style="font-size:11px;color:var(--muted)">JPG, PNG, PDF — max 5 MB</div></div><input type="file" id="kyc_aadhaar_card" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="kycFileSelect(this,'aadhaar')"><div class="kyc-preview" id="kycPreviewAadhaar" style="display:none"><i class="fa-solid fa-file-lines" style="color:var(--green)"></i><span id="kycNameAadhaar" style="flex:1;font-size:12px;font-weight:600;color:var(--navy);word-break:break-all"></span><span id="kycSizeAadhaar" style="font-size:11px;color:var(--muted)"></span><button type="button" onclick="kycRemove('aadhaar')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">✕</button></div><div class="field-error" id="kycErrAadhaar" style="display:none"></div></div>
+      <div class="field"><label style="font-size:13px;font-weight:700">Cancelled Cheque <span class="req">*</span></label><div style="font-size:11px;color:var(--muted);background:#fafbfd;border-left:3px solid var(--orange);padding:5px 8px;border-radius:0 4px 4px 0;margin-bottom:6px"><i class="fa-solid fa-circle-info" style="color:var(--orange)"></i> Account holder name, bank name, IFSC and account number must be visible.</div><div class="kyc-upload-box" id="kycBoxCheque" onclick="kycTrigger('kyc_cancelled_cheque')" tabindex="0"><i class="fa-solid fa-cloud-arrow-up" style="font-size:20px;color:var(--orange);margin-bottom:4px"></i><div style="font-size:12.5px;font-weight:600;color:var(--navy)">Click to upload or drag &amp; drop</div><div style="font-size:11px;color:var(--muted)">JPG, PNG, PDF — max 5 MB</div></div><input type="file" id="kyc_cancelled_cheque" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="kycFileSelect(this,'cheque')"><div class="kyc-preview" id="kycPreviewCheque" style="display:none"><i class="fa-solid fa-file-lines" style="color:var(--green)"></i><span id="kycNameCheque" style="flex:1;font-size:12px;font-weight:600;color:var(--navy);word-break:break-all"></span><span id="kycSizeCheque" style="font-size:11px;color:var(--muted)"></span><button type="button" onclick="kycRemove('cheque')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px">✕</button></div><div class="field-error" id="kycErrCheque" style="display:none"></div></div>
+      <button class="btn btn-primary btn-full btn-lg" id="kycSubmitBtn" disabled onclick="kycSubmit()"><span id="kycBtnText"><i class="fa-solid fa-lock"></i> Upload Documents &amp; Continue</span><span id="kycBtnSpinner" style="display:none"><i class="fa-solid fa-spinner fa-spin"></i> Uploading…</span></button>
     </div>
   </div>
 </div>
@@ -1462,6 +1550,8 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
    CONSTANTS & STATE
 ════════════════════════════════════════════════════ */
 const API_AUTH   = '/api/partner/partner_auth.php';
+const API_MSG91_CONFIG = '/api/auth/msg91_widget_config.php';
+const API_MSG91_LOGIN  = '/api/auth/msg91_validate_login.php';
 const API_LEAD   = '/api/partner/lead_api.php';
 const API_HYBRID = '/api/hybrid_query.php';
 const API_FU     = '/api/partner/followup_api.php';
@@ -2437,7 +2527,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function switchAuthTab(tab) {
-  ['otpFlow','pwdFlow','registerFlow','forgotFlow'].forEach(id => {
+  ['otpFlow','pwdFlow','registerFlow','forgotFlow','onboardFlow'].forEach(id => {
     const el = document.getElementById(id); if (el) el.classList.add('hidden');
   });
   document.getElementById('tabOtp').classList.remove('active');
@@ -2446,6 +2536,7 @@ function switchAuthTab(tab) {
   if (tab==='otp') { document.getElementById('otpFlow').classList.remove('hidden'); document.getElementById('tabOtp').classList.add('active'); tabBar.style.display=''; }
   else if (tab==='password') { document.getElementById('pwdFlow').classList.remove('hidden'); document.getElementById('tabPwd').classList.add('active'); tabBar.style.display=''; }
   else if (tab==='register') { document.getElementById('registerFlow').classList.remove('hidden'); tabBar.style.display='none'; }
+  else if (tab==='onboard') { document.getElementById('onboardFlow').classList.remove('hidden'); tabBar.style.display='none'; }
   else if (tab==='forgot') { document.getElementById('forgotFlow').classList.remove('hidden'); tabBar.style.display='none'; }
 }
 
@@ -2489,32 +2580,139 @@ function setupOTPInputs() {
   });
 }
 
-async function sendOTP() {
-  const mobile = document.getElementById('authMobile').value.trim();
-  if (!validateMobileInput(document.getElementById('authMobile'))) return;
-  const btn = document.getElementById('sendOtpBtn'); btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span> Sending...';
-  otpMobile = mobile;
+function loadMsg91Script(src) {
+  return new Promise((resolve, reject) => {
+    const existing = Array.from(document.scripts).find(x => x.src === src);
+    if (existing) return resolve();
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function ensureMsg91Sdk() {
+  if (window.initSendOTP || window.sendOtp || window.MSG91OTP) return true;
   try {
-    const res = await apiCall(API_AUTH, {action:'send_otp', mobile});
-    if (res.status === 'ok') {
-      document.getElementById('otpStep1').classList.add('hidden');
-      document.getElementById('otpStep2').classList.remove('hidden');
-      document.querySelectorAll('.otp-box').forEach(b => { b.value=''; b.classList.remove('filled','error'); });
-      const debugBox = document.getElementById('otpDebugBox');
-      if (res._otp) {
-        debugBox.innerHTML = '<div class="otp-debug-label">⚠️ Dev Mode — OTP</div><div class="otp-debug-code">'+res._otp+'</div><div class="otp-debug-hint">WhatsApp off. Enter below.</div>';
-        debugBox.style.display = 'block';
-        [...String(res._otp)].forEach((c,i) => { const b=document.querySelectorAll('.otp-box')[i]; if(b){b.value=c;b.classList.add('filled');} });
-        document.getElementById('otpSentMsg').textContent = 'OTP generated (Dev Mode)';
-      } else {
-        debugBox.style.display = 'none';
-        document.getElementById('otpSentMsg').textContent = 'OTP sent to '+maskMobile(mobile)+' via WhatsApp';
+    await loadMsg91Script('https://verify.msg91.com/otp-provider.js');
+    return true;
+  } catch (e) {}
+  try {
+    await loadMsg91Script('https://verify.phone91.com/otp-provider.js');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function sendOTP() {
+  const mobileEl = document.getElementById('authMobile');
+  const mobile = mobileEl.value.trim();
+
+  if (!validateMobileInput(mobileEl)) return;
+
+  const btn = document.getElementById('sendOtpBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> Opening secure OTP...';
+  otpMobile = mobile;
+
+  try {
+    const cfgRes = await fetch(API_MSG91_CONFIG);
+    const cfg = await cfgRes.json();
+
+    if (!cfgRes.ok || !cfg.success || !cfg.widget_id || !cfg.widget_token) {
+      showErr('mobileErr', cfg.message || 'MSG91 widget config missing');
+      return;
+    }
+
+    const sdkReady = await ensureMsg91Sdk();
+    if (!sdkReady) {
+      showErr('mobileErr', 'Could not load MSG91 OTP widget. Try again.');
+      return;
+    }
+
+    const callback = async function(response) {
+      try {
+        const accessToken = response && response.message ? response.message : '';
+
+        if (!accessToken) {
+          showErr('mobileErr', 'OTP verification failed or cancelled.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span> Verifying...';
+
+        const apiRes = await fetch(API_MSG91_LOGIN, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            access_token: accessToken,
+            login_type: 'partner'
+          })
+        });
+
+        const res = await apiRes.json();
+
+        if (apiRes.ok && res.success && res.token) {
+          authToken = res.token;
+          partnerData = normalizePartner(res.partner || {});
+          persistPartnerSession();
+          toast('Login successful!','success');
+          showPortal();
+        } else if (apiRes.ok && res.success && res.is_new_user) {
+          window._onboardToken  = res.onboard_token;
+          window._onboardMobile = res.mobile;
+          switchAuthTab('onboard');
+          const maxDob = new Date(); maxDob.setFullYear(maxDob.getFullYear()-18);
+          document.getElementById('obDob').max = maxDob.toISOString().split('T')[0];
+          document.getElementById('obDob').min = '1940-01-01';
+          toast('Welcome! Please complete your profile.','info');
+        } else {
+          showErr('mobileErr', res.message || 'MSG91 login failed');
+        }
+      } catch (err) {
+        showErr('mobileErr', 'Login verification failed. Try again.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-key"></i> Generate OTP';
       }
-      document.querySelector('.otp-box').focus();
-      startResendTimer();
-    } else { showErr('mobileErr', res.message || 'Could not send OTP'); }
-  } catch(e) { showErr('mobileErr','Network error. Try again.'); }
-  btn.disabled=false; btn.innerHTML='<i class="fa-brands fa-whatsapp"></i> Send OTP via WhatsApp';
+    };
+
+    if (typeof window.initSendOTP === 'function') {
+      window.initSendOTP({
+        widgetId: cfg.widget_id,
+        tokenAuth: cfg.widget_token,
+        success: callback,
+        failure: callback
+      });
+      return;
+    }
+
+    if (typeof window.sendOtp === 'function') {
+      window.sendOtp(cfg.widget_id, cfg.widget_token, '91' + mobile, callback);
+      return;
+    }
+
+    if (window.MSG91OTP && typeof window.MSG91OTP.init === 'function') {
+      window.MSG91OTP.init({
+        widgetId: cfg.widget_id,
+        tokenAuth: cfg.widget_token,
+        success: callback,
+        failure: callback
+      });
+      return;
+    }
+
+    showErr('mobileErr', 'MSG91 OTP widget loaded but init function not found.');
+  } catch(e) {
+    showErr('mobileErr','Network error. Try again.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-key"></i> Generate OTP';
+  }
 }
 
 function startResendTimer() {
@@ -2635,6 +2833,59 @@ function logout() {
 ════════════════════════════════════════════════════ */
 function showPortal() {
   partnerData = normalizePartner(partnerData);
+  // Fetch fresh onboarding_step from server before routing
+  fetch('/api/partner/partner_auth.php', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+    body: JSON.stringify({action:'me'})
+  }).then(r=>r.json()).then(res=>{
+    if (res.status==='ok' && res.partner) {
+      partnerData = normalizePartner(Object.assign({}, partnerData, res.partner));
+      persistPartnerSession();
+    }
+    _routeAfterLogin();
+  }).catch(()=>_routeAfterLogin());
+}
+function _routeAfterLogin() {
+  if (partnerData.onboarding_step === 'registration') { showKycStep(); return; }
+  if (partnerData.onboarding_step === 'kyc_submitted') { showKycStep(); return; }
+  if (['submitted','agreement','kyc_submitted'].includes(partnerData.onboarding_step) && partnerData.kyc_status !== 'approved') { showUnderReview(); return; }
+  if (partnerData.onboarding_step === 'approved' && partnerData.kyc_status === 'approved') { _showPortalUI(); return; }
+
+  // ── Agreement check ──────────────────────────────────────
+  checkAgreementStatus().then(needsAgreement => {
+    if (needsAgreement) {
+      // Redirect to agreement page
+      const isReaccept = partnerData.agreement_version_accepted ? '?reaccept=1' : '';
+      window.location.href = '/partner_agreement.html' + isReaccept;
+      return;
+    }
+    // Normal portal load
+    _showPortalUI();
+  });
+}
+
+async function checkAgreementStatus() {
+  if (partnerData && partnerData.onboarding_step === 'approved' && partnerData.kyc_status === 'approved') return false;
+  try {
+    const res = await fetch('/api/partner/agreement_api.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + authToken
+      },
+      credentials: 'include',
+      body: JSON.stringify({action: 'check_status'})
+    });
+    const d = await res.json();
+    if (!d.success) return false;
+    return d.needs_acceptance === true;
+  } catch(e) {
+    return false;
+  }
+}
+
+function _showPortalUI() {
   document.getElementById('authScreen').style.display = 'none';
   document.getElementById('portalScreen').classList.remove('hidden');
   document.getElementById('sidebarName').textContent = partnerData.partner_name || 'Partner';
@@ -4017,6 +4268,160 @@ function goToStep2Smart() {
   }
 }
 
+
+// ═══ PARTNER ONBOARDING ═══
+async function handlePinInput(el) {
+  const pin = el.value.replace(/\D/g,'');
+  el.value = pin;
+  if (pin.length !== 6) { document.getElementById('obLocationRow').style.display='none'; return; }
+  document.getElementById('obPinSpinner').style.display = 'inline';
+  try {
+    const r = await fetch('https://api.postalpincode.in/pincode/' + pin);
+    const data = await r.json();
+    if (data[0]?.Status === 'Success' && data[0].PostOffice?.length > 0) {
+      const po = data[0].PostOffice[0];
+      document.getElementById('obCity').value  = po.District || po.Name || '';
+      document.getElementById('obState').value = po.State || '';
+      document.getElementById('obLocationRow').style.display = '';
+    } else {
+      showManualCityInput(pin);
+    }
+  } catch(e) { showManualCityInput(pin); }
+  document.getElementById('obPinSpinner').style.display = 'none';
+}
+
+function showManualCityInput(pin) {
+  // Common Rajasthan PIN prefixes → city mapping
+  const pinMap = {
+    '302':'Jaipur','303':'Jaipur','304':'Jaipur','305':'Ajmer',
+    '306':'Pali','307':'Sirohi','311':'Bhilwara','313':'Udaipur',
+    '314':'Dungarpur','324':'Kota','325':'Kota','326':'Jhalawar',
+    '327':'Banswara','331':'Churu','332':'Sikar','333':'Jhunjhunu',
+    '334':'Bikaner','335':'Bikaner','341':'Nagaur','342':'Jodhpur',
+    '343':'Barmer','344':'Jaisalmer','345':'Jaisalmer',
+  };
+  const prefix = (pin||'').substring(0,3);
+  const guessCity  = pinMap[prefix] || '';
+  const guessState = guessCity ? 'Rajasthan' : '';
+
+  document.getElementById('obCity').value  = guessCity;
+  document.getElementById('obState').value = guessState;
+  document.getElementById('obLocationRow').style.display = '';
+
+  const cityEl = document.getElementById('obCity');
+  cityEl.removeAttribute('readonly');
+  cityEl.style.border = '1.5px solid #f97316';
+  cityEl.placeholder = 'Enter your city name';
+  if (!guessCity) cityEl.focus();
+}
+
+function validateDobField(el) {
+  const errEl = document.getElementById('dobErr');
+  const maxYear = new Date().getFullYear() - 18;
+
+  // Use browser validity API first
+  if (el.validity && (el.validity.badInput || el.validity.rangeOverflow || el.validity.rangeUnderflow)) {
+    el.style.borderColor = '#dc2626';
+    errEl.textContent = 'Please enter a valid date of birth (age must be 18+).';
+    errEl.style.display = 'block';
+    return false;
+  }
+
+  const val = el.value;
+  if (!val) { errEl.style.display='none'; el.style.borderColor=''; return false; }
+
+  // Parse and validate year manually
+  const parts = val.split('-');
+  const year  = parseInt(parts[0], 10);
+  if (isNaN(year) || year < 1940 || year > maxYear) {
+    el.style.borderColor = '#dc2626';
+    errEl.textContent = 'Year must be between 1940 and ' + maxYear + '.';
+    errEl.style.display = 'block';
+    el.value = '';
+    setTimeout(() => el.focus(), 10);
+    return false;
+  }
+
+  el.style.borderColor = '#16a34a';
+  errEl.style.display = 'none';
+  return true;
+}
+
+async function submitOnboarding() {
+  const first = document.getElementById('obFirst').value.trim();
+  const last  = document.getElementById('obLast').value.trim();
+  const firm  = document.getElementById('obFirmSkip').checked ? '' : document.getElementById('obFirm').value.trim();
+  const dob   = document.getElementById('obDob').value.trim();
+  const pin   = document.getElementById('obPin').value.trim();
+  const city  = document.getElementById('obCity').value.trim();
+  const state = document.getElementById('obState').value.trim();
+  const errEl = document.getElementById('obErr');
+  errEl.style.display = 'none';
+  const showObErr = (msg) => { errEl.querySelector('span').textContent = msg; errEl.style.display='flex'; };
+  if (!first || !last) return showObErr('Please enter your first and last name.');
+  if (!dob || !validateDobField(document.getElementById('obDob'))) {
+    return showObErr('Please enter a valid date of birth (year 1940-2008).');
+  }
+  if (pin.length !== 6) return showObErr('Please enter a valid 6-digit PIN code.');
+  // If city still empty after API, prompt manual entry
+  if (!city) {
+    showManualCityInput(pin);
+    return showObErr('Could not auto-detect city. Please enter your city name manually above.');
+  }
+  const btn = document.getElementById('obSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> Setting up your account...';
+  try {
+    const res = await fetch('/api/auth/partner_onboard.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        onboard_token: window._onboardToken,
+        mobile: window._onboardMobile,
+        first_name: first, last_name: last,
+        firm_name: firm, dob, pin_code: pin, city, state
+      })
+    }).then(r => r.json());
+    if (res.success && res.token) {
+      authToken   = res.token;
+      partnerData = normalizePartner(res.partner || {});
+      persistPartnerSession();
+      toast('🎉 Welcome to WealthMetre, ' + first + '!', 'success');
+      showPortal();
+    } else {
+      showObErr(res.message || 'Setup failed. Please try again.');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Complete Setup & Enter Portal';
+    }
+  } catch(e) {
+    showObErr('Network error. Please try again.');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-rocket"></i> Complete Setup & Enter Portal';
+  }
+}
+</script>
+<script>
+const _kycFiles={pan:null,aadhaar:null,cheque:null};
+const _kycMap={pan:{inputId:'kyc_pan_card',boxId:'kycBoxPan',previewId:'kycPreviewPan',nameId:'kycNamePan',sizeId:'kycSizePan',errId:'kycErrPan'},aadhaar:{inputId:'kyc_aadhaar_card',boxId:'kycBoxAadhaar',previewId:'kycPreviewAadhaar',nameId:'kycNameAadhaar',sizeId:'kycSizeAadhaar',errId:'kycErrAadhaar'},cheque:{inputId:'kyc_cancelled_cheque',boxId:'kycBoxCheque',previewId:'kycPreviewCheque',nameId:'kycNameCheque',sizeId:'kycSizeCheque',errId:'kycErrCheque'}};
+const KYC_ALLOWED_EXT=['jpg','jpeg','png','pdf'],KYC_MAX_BYTES=5242880;
+function showUnderReview(){
+  ['otpFlow','pwdFlow','forgotFlow','onboardFlow','registerFlow','kycFlow'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden')});
+  const u=document.getElementById('underReviewFlow');if(u)u.classList.remove('hidden');
+  const tb=document.getElementById('authTabBar');if(tb)tb.style.display='none';
+  const a=document.getElementById('authScreen');if(a)a.style.display='flex';
+  const p=document.getElementById('portalScreen');if(p)p.classList.add('hidden');
+}
+function showKycStep(){['otpFlow','pwdFlow','forgotFlow','onboardFlow','registerFlow'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.add('hidden')});const k=document.getElementById('kycFlow');if(k)k.classList.remove('hidden');const a=document.getElementById('authScreen');if(a)a.style.display='flex';const p=document.getElementById('portalScreen');if(p)p.classList.add('hidden');const tb=document.getElementById('authTabBar');if(tb)tb.style.display='none';const ac=document.querySelector('.auth-card');if(ac)ac.style.maxHeight='90vh';_kycSetupDragDrop();}
+function kycTrigger(id){document.getElementById(id).click();}
+function kycFileSelect(input,key){const map=_kycMap[key],file=input.files[0];_kycClearErr(key);if(!file)return;const ext=file.name.split('.').pop().toLowerCase();if(!KYC_ALLOWED_EXT.includes(ext)){_kycSetErr(key,'Only JPG, PNG, or PDF files are allowed.');input.value='';return;}if(file.size>KYC_MAX_BYTES){_kycSetErr(key,'File must be under 5 MB.');input.value='';return;}_kycFiles[key]=file;document.getElementById(map.nameId).textContent=file.name;document.getElementById(map.sizeId).textContent=_kycFmtBytes(file.size);document.getElementById(map.previewId).style.display='flex';const box=document.getElementById(map.boxId);box.classList.add('kyc-has-file');box.classList.remove('kyc-has-error');_kycRefreshBtn();}
+function kycRemove(key){const map=_kycMap[key];_kycFiles[key]=null;document.getElementById(map.inputId).value='';document.getElementById(map.previewId).style.display='none';document.getElementById(map.boxId).classList.remove('kyc-has-file');_kycClearErr(key);_kycRefreshBtn();}
+function _kycRefreshBtn(){const btn=document.getElementById('kycSubmitBtn');if(btn)btn.disabled=!(_kycFiles.pan&&_kycFiles.aadhaar&&_kycFiles.cheque);}
+async function kycSubmit(){const btn=document.getElementById('kycSubmitBtn'),bt=document.getElementById('kycBtnText'),sp=document.getElementById('kycBtnSpinner'),bn=document.getElementById('kycErrBanner');if(bn)bn.style.display='none';if(!_kycFiles.pan||!_kycFiles.aadhaar||!_kycFiles.cheque){_kycShowBanner('Please upload all 3 required documents.');return;}btn.disabled=true;bt.style.display='none';sp.style.display='inline';const fd=new FormData();fd.append('pan_card',_kycFiles.pan);fd.append('aadhaar_card',_kycFiles.aadhaar);fd.append('cancelled_cheque',_kycFiles.cheque);try{const res=await fetch('/api/partner/kyc_upload_api.php',{method:'POST',headers:{'Authorization':'Bearer '+authToken},body:fd}),data=await res.json();if(data.success){window.location.href=data.redirect||'/partner_agreement.html';}else{_kycShowBanner(data.message||'Upload failed.');btn.disabled=false;bt.style.display='inline';sp.style.display='none';}}catch(e){_kycShowBanner('Network error. Please try again.');btn.disabled=false;bt.style.display='inline';sp.style.display='none';}}
+function _kycSetupDragDrop(){Object.entries(_kycMap).forEach(([key,map])=>{const box=document.getElementById(map.boxId);if(!box||box._kycDndReady)return;box._kycDndReady=true;box.addEventListener('dragover',e=>{e.preventDefault();box.classList.add('kyc-drag-over');});box.addEventListener('dragleave',()=>box.classList.remove('kyc-drag-over'));box.addEventListener('drop',e=>{e.preventDefault();box.classList.remove('kyc-drag-over');if(e.dataTransfer.files.length){const inp=document.getElementById(map.inputId),dt=new DataTransfer();dt.items.add(e.dataTransfer.files[0]);inp.files=dt.files;kycFileSelect(inp,key);}});});}
+function _kycSetErr(key,msg){const el=document.getElementById(_kycMap[key].errId),box=document.getElementById(_kycMap[key].boxId);if(el){el.innerHTML='<i class="fa-solid fa-circle-exclamation"></i> '+msg;el.style.display='flex';}if(box)box.classList.add('kyc-has-error');}
+function _kycClearErr(key){const el=document.getElementById(_kycMap[key].errId),box=document.getElementById(_kycMap[key].boxId);if(el){el.style.display='none';el.textContent='';}if(box)box.classList.remove('kyc-has-error');}
+function _kycShowBanner(msg){const b=document.getElementById('kycErrBanner');if(!b)return;document.getElementById('kycErrText').textContent=msg;b.style.display='flex';b.scrollIntoView({behavior:'smooth',block:'center'});}
+function _kycFmtBytes(n){if(n<1024)return n+' B';if(n<1048576)return(n/1024).toFixed(1)+' KB';return(n/1048576).toFixed(2)+' MB';}
 </script>
 </body>
 </html>

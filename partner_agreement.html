@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Partner Agreement — WealthMetre</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+:root{--navy:#1e3a8a;--navy-2:#1e4db7;--navy-lt:#eff4ff;--navy-mid:#dbeafe;--orange:#ff9800;--orange-dk:#f57c00;--orange-lt:#fff7ed;--green:#16a34a;--green-lt:#f0fdf4;--red:#dc2626;--red-lt:#fef2f2;--text:#1a1a2e;--text-soft:#4b5563;--muted:#6b7280;--border:#e5e7eb;--border-blue:#dbeafe;--bg:#f0f4ff;--card:#ffffff;--shadow:0 2px 12px rgba(30,58,138,.07);--r:14px;--r-sm:10px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+.container{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+.page-header{text-align:center;margin-bottom:28px}
+.logo-wrap{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+.logo-text{font-size:22px;font-weight:800;color:var(--navy)}
+.logo-text span{color:var(--orange)}
+.page-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--muted)}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:28px;overflow-x:auto;padding:4px 0}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:64px}
+.step-circle{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid var(--border);background:#fff;color:var(--muted)}
+.step.done .step-circle{background:var(--green);border-color:var(--green);color:#fff}
+.step.active .step-circle{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 0 0 4px rgba(30,58,138,.15)}
+.step-label{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+.step.active .step-label{color:var(--navy);font-weight:700}
+.step.done .step-label{color:var(--green)}
+.step-line{flex:1;height:2px;background:var(--border);min-width:20px;margin-bottom:16px}
+.step-line.done{background:var(--green)}
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:20px}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card-header-left{display:flex;align-items:center;gap:10px}
+.card-header h3{font-size:14px;font-weight:700}
+.icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.card-body{padding:18px 20px}
+.summary-list{list-style:none}
+.summary-list li{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text-soft)}
+.summary-list li:last-child{border:none}
+.num{width:22px;height:22px;border-radius:50%;background:var(--navy-lt);color:var(--navy);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.scroll-progress{height:3px;background:var(--navy-mid);border-radius:2px;margin-bottom:8px;overflow:hidden}
+.scroll-bar{height:100%;background:var(--navy);width:0%;transition:width .1s;border-radius:2px}
+.agreement-box{height:400px;overflow-y:scroll;border:1.5px solid var(--border);border-radius:var(--r-sm);padding:20px;font-size:13px;line-height:1.8;color:var(--text-soft);background:#fafbff}
+@media(max-width:600px){.agreement-box{height:350px}}
+.agreement-box h4{color:var(--navy);font-size:14px;font-weight:700;margin:16px 0 6px}
+.agreement-box p{margin-bottom:10px}
+.scroll-notice{display:flex;align-items:center;gap:8px;background:var(--orange-lt);border:1px solid #fed7aa;border-radius:var(--r-sm);padding:10px 14px;font-size:12.5px;color:var(--orange-dk);margin:12px 0;transition:all .3s}
+.scroll-notice.hidden{display:none}
+.checkbox-wrap{display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--navy-lt);border:1.5px solid var(--border-blue);border-radius:var(--r-sm);margin:14px 0}
+.checkbox-wrap input{width:18px;height:18px;accent-color:var(--navy);cursor:pointer;flex-shrink:0;margin-top:2px}
+.checkbox-wrap input:disabled{opacity:.4;cursor:not-allowed}
+.checkbox-label{font-size:12.5px;color:var(--text-soft);line-height:1.5}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;box-shadow:0 4px 14px rgba(30,58,138,.2)}
+.btn-primary:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(30,58,138,.32)}
+.btn-outline{background:#fff;color:var(--navy);border:1.5px solid var(--border-blue)}
+.btn-outline:hover{background:var(--navy-lt)}
+.btn-full{width:100%;justify-content:center}
+.btn-lg{padding:13px 24px;font-size:14px}
+.actions{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.hint{text-align:center;font-size:11px;color:var(--muted);margin-top:4px}
+.alert{display:none;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:var(--r-sm);font-size:13px;margin-bottom:16px}
+.alert.show{display:flex}
+.alert-error{background:var(--red-lt);border:1px solid #fca5a5;color:var(--red)}
+.alert-success{background:var(--green-lt);border:1px solid #86efac;color:var(--green)}
+.alert-info{background:var(--navy-lt);border:1px solid var(--border-blue);color:var(--navy)}
+.loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:48px;gap:12px;color:var(--muted)}
+.loading.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.content-wrap{display:none}
+.content-wrap.show{display:block}
+.success-state{display:none;text-align:center;padding:40px 20px}
+.success-state.show{display:block}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--green-lt);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--green);margin:0 auto 16px}
+.success-state h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.success-state p{font-size:13px;color:var(--muted);max-width:420px;margin:0 auto 20px}
+.success-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.banner{display:none;align-items:flex-start;gap:10px;background:#fff7ed;border:1.5px solid #fed7aa;border-radius:var(--r-sm);padding:14px 16px;margin-bottom:20px;font-size:13px;color:var(--orange-dk)}
+.banner.show{display:flex}
+@media print{
+  .btn,.steps,.scroll-notice,.scroll-progress,.actions,.alert,.loading,.banner{display:none!important}
+  .agreement-box{height:auto!important;overflow:visible!important;border:none!important;padding:0!important}
+  .card{box-shadow:none!important;border:none!important}
+  .print-header{display:block!important}
+  body{background:#fff}
+}
+.print-header{display:none;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--navy)}
+.print-header h2{color:var(--navy);font-size:16px}
+.print-header p{font-size:12px;color:var(--text-soft);margin-top:3px}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="print-header" id="printHeader">
+    <h2>WealthMetre — Partner Onboarding Agreement</h2>
+    <p id="printInfo"></p>
+    <p id="printDate"></p>
+  </div>
+
+  <div class="page-header">
+    <div class="logo-wrap">
+      <img src="/images/logo.png" alt="WM" style="height:38px" onerror="this.style.display='none'">
+      <div class="logo-text">Wealth<span>Metre</span></div>
+    </div>
+    <div class="page-title">Partner Onboarding Agreement</div>
+    <div class="page-sub">Please review and accept the agreement to submit your partner application.</div>
+  </div>
+
+  <div class="steps">
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Registration</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">Profile</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step-circle"><i class="fas fa-check"></i></div><div class="step-label">KYC</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-circle">4</div><div class="step-label">Agreement</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-circle">5</div><div class="step-label">Submitted</div></div>
+  </div>
+
+  <div class="banner" id="reacceptBanner">
+    <i class="fas fa-exclamation-triangle"></i>
+    <span>Our Partner Agreement has been updated. Please review and accept the new agreement to continue.</span>
+  </div>
+
+  <div class="alert alert-error" id="alertError"><i class="fas fa-circle-xmark"></i><span id="alertMsg"></span></div>
+  <div class="alert alert-info" id="alertInfo"><i class="fas fa-circle-info"></i><span id="alertInfoMsg"></span></div>
+
+  <div class="loading show" id="loadingState">
+    <div class="spinner"></div><span>Loading agreement...</span>
+  </div>
+
+  <div class="content-wrap" id="contentWrap">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="icon" style="background:#eff4ff;color:var(--navy)"><i class="fas fa-list-check"></i></div>
+          <h3>Key Terms — Quick Summary</h3>
+        </div>
+      </div>
+      <div class="card-body">
+        <ul class="summary-list" id="summaryList"></ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="icon" style="background:#f0fdf4;color:var(--green)"><i class="fas fa-file-contract"></i></div>
+          <h3 id="agTitle">WealthMetre Partner Onboarding Agreement</h3>
+        </div>
+
+      </div>
+      <div class="card-body">
+        <div class="scroll-progress"><div class="scroll-bar" id="progressBar"></div></div>
+        <div class="agreement-box" id="agreementBox"></div>
+        <div class="scroll-notice" id="scrollNotice">
+          <i class="fas fa-arrow-down"></i>
+          <span>Please scroll through the complete agreement to enable acceptance.</span>
+        </div>
+        <label class="checkbox-wrap">
+          <input type="checkbox" id="agreementCheckbox" disabled>
+          <span class="checkbox-label" id="checkboxLabel">Loading...</span>
+        </label>
+        <div class="actions">
+          <button class="btn btn-primary btn-lg btn-full" id="submitBtn" disabled onclick="submitAcceptance()">
+            <i class="fas fa-handshake"></i> Accept &amp; Submit Partner Application
+          </button>
+          <p class="hint"><i class="fas fa-lock"></i> Acceptance recorded with timestamp, IP &amp; OTP-verified mobile for legal proof.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-state" id="successState">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h3>Application Submitted Successfully!</h3>
+    <p>Your partner application has been submitted. WealthMetre team will review your profile and KYC details and contact you within 24-48 hours.</p>
+    <div class="success-actions">
+      <a href="/partner_portal.html" class="btn btn-primary"><i class="fas fa-home"></i> Go to Dashboard</a>
+      
+    </div>
+  </div>
+
+</div>
+<script>
+const API = '/api/partner/agreement_api.php';
+const authToken = localStorage.getItem('wm_partner_token') || '';
+let activeVersion='', activeHash='', csrfToken='', scrollVerified=false;
+
+async function init(){
+  try{
+    const res = await post(API,{action:'get_active'});
+    const d   = await res.json();
+    if(res.status===401){location.href='/partner_portal.html?redirect=agreement';return;}
+    if(!d.success){showErr(d.message||'Failed to load agreement.');hideLoad();return;}
+    const ag=d.agreement;
+    activeVersion=ag.version; activeHash=ag.text_hash; csrfToken=d.csrf_token||'';
+    if(new URLSearchParams(location.search).get('reaccept')==='1')
+      document.getElementById('reacceptBanner').classList.add('show');
+    renderSummary(ag.summary);
+    document.getElementById('agTitle').textContent=ag.title;
+    document.getElementById('agreementBox').innerHTML=formatText(ag.full_text);
+    document.getElementById('checkboxLabel').textContent=ag.checkbox_text;
+    document.getElementById('printInfo').textContent='Partner Agreement Version: '+ag.version;
+    document.getElementById('printDate').textContent='Generated: '+new Date().toLocaleString('en-IN');
+    hideLoad();
+    document.getElementById('contentWrap').classList.add('show');
+    setupScroll();
+    logAudit('viewed');
+  }catch(e){showErr('Failed to load agreement. Please refresh.');hideLoad();}
+}
+
+function renderSummary(txt){
+  const lines=txt.split('\n').filter(l=>l.trim()&&/^\d/.test(l.trim()));
+  const ul=document.getElementById('summaryList');
+  ul.innerHTML='';
+  lines.forEach((l,i)=>{
+    const text=l.replace(/^\d+\.\s*/,'').trim();
+    ul.innerHTML+=`<li><span class="num">${i+1}</span><span>${text}</span></li>`;
+  });
+}
+
+function formatText(t){
+  return t.replace(/^(\d+\.\s+[^\n]+)/gm,'<h4>$1</h4>')
+           .replace(/\n{2,}/g,'</p><p>')
+           .replace(/\n/g,' ')
+           .replace(/^(?!<[hp])/gm,'<p>')+'</p>';
+}
+
+function setupScroll(){
+  const box=document.getElementById('agreementBox');
+  const cb=document.getElementById('agreementCheckbox');
+  const notice=document.getElementById('scrollNotice');
+  const bar=document.getElementById('progressBar');
+  let started=false;
+  box.addEventListener('scroll',()=>{
+    const pct=Math.min(100,Math.round(((box.scrollTop+box.clientHeight)/box.scrollHeight)*100));
+    bar.style.width=pct+'%';
+    if(!started&&box.scrollTop>10){started=true;logAudit('scrolled_start');}
+    if(!scrollVerified&&pct>=90){
+      scrollVerified=true;cb.disabled=false;notice.classList.add('hidden');logAudit('scrolled_complete');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('agreementCheckbox').addEventListener('change',function(){
+    document.getElementById('submitBtn').disabled=!this.checked;
+    logAudit(this.checked?'checkbox_checked':'checkbox_unchecked');
+  });
+  init();
+});
+
+async function submitAcceptance(){
+  clearAlerts();
+  if(!scrollVerified){showErr('Please scroll through the complete agreement to enable acceptance.');return;}
+  const cb=document.getElementById('agreementCheckbox');
+  if(!cb.checked){showErr('Please accept the agreement before submitting.');return;}
+  const btn=document.getElementById('submitBtn');
+  btn.disabled=true;
+  btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting...';
+  logAudit('submitted');
+  try{
+    const res=await post(API,{action:'accept',agreement_version:activeVersion,text_hash:activeHash,checkbox_accepted:true,scroll_verified:true,csrf_token:csrfToken});
+    const d=await res.json();
+    if(res.status===429){showErr('Too many attempts. Please try after 1 hour.');resetBtn(btn);return;}
+    if(res.status===401){showErr('Your session has expired. Please login again. Your progress has been saved.');logAudit('session_expired');setTimeout(()=>location.href='/partner_portal.html?redirect=agreement',2500);return;}
+    if(d.success){
+      document.getElementById('printInfo').textContent='Partner: Accepted | Version: '+activeVersion;
+      document.getElementById('printDate').textContent='Accepted: '+new Date().toLocaleString('en-IN');
+      document.getElementById('contentWrap').classList.remove('show');
+      document.getElementById('successState').classList.add('show');
+      window.scrollTo(0,0);
+    }else{showErr(d.message||'Something went wrong. Please try again.');resetBtn(btn);}
+  }catch(e){showErr('Something went wrong. Please try again.');resetBtn(btn);}
+}
+
+function logAudit(action){
+  post(API,{action:'log_audit',action:action,agreement_version:activeVersion}).catch(()=>{});
+}
+
+function post(url,body){
+  return fetch(url,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},credentials:'include',body:JSON.stringify(body)});
+}
+
+function showErr(msg){
+  document.getElementById('alertError').classList.add('show');
+  document.getElementById('alertMsg').textContent=msg;
+  window.scrollTo(0,0);
+}
+function clearAlerts(){
+  document.getElementById('alertError').classList.remove('show');
+  document.getElementById('alertInfo').classList.remove('show');
+}
+function hideLoad(){document.getElementById('loadingState').classList.remove('show');}
+function resetBtn(btn){
+  btn.disabled=false;
+  btn.innerHTML='<i class="fas fa-handshake"></i> Accept & Submit Partner Application';
+}
+</script>
+</body>
+</html>

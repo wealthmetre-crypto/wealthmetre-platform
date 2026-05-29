@@ -30,7 +30,21 @@ function startAdminSession(): void {
 }
 function isLoggedIn(): bool {
     startAdminSession();
-    return !empty($_SESSION['admin_id']) && !empty($_SESSION['admin_role']);
+    if (empty($_SESSION['admin_id']) || empty($_SESSION['admin_role'])) return false;
+    // IP binding — soft check (log mismatch but allow mobile IP changes within /24)
+    $currentIp = $_SERVER['REMOTE_ADDR'] ?? '';
+    $sessionIp = $_SESSION['admin_ip'] ?? '';
+    if ($sessionIp && $currentIp) {
+        $currentNet = implode('.', array_slice(explode('.', $currentIp), 0, 3));
+        $sessionNet = implode('.', array_slice(explode('.', $sessionIp), 0, 3));
+        if ($currentNet !== $sessionNet) {
+            error_log("[SECURITY] Admin session IP mismatch: session={$sessionIp} current={$currentIp} admin_id={$_SESSION['admin_id']}");
+            // Hard block: different /24 subnet = likely stolen session
+            session_destroy();
+            return false;
+        }
+    }
+    return true;
 }
 function requireAuth(): void {
     // Validate token header directly (self-contained, no session needed)
@@ -53,6 +67,7 @@ function requireAuth(): void {
                         $_SESSION['admin_id']   = $u['id'];
                         $_SESSION['admin_name'] = $u['name'];
                         $_SESSION['admin_role'] = $u['role'];
+                        $_SESSION['admin_ip']   = $_SERVER['REMOTE_ADDR'] ?? '';
                         return;
                     }
                 }
