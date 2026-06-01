@@ -1342,7 +1342,6 @@ function handleExactQuoteFlow(string $msg, array $profile, string $sid, string $
         case 'final_search':
             if ($step === 'final_search' || str_contains($lower, 'find') || str_contains($lower, "\ud83d\udd0d")) {
                 $searchProfile = buildSearchProfile($profile);
-                file_put_contents('/var/www/wealthmetre/public_html/diva_fs_debug.txt', date('H:i:s').' notes='.($searchProfile['extra_notes']??'EMPTY').' q_will_be='.($searchProfile['extra_notes']??'')."\n", FILE_APPEND);
                 if (!function_exists('runHybrid')) { require_once __DIR__ . '/hybrid_query.php'; }
         try { $lenderResult = runHybrid($searchProfile, $searchProfile['extra_notes'] ?? ''); }
                 catch (\Throwable $e) { $lenderResult = ['type'=>'error','lenders'=>[],'total_matches'=>0]; }

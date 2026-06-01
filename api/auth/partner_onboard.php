@@ -47,6 +47,8 @@ $ins = $db->prepare("
 ");
 $ins->execute([$partnerName, $first, $last, $firm ?: null, $mobile, $dob ?: null, $pin, $city, $state ?: null, $address]);
 $partnerId = (int)$db->lastInsertId();
+// Create partner_users record for login
+$db->prepare("INSERT IGNORE INTO partner_users (mobile, first_name, last_name, role, status) VALUES (?, ?, ?, 'partner', 'active')")->execute([$mobile, $first, $last]);
 
 // Mark onboard token as used
 $db->prepare("UPDATE partner_onboard_tokens SET used=1 WHERE token=?")->execute([$token]);
