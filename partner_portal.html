@@ -30,7 +30,7 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+-webkit-tap-highlight-color:transparent;touch-action:manipulation;body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
 a{text-decoration:none;color:inherit}
 button{font-family:inherit;cursor:pointer}
 img{max-width:100%;display:block}
@@ -502,12 +502,12 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
 .lsc-value{font-size:13px;font-weight:700;color:var(--text)}
 .lsc-value.highlight{color:var(--navy)}
 .lsc-value.orange{color:var(--orange-dk)}
-</style>
+@media (max-width:768px){.drawer-overlay,.sidebar-backdrop,.modal-overlay{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;}}.sidebar,.topbar,.app-wrap{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden;}</style>
 <script>
 // PWA blur fix — force repaint on iOS standalone launch
 (function(){
   if(window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches){
-    document.addEventListener('DOMContentLoaded', function(){
+    document.addEventListener('DOMContentLoaded', function(){document.body.style.opacity='0.99';setTimeout(function(){document.body.style.opacity='1';},50);
       setTimeout(function(){
         var el = document.body;
         el.style.transform = 'translateZ(0)';

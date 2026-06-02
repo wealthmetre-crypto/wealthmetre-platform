@@ -73,6 +73,7 @@ function showPage(id) {
   if (id === 'dataquality') loadDataQuality();
   if (id === 'auditlogs') loadAuditLogs();
   if (id === 'smsharing') loadSMDirectory();
+  if (id === 'commission') loadCommissionPage();
 }
 
 // ═══ SIDEBAR MOBILE ═══
@@ -1809,3 +1810,101 @@ function showMissingFields(missing, lenderName) {
     openLenderDetail(window._lastQualityId);
   };
 }
+
+
+// Commission Rates
+  // Commission page logic
+  var _commPartnerId = null;
+  var _commProducts = ['home_loan','lap','business_loan','personal_loan'];
+  var _commLabels   = {'home_loan':'Home Loan','lap':'LAP','business_loan':'Business Loan','personal_loan':'Personal Loan'};
+
+  function loadCommissionPage() {
+    fetch('/api/admin/commission_api.php?action=master_partners', {credentials:'include'})
+      .then(r=>r.json()).then(d=>{
+        var el = document.getElementById('masterPartnerList');
+        el.innerHTML = '';
+        if (!d.partners || !d.partners.length) {
+          el.innerHTML = '<div style="color:#64748b;font-size:13px;">No master partners found.</div>';
+          return;
+        }
+        d.partners.forEach(function(p){
+          var btn = document.createElement('button');
+          btn.className = 'btn btn-outline';
+          btn.style.cssText = 'font-size:12px;padding:8px 16px;';
+          btn.textContent = p.partner_name;
+          btn.onclick = function(){ loadPartnerCommission(p.id, p.partner_name); };
+          el.appendChild(btn);
+        });
+      });
+  }
+
+  function loadPartnerCommission(pid, pname) {
+    _commPartnerId = pid;
+    document.getElementById('commFormTitle').textContent = 'Rates for: ' + pname;
+    document.getElementById('commissionForm').style.display = 'block';
+
+    fetch('/api/admin/commission_api.php?action=get_rates&partner_id='+pid, {credentials:'include'})
+      .then(r=>r.json()).then(d=>{
+        var rates = d.rates || {};
+        var tbody = document.getElementById('commRatesBody');
+        tbody.innerHTML = '';
+        _commProducts.forEach(function(prod){
+          var r = rates[prod] || {sub_partner_pct:50, override_pct:15};
+          var wm = 100 - parseFloat(r.sub_partner_pct) - parseFloat(r.override_pct);
+          tbody.innerHTML += '<tr style="border-bottom:1px solid #f1f5f9;">'
+            + '<td style="padding:12px 14px;font-size:13px;font-weight:600;color:#0a1628;">'+_commLabels[prod]+'</td>'
+            + '<td style="padding:12px 14px;text-align:center;"><input type="number" min="0" max="100" step="0.5" value="'+r.sub_partner_pct+'" id="sub_'+prod+'" onchange="recalcWM(this.id.slice(4))" style="width:80px;padding:6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-size:13px;font-weight:700;">%</td>'
+            + '<td style="padding:12px 14px;text-align:center;"><input type="number" min="0" max="100" step="0.5" value="'+r.override_pct+'" id="ovr_'+prod+'" onchange="recalcWM(this.id.slice(4))" style="width:80px;padding:6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-size:13px;font-weight:700;">%</td>'
+            + '<td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:800;color:#059669;" id="wm_'+prod+'">'+wm.toFixed(1)+'%</td>'
+            + '</tr>';
+        });
+      });
+
+    // Load sub-partners
+    fetch('/api/admin/commission_api.php?action=sub_partners&partner_id='+pid, {credentials:'include'})
+      .then(r=>r.json()).then(d=>{
+        var sec = document.getElementById('subPartnerSection');
+        var el  = document.getElementById('subPartnerList');
+        if (!d.partners || !d.partners.length) { sec.style.display='none'; return; }
+        sec.style.display = 'block';
+        el.innerHTML = d.partners.map(function(p){
+          return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f1f5f9;">'
+            + '<div style="width:36px;height:36px;border-radius:50%;background:#eff4ff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#1e3a8a;">'+p.partner_name.charAt(0)+'</div>'
+            + '<div><div style="font-size:13px;font-weight:700;color:#0a1628;">'+p.partner_name+'</div>'
+            + '<div style="font-size:11px;color:#64748b;">'+p.mobile+'</div></div>'
+            + '<div style="margin-left:auto;font-size:11px;background:#dcfce7;color:#059669;padding:3px 10px;border-radius:20px;">Active</div>'
+            + '</div>';
+        }).join('');
+      });
+  }
+
+  function recalcWM(prod) {
+    var sub = parseFloat(document.getElementById('sub_'+prod).value)||0;
+    var ovr = parseFloat(document.getElementById('ovr_'+prod).value)||0;
+    var wm  = 100 - sub - ovr;
+    document.getElementById('wm_'+prod).textContent = wm.toFixed(1)+'%';
+    document.getElementById('wm_'+prod).style.color = wm < 0 ? '#ef4444' : '#059669';
+  }
+
+  function saveCommissionRates() {
+    if (!_commPartnerId) return;
+    var rates = {};
+    _commProducts.forEach(function(prod){
+      var sub = parseFloat(document.getElementById('sub_'+prod).value)||0;
+      var ovr = parseFloat(document.getElementById('ovr_'+prod).value)||0;
+      rates[prod] = {sub_partner_pct: sub, override_pct: ovr, wm_pct: 100-sub-ovr};
+    });
+    fetch('/api/admin/commission_api.php', {
+      method: 'POST',
+      credentials:'include', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'save_rates', partner_id: _commPartnerId, rates: rates})
+    }).then(r=>r.json()).then(d=>{
+      var msg = document.getElementById('commSaveMsg');
+      msg.style.display = 'inline';
+      msg.textContent = d.success ? 'Saved successfully!' : (d.message||'Error');
+      msg.style.color = d.success ? '#059669' : '#ef4444';
+      setTimeout(function(){ msg.style.display='none'; }, 3000);
+    });
+  }
+
+
