@@ -537,6 +537,21 @@ if($action==='update_lead_status'){
     exit;
 }
 
+if($action==='update_disbursal'){
+    $b = getJsonBody();
+    $id     = intSafe($b['lead_id']??0);
+    $status = trim($b['status']??'');
+    $amount = intSafe($b['disbursal_amount']??0);
+    $date   = trim($b['disbursal_date']??'');
+    $lender = trim($b['disbursed_lender']??'');
+    if(!$id){ echo json_encode(['success'=>false,'message'=>'lead_id required']); exit; }
+    try {
+        $pdo->prepare("UPDATE leads SET status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
+            ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
+        echo json_encode(['success'=>true,'message'=>'Disbursal updated']);
+    } catch(\Throwable $e){ echo json_encode(['success'=>false,'message'=>$e->getMessage()]); }
+    exit;
+}
 // ═══════════════════════════════════════════════════════
 // LLM CALL LOGS
 // ═══════════════════════════════════════════════════════

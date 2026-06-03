@@ -1704,7 +1704,65 @@ function openCrmLead(l) {
     waBtn.href = 'https://wa.me/91'+l.mobile.replace(/\D/g,'');
     waBtn.style.display = 'inline-flex';
   } else { waBtn.style.display = 'none'; }
+  // Disbursal section
+  const disbursalHtml = `
+  <div style="margin-top:14px;padding-top:14px;border-top:2px solid var(--border)">
+    <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:10px">UPDATE DISBURSAL</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Status</label>
+        <select class="inp" id="crm_status" style="width:100%">
+          <option value="new" ${(l.status==='new'?'selected':'')}>New</option>
+          <option value="active" ${(l.status==='active'?'selected':'')}>Active</option>
+          <option value="follow_up" ${(l.status==='follow_up'?'selected':'')}>Follow Up</option>
+          <option value="lender_shortlisted" ${(l.status==='lender_shortlisted'?'selected':'')}>Lender Shortlisted</option>
+          <option value="docs_collected" ${(l.status==='docs_collected'?'selected':'')}>Docs Collected</option>
+          <option value="disbursed" ${(l.status==='disbursed'?'selected':'')}>Disbursed</option>
+          <option value="rejected" ${(l.status==='rejected'?'selected':'')}>Rejected</option>
+        </select>
+      </div>
+      <div id="crm_dis_date_wrap">
+        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursal Date</label>
+        <input type="date" class="inp" id="crm_dis_date" value="${l.disbursal_date||''}" style="width:100%"/>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px" id="crm_dis_fields">
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursal Amount (Rs.)</label>
+        <input type="number" class="inp" id="crm_dis_amount" value="${l.disbursal_amount||''}" placeholder="e.g. 5000000" style="width:100%"/>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursed By (Lender)</label>
+        <input type="text" class="inp" id="crm_dis_lender" value="${l.disbursed_lender||''}" placeholder="e.g. HDFC Bank" style="width:100%"/>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="saveCrmDisbursal(${l.id})"><i class="fa fa-save"></i> Save Update</button>
+    <span id="crm_dis_msg" style="font-size:12px;margin-left:10px;color:var(--green)"></span>
+  </div>`;
+  body.innerHTML += disbursalHtml;
   document.getElementById('crmLeadModal').classList.add('open');
+}
+async function saveCrmDisbursal(leadId) {
+  const status  = document.getElementById('crm_status').value;
+  const amount  = document.getElementById('crm_dis_amount').value;
+  const date    = document.getElementById('crm_dis_date').value;
+  const lender  = document.getElementById('crm_dis_lender').value;
+  const msg     = document.getElementById('crm_dis_msg');
+  try {
+    const r = await fetch(API, {
+      method:'POST', credentials:'include',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'update_disbursal', lead_id:leadId, status, disbursal_amount:amount, disbursal_date:date, disbursed_lender:lender})
+    }).then(d=>d.json());
+    if (r.success) {
+      msg.textContent = 'Saved!';
+      msg.style.color = 'var(--green)';
+      setTimeout(()=>{ closeModal('crmLeadModal'); loadLeads(); }, 1000);
+    } else {
+      msg.textContent = r.message || 'Error';
+      msg.style.color = 'var(--red)';
+    }
+  } catch(e) { msg.textContent = 'Network error'; msg.style.color = 'var(--red)'; }
 }
 // VIEW PARTNER LEADS
 function viewPartnerLeads(partnerId, partnerName) {
