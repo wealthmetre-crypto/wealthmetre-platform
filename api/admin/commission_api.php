@@ -59,8 +59,6 @@ if ($action === 'save_rates') {
     jsonResponse(['success'=>true, 'message'=>'Rates saved']);
 }
 
-jsonError('Invalid action');
-
 // Monthly disbursement summary
 if ($action === 'monthly_summary') {
     $pid   = (int)($_GET['partner_id'] ?? 0);
@@ -144,3 +142,5 @@ if ($action === 'monthly_summary') {
         'month'            => $month
     ],'rates'=>$rates]);
 }
+
+jsonError('Invalid action');
