@@ -1677,6 +1677,7 @@ function openDivaLead(d) {
 }
 // CRM LEAD DETAIL
 function openCrmLead(l) {
+  window._crmLeadSource = l.lead_source || 'calling';
   document.getElementById('crmLeadTitle').textContent = (l.name||'Lead') + ' — ' + (l.loan_type||'');
   const body = document.getElementById('crmLeadBody');
   const rows = [
@@ -1752,7 +1753,7 @@ async function saveCrmDisbursal(leadId) {
     const r = await fetch(API, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({action:'update_disbursal', lead_id:leadId, status, disbursal_amount:amount, disbursal_date:date, disbursed_lender:lender})
+      body: JSON.stringify({action:'update_disbursal', lead_id:leadId, lead_source:window._crmLeadSource||'calling', status, disbursal_amount:amount, disbursal_date:date, disbursed_lender:lender})
     }).then(d=>d.json());
     if (r.success) {
       msg.textContent = 'Saved!';

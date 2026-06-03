@@ -547,10 +547,16 @@ if($action==='update_disbursal'){
     $amount = intSafe($b['disbursal_amount']??0);
     $date   = trim($b['disbursal_date']??'');
     $lender = trim($b['disbursed_lender']??'');
+    $source = trim($b['lead_source']??'calling');
     if(!$id){ echo json_encode(['success'=>false,'message'=>'lead_id required']); exit; }
     try {
-        $pdo->prepare("UPDATE calling_leads SET current_status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
-            ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
+        if ($source === 'direct') {
+            $pdo->prepare("UPDATE leads SET status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
+                ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
+        } else {
+            $pdo->prepare("UPDATE calling_leads SET current_status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
+                ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
+        }
         echo json_encode(['success'=>true,'message'=>'Disbursal updated']);
     } catch(\Throwable $e){ echo json_encode(['success'=>false,'message'=>$e->getMessage()]); }
     exit;
