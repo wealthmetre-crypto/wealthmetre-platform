@@ -167,6 +167,7 @@ if($action==='partner_leads_list'){
         "SELECT l.id, l.customer_name, COALESCE(l.customer_mobile,l.mobile) as mobile,
                 l.city, l.loan_type, l.loan_amount, l.cibil, l.status,
                 l.source, l.created_at, l.notes,
+                l.disbursal_amount, l.disbursal_date, l.disbursed_lender,
                 p.partner_name, p.first_name, p.last_name, p.mobile as partner_mobile
          FROM leads l
          LEFT JOIN partners p ON p.id = l.partner_id
