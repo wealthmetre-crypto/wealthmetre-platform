@@ -216,6 +216,7 @@ if($action==='leads_list'){
                cl.followup_at AS followup_date, cl.call_notes AS notes,
                cl.created_at, cl.cibil, cl.source,
                cl.assigned_telecaller_id,
+               cl.disbursal_amount, cl.disbursal_date, cl.disbursed_lender,
                p.partner_name, t.name AS telecaller_name, 'calling' AS lead_source
         FROM calling_leads cl
         LEFT JOIN calling_batches cb ON cb.id = cl.batch_id
@@ -547,7 +548,7 @@ if($action==='update_disbursal'){
     $lender = trim($b['disbursed_lender']??'');
     if(!$id){ echo json_encode(['success'=>false,'message'=>'lead_id required']); exit; }
     try {
-        $pdo->prepare("UPDATE leads SET status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
+        $pdo->prepare("UPDATE calling_leads SET current_status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
             ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
         echo json_encode(['success'=>true,'message'=>'Disbursal updated']);
     } catch(\Throwable $e){ echo json_encode(['success'=>false,'message'=>$e->getMessage()]); }
