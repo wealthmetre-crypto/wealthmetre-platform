@@ -233,6 +233,7 @@ if($action==='leads_list'){
                NULL AS followup_date, l.notes AS notes,
                l.created_at, l.cibil, l.source,
                NULL AS assigned_telecaller_id,
+               l.disbursal_amount, l.disbursal_date, l.disbursed_lender,
                p.partner_name, NULL AS telecaller_name, 'direct' AS lead_source
         FROM leads l
         LEFT JOIN partners p ON p.id = l.partner_id
