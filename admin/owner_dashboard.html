@@ -1015,6 +1015,41 @@ textarea.inp{resize:vertical;min-height:90px}
   var _commProducts = ['home_loan','lap','business_loan','personal_loan'];
   var _commLabels   = {'home_loan':'Home Loan','lap':'LAP','business_loan':'Business Loan','personal_loan':'Personal Loan'};
 
+
+    <!-- Monthly Summary Section -->
+    <div id="monthlySummarySection" style="margin-top:20px;">
+      <div style="background:#fff;border-radius:12px;border:1px solid #e2e8f0;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:700;color:#1e3a8a;">Monthly Disbursement Summary</div>
+          <div style="display:flex;gap:10px;">
+            <input type="month" id="commMonth" style="padding:6px 10px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;" />
+            <button class="btn btn-primary" onclick="loadMonthlySummary()" style="padding:8px 16px;font-size:12px;"><i class="fa fa-chart-bar"></i> Load Summary</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+          <div style="background:#eff4ff;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:#64748b;font-weight:700;margin-bottom:4px;">LEADS DISBURSED</div><div style="font-size:22px;font-weight:800;color:#1e3a8a;" id="sumLeadCount">0</div></div>
+          <div style="background:#eff4ff;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:#64748b;font-weight:700;margin-bottom:4px;">TOTAL DISBURSED</div><div style="font-size:18px;font-weight:800;color:#1e3a8a;" id="sumTotalDis">Rs. 0</div></div>
+          <div style="background:#dcfce7;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:#059669;font-weight:700;margin-bottom:4px;">PARTNER PAYOUT</div><div style="font-size:18px;font-weight:800;color:#059669;" id="sumPartner">Rs. 0</div></div>
+          <div style="background:#fef3c7;border-radius:10px;padding:14px;text-align:center;"><div style="font-size:11px;color:#92400e;font-weight:700;margin-bottom:4px;">WM EARNING</div><div style="font-size:18px;font-weight:800;color:#92400e;" id="sumWM">Rs. 0</div></div>
+        </div>
+        <div id="summaryTableWrap" style="display:none;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead><tr style="background:#eff4ff;">
+              <th style="padding:8px 12px;text-align:left;color:#1e3a8a;">#</th>
+              <th style="padding:8px 12px;text-align:left;color:#1e3a8a;">Customer</th>
+              <th style="padding:8px 12px;text-align:left;color:#1e3a8a;">Loan Type</th>
+              <th style="padding:8px 12px;text-align:left;color:#1e3a8a;">Lender</th>
+              <th style="padding:8px 12px;text-align:right;color:#1e3a8a;">Amount</th>
+              <th style="padding:8px 12px;text-align:right;color:#1e3a8a;">Payout%</th>
+              <th style="padding:8px 12px;text-align:right;color:#059669;">Partner</th>
+              <th style="padding:8px 12px;text-align:right;color:#92400e;">WM</th>
+            </tr></thead>
+            <tbody id="summaryTableBody"></tbody>
+          </table>
+        </div>
+        <div id="summaryEmpty" style="text-align:center;padding:20px;color:#64748b;font-size:13px;display:none;">No disbursed leads found for this month.</div>
+      </div>
+    </div>
   function loadCommissionPage() {
     fetch('/api/admin/commission_api.php?action=master_partners', {credentials:'include'})
       .then(r=>r.json()).then(d=>{

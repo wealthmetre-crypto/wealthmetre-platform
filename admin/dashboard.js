@@ -1966,3 +1966,38 @@ function showMissingFields(missing, lenderName) {
   }
 
 
+
+// Commission Monthly Summary
+async function loadMonthlySummary() {
+  if (!window._commPartnerId) { toast('Select a partner first', 'warning'); return; }
+  const month = document.getElementById('commMonth').value || new Date().toISOString().slice(0,7);
+  const url = '/api/admin/commission_api.php?action=monthly_summary&partner_id='+window._commPartnerId+'&month='+month;
+  try {
+    const d = await fetch(url, {credentials:'include'}).then(r=>r.json());
+    if (!d.success) { toast(d.message||'Error', 'error'); return; }
+    const s = d.summary;
+    const fmt = n => 'Rs. '+Math.round(n).toLocaleString('en-IN');
+    document.getElementById('sumLeadCount').textContent = s.lead_count;
+    document.getElementById('sumTotalDis').textContent  = fmt(s.total_disbursed);
+    document.getElementById('sumPartner').textContent   = fmt(s.total_partner);
+    document.getElementById('sumWM').textContent        = fmt(s.total_wm);
+    const tbody = document.getElementById('summaryTableBody');
+    if (!d.leads || !d.leads.length) {
+      document.getElementById('summaryTableWrap').style.display = 'none';
+      document.getElementById('summaryEmpty').style.display = 'block';
+      return;
+    }
+    document.getElementById('summaryTableWrap').style.display = 'block';
+    document.getElementById('summaryEmpty').style.display = 'none';
+    tbody.innerHTML = d.leads.map((l,i) => `<tr style="border-bottom:1px solid #f1f5f9;">
+      <td style="padding:8px 12px;color:#64748b;">${i+1}</td>
+      <td style="padding:8px 12px;font-weight:600;">${l.name||'—'}</td>
+      <td style="padding:8px 12px;">${l.loan_type||'—'}</td>
+      <td style="padding:8px 12px;color:#64748b;">${l.disbursed_lender||'—'}</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:700;">Rs.${Math.round((l.disbursal_amount||l.loan_amount||0)/100000)}L</td>
+      <td style="padding:8px 12px;text-align:right;color:#64748b;">${l.payout_rate}%</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:700;color:#059669;">Rs.${Math.round(l.calc_partner).toLocaleString('en-IN')}</td>
+      <td style="padding:8px 12px;text-align:right;font-weight:700;color:#92400e;">Rs.${Math.round(l.calc_wm).toLocaleString('en-IN')}</td>
+    </tr>`).join('');
+  } catch(e) { toast('Network error', 'error'); }
+}

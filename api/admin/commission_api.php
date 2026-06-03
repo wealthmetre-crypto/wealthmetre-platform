@@ -60,3 +60,78 @@ if ($action === 'save_rates') {
 }
 
 jsonError('Invalid action');
+
+// Monthly disbursement summary
+if ($action === 'monthly_summary') {
+    $pid   = (int)($_GET['partner_id'] ?? 0);
+    $month = $_GET['month'] ?? date('Y-m');
+    if (!$pid) jsonError('partner_id required');
+
+    [$year, $mon] = explode('-', $month);
+
+    // Disbursed leads from calling_leads
+    $stmt = $pdo->prepare("
+        SELECT cl.id, cl.customer_name as name, cl.loan_type, cl.loan_amount,
+               cl.disbursal_amount, cl.disbursal_date, cl.disbursed_lender,
+               cl.current_status as status
+        FROM calling_leads cl
+        LEFT JOIN calling_batches cb ON cb.id = cl.batch_id
+        WHERE cb.partner_id = ?
+          AND cl.current_status = 'disbursed'
+          AND MONTH(cl.disbursal_date) = ?
+          AND YEAR(cl.disbursal_date) = ?
+        ORDER BY cl.disbursal_date ASC
+    ");
+    $stmt->execute([$pid, $mon, $year]);
+    $leads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Get commission rates for this partner
+    $rStmt = $pdo->prepare("SELECT product_type, sub_partner_pct, override_pct, wm_pct FROM partner_commission_rates WHERE partner_id=?");
+    $rStmt->execute([$pid]);
+    $rates = [];
+    foreach ($rStmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $rates[$r['product_type']] = $r;
+    }
+
+    // Andro base payout rates
+    $basePayout = ['home_loan'=>1.0,'Home Loan'=>1.0,'lap'=>1.5,'Loan Against Property (LAP)'=>1.5,'business_loan'=>3.0,'Business Loan'=>3.0,'personal_loan'=>3.0,'Personal Loan'=>3.0];
+
+    $summary = [];
+    $totalDisbursed = 0;
+    $totalWM = 0;
+    $totalPartner = 0;
+
+    foreach ($leads as &$lead) {
+        $amt = (float)($lead['disbursal_amount'] ?: $lead['loan_amount'] ?: 0);
+        $ltype = $lead['loan_type'] ?? '';
+        $payout = $basePayout[$ltype] ?? 1.0;
+        $gross = $amt * $payout / 100;
+
+        // Map loan type to product key
+        $prodKey = strtolower(str_replace([' ','(',')','-'], ['_','','','_'], $ltype));
+        $prodKey = str_replace('loan_against_property_lap', 'lap', $prodKey);
+        $prodKey = str_replace('home_loan', 'home_loan', $prodKey);
+
+        $r = $rates[$prodKey] ?? ['sub_partner_pct'=>50,'override_pct'=>15,'wm_pct'=>35];
+        $wmShare = $gross * 0.10; // WM base cut (10%)
+        $partnerShare = $gross * 0.90 * ((float)$r['sub_partner_pct'] / 100);
+        $wmTotal = $gross - $partnerShare;
+
+        $lead['calc_gross']   = round($gross);
+        $lead['calc_partner'] = round($partnerShare);
+        $lead['calc_wm']      = round($wmTotal);
+        $lead['payout_rate']  = $payout;
+
+        $totalDisbursed += $amt;
+        $totalWM        += $wmTotal;
+        $totalPartner   += $partnerShare;
+    }
+
+    jsonResponse(['success'=>true,'leads'=>$leads,'summary'=>[
+        'total_disbursed'  => $totalDisbursed,
+        'total_wm'         => round($totalWM),
+        'total_partner'    => round($totalPartner),
+        'lead_count'       => count($leads),
+        'month'            => $month
+    ],'rates'=>$rates]);
+}
