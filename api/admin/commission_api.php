@@ -80,9 +80,18 @@ if ($action === 'monthly_summary') {
           AND cl.current_status = 'disbursed'
           AND MONTH(cl.disbursal_date) = ?
           AND YEAR(cl.disbursal_date) = ?
-        ORDER BY cl.disbursal_date ASC
+        UNION ALL
+        SELECT l.id, l.customer_name as name, l.loan_type, l.loan_amount,
+               l.disbursal_amount, l.disbursal_date, l.disbursed_lender,
+               l.status as status
+        FROM leads l
+        WHERE l.partner_id = ?
+          AND l.status = 'disbursed'
+          AND MONTH(l.disbursal_date) = ?
+          AND YEAR(l.disbursal_date) = ?
+        ORDER BY disbursal_date ASC
     ");
-    $stmt->execute([$pid, $mon, $year]);
+    $stmt->execute([$pid, $mon, $year, $pid, $mon, $year]);
     $leads = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Get commission rates for this partner
