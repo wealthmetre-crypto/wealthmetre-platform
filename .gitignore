@@ -17,3 +17,5 @@ storage/exports/
 .DS_Store
 Thumbs.db
 *.swp
+Private/
+config/db.php
