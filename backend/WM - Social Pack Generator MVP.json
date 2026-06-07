@@ -1,0 +1,209 @@
+{
+  "name": "WM - Social Pack Generator MVP",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "3312faac-92af-4c12-b690-59c93086c12b",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  id,\n  content_type,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  title,\n  meta_title,\n  meta_description,\n  slug,\n  content_long,\n  content_short,\n  cta,\n  compliance_notes,\n  status,\n  created_at\nFROM content_queue b\nWHERE b.content_type = 'blog'\n  AND b.status IN ('needs_review', 'approved')\n  AND NOT EXISTS (\n    SELECT 1\n    FROM content_queue s\n    WHERE s.slug IN (\n      CONCAT(b.slug, '-instagram'),\n      CONCAT(b.slug, '-facebook'),\n      CONCAT(b.slug, '-linkedin'),\n      CONCAT(b.slug, '-gbp')\n    )\n  )\nORDER BY b.id ASC\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "420f75f7-b157-4f7b-b6a3-9f1b34794c7f",
+      "name": "Get Blog Without Social Pack",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const blog = $json;\n\nconst sourceContent = `\nTitle: ${blog.title || ''}\nTopic: ${blog.topic || ''}\nKeyword: ${blog.target_keyword || ''}\nCity: ${blog.city || ''}\nLoan Product: ${blog.loan_product || ''}\nMeta Description: ${blog.meta_description || ''}\nCTA: ${blog.cta || ''}\nCompliance Notes: ${blog.compliance_notes || ''}\n\nBlog Content:\n${blog.content_long || blog.content_short || ''}\n`;\n\nconst systemPrompt = `You are WealthMetre's social media content strategist.\n\nWealthMetre is an AI-powered loan advisory platform in Jaipur/Rajasthan.\nIt helps users compare 140+ banks and NBFCs for Home Loan, LAP, Business Loan, Personal Loan and Working Capital.\n\nRules:\n- Output only valid JSON.\n- Do not invent lender policies, ROI, LTV, CIBIL rules, fees, or approval guarantees.\n- Keep finance content compliant and practical.\n- Avoid saying \"guaranteed approval\", \"lowest rate guaranteed\", or \"instant approval\".\n- Tone should be helpful, trustworthy, simple, and India-specific.\n- Use light Hinglish only where natural.\n- Mention final eligibility depends on lender policy, credit profile, income, property/legal/technical checks and documentation.`;\n\nconst userPrompt = `Create a social media pack from this approved/review blog.\n\n${sourceContent}\n\nReturn valid JSON with exactly these keys:\n\n{\n  \"instagram\": {\n    \"title\": \"\",\n    \"caption\": \"\",\n    \"hashtags\": \"\",\n    \"cta\": \"\",\n    \"image_prompt\": \"\"\n  },\n  \"facebook\": {\n    \"title\": \"\",\n    \"caption\": \"\",\n    \"hashtags\": \"\",\n    \"cta\": \"\",\n    \"image_prompt\": \"\"\n  },\n  \"linkedin\": {\n    \"title\": \"\",\n    \"caption\": \"\",\n    \"hashtags\": \"\",\n    \"cta\": \"\",\n    \"image_prompt\": \"\"\n  },\n  \"gbp_post\": {\n    \"title\": \"\",\n    \"caption\": \"\",\n    \"hashtags\": \"\",\n    \"cta\": \"\",\n    \"image_prompt\": \"\"\n  }\n}\n\nPlatform rules:\n- Instagram: punchy hook, short caption, carousel/reel friendly, local Jaipur angle, 8-15 hashtags.\n- Facebook: simple explanatory post for local borrowers, warm and practical, 4-8 hashtags.\n- LinkedIn: professional founder/business tone, insight-led, less salesy, 3-6 hashtags.\n- GBP post: short local SEO post, max 700 characters, include Jaipur naturally, clear CTA.\n- Image prompts should be suitable for Pomelli/Canva-style branded creatives.\n`;\n\nreturn {\n  json: {\n    blog_id: blog.id,\n    blog_slug: blog.slug,\n    blog_topic: blog.topic,\n    blog_title: blog.title,\n    city: blog.city,\n    loan_product: blog.loan_product,\n    requestBody: {\n      model: \"gpt-4o-mini\",\n      temperature: 0.45,\n      response_format: {\n        type: \"json_object\"\n      },\n      messages: [\n        {\n          role: \"system\",\n          content: systemPrompt\n        },\n        {\n          role: \"user\",\n          content: userPrompt\n        }\n      ]\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "48d530e7-c0e1-4bce-a625-0d5ea63f969a",
+      "name": "Build Social Pack Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "16b36bed-6b4e-41be-8532-27bb182d06a9",
+      "name": "Call OpenAI - Generate Social Pack"
+    },
+    {
+      "parameters": {
+        "jsCode": "const openai = $json;\nconst source = $(\"Build Social Pack Request\").first().json;\n\nconst raw = openai.choices?.[0]?.message?.content || \"{}\";\n\nlet pack;\ntry {\n  pack = JSON.parse(raw);\n} catch (e) {\n  throw new Error(\"Failed to parse OpenAI social pack JSON: \" + e.message + \"\\nRaw content:\\n\" + raw);\n}\n\nreturn {\n  json: {\n    blog_id: source.blog_id,\n    blog_slug: source.blog_slug,\n    blog_topic: source.blog_topic,\n    blog_title: source.blog_title,\n    city: source.city,\n    loan_product: source.loan_product,\n\n    instagram: pack.instagram || {},\n    facebook: pack.facebook || {},\n    linkedin: pack.linkedin || {},\n    gbp_post: pack.gbp_post || {}\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "bfa23ad2-1ef6-41d7-b4a9-055c73b0a295",
+      "name": "Parse Social Pack JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nfunction esc(value) {\n  if (value === null || value === undefined) return '';\n  return String(value)\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"\\\\'\");\n}\n\nconst platforms = [\n  { type: 'instagram', suffix: 'instagram', payload: data.instagram || {} },\n  { type: 'facebook', suffix: 'facebook', payload: data.facebook || {} },\n  { type: 'linkedin', suffix: 'linkedin', payload: data.linkedin || {} },\n  { type: 'gbp_post', suffix: 'gbp', payload: data.gbp_post || {} }\n];\n\nconst sql = platforms.map((p) => {\n  const title = p.payload.title || '';\n  const caption = p.payload.caption || '';\n  const hashtags = p.payload.hashtags || '';\n  const cta = p.payload.cta || '';\n  const imagePrompt = p.payload.image_prompt || '';\n  const slug = `${data.blog_slug}-${p.suffix}`;\n\n  const contentLong = [\n    `Title: ${title}`,\n    '',\n    `Caption: ${caption}`,\n    hashtags ? `Hashtags: ${hashtags}` : '',\n    cta ? `CTA: ${cta}` : '',\n    imagePrompt ? `Image Prompt: ${imagePrompt}` : ''\n  ].filter(Boolean).join('\\n');\n\n  const complianceNotes =\n    `Generated from blog_id ${data.blog_id}. Review before publishing. ` +\n    `Final eligibility depends on lender policy, credit profile, income, property/legal/technical checks and documentation.`;\n\n  return `\nINSERT INTO content_queue\n(\n  content_type,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  title,\n  meta_title,\n  meta_description,\n  slug,\n  content_long,\n  content_short,\n  cta,\n  compliance_notes,\n  status\n)\nVALUES\n(\n  '${esc(p.type)}',\n  '${esc(data.blog_topic || data.blog_title || '')}',\n  '${esc(data.blog_topic || '')}',\n  '${esc(data.city || '')}',\n  '${esc(data.loan_product || '')}',\n  '${esc(title)}',\n  '${esc(title)}',\n  '${esc(caption.substring(0, 160))}',\n  '${esc(slug)}',\n  '${esc(contentLong)}',\n  '${esc(caption)}',\n  '${esc(cta)}',\n  '${esc(complianceNotes)}',\n  'needs_review'\n)\nON DUPLICATE KEY UPDATE\n  topic = VALUES(topic),\n  target_keyword = VALUES(target_keyword),\n  city = VALUES(city),\n  loan_product = VALUES(loan_product),\n  title = VALUES(title),\n  meta_title = VALUES(meta_title),\n  meta_description = VALUES(meta_description),\n  content_long = VALUES(content_long),\n  content_short = VALUES(content_short),\n  cta = VALUES(cta),\n  compliance_notes = VALUES(compliance_notes),\n  status = VALUES(status)\n`.trim();\n}).join(';\\n\\n') + ';';\n\nreturn {\n  json: {\n    blog_id: data.blog_id,\n    blog_slug: data.blog_slug,\n    insertQuery: sql\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "29a087d5-2c15-4ff3-96ef-79d1877f3ae7",
+      "name": "Build Social Insert SQL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.insertQuery }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "5c621c6b-31cd-4720-a9a1-b4af5d3367a1",
+      "name": "Save Social Pack to Content Queue",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Blog Without Social Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Blog Without Social Pack": {
+      "main": [
+        [
+          {
+            "node": "Build Social Pack Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Social Pack Request": {
+      "main": [
+        [
+          {
+            "node": "Call OpenAI - Generate Social Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenAI - Generate Social Pack": {
+      "main": [
+        [
+          {
+            "node": "Parse Social Pack JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Social Pack JSON": {
+      "main": [
+        [
+          {
+            "node": "Build Social Insert SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Social Insert SQL": {
+      "main": [
+        [
+          {
+            "node": "Save Social Pack to Content Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a024b0b6-4518-4950-879a-254b6dea8b67",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "317f14e9ff835c290cd7339fb580b0a8520328d9f39eea6fd64aaa1ea5d2035a"
+  },
+  "id": "W4GYQ42fPLKoYEbp",
+  "tags": []
+}
