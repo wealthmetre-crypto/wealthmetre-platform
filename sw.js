@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wm-tc-v1';
+const CACHE_NAME = 'wm-tc-v10';
 
 // Assets to cache for faster load (not for offline)
 const STATIC_ASSETS = [

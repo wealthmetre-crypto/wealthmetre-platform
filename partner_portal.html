@@ -10,6 +10,9 @@
 <link rel="manifest" href="/manifest-partner.json"/>
 <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("/sw.js").catch(()=>{})}</script>
 <meta charset="UTF-8"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>WealthMetre – Channel Partner CRM</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -713,6 +716,7 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
       <div class="nav-item" onclick="showPage('pipeline')" data-page="pipeline"><i class="fa-solid fa-table-columns"></i> Pipeline <span class="nav-badge" id="navPipelineCount">0</span></div>
       <div class="nav-item" onclick="showPage('myLeads')" data-page="myLeads"><i class="fa-solid fa-folder-open"></i> All Leads <span class="nav-badge" id="navLeadCount">0</span></div>
       <div class="nav-section">Actions</div>
+      <div class="nav-item" onclick="showPage('myTeam')" data-page="myTeam" id="navMyTeam" style="display:none"><i class="fa-solid fa-users"></i> My Team <span class="nav-badge green" id="navTeamCount" style="display:none">0</span></div>
       <div class="nav-item" onclick="showPage('followups')" data-page="followups"><i class="fa-solid fa-bell"></i> Follow-ups <span class="nav-badge red" id="navOverdueCount" style="display:none">0</span></div>
       <div class="nav-section">Telecalling CRM</div>
       <div class="nav-item" onclick="showPage('crmDashboard')" data-page="crmDashboard">
@@ -1082,6 +1086,54 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
       </div>
 
       <!-- ══ FOLLOW-UPS ══ -->
+      <div id="page-myTeam" class="form-section">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-size:18px;font-weight:800;color:var(--navy)"><i class="fa-solid fa-users"></i> My Team</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">Sub-partners aur unki leads track karo</div>
+          </div>
+          <button class="btn btn-primary" onclick="showInviteModal()"><i class="fa-solid fa-user-plus"></i> Invite Sub-Partner</button>
+        </div>
+        <!-- Team Stats -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:20px;">
+          <div style="background:var(--navy-lt);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:10px;color:var(--muted);font-weight:700;margin-bottom:4px;">TEAM MEMBERS</div>
+            <div style="font-size:22px;font-weight:800;color:var(--navy)" id="teamMemberCount">—</div>
+          </div>
+          <div style="background:#dcfce7;border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:10px;color:#059669;font-weight:700;margin-bottom:4px;">TOTAL LEADS</div>
+            <div style="font-size:22px;font-weight:800;color:#059669" id="teamTotalLeads">—</div>
+          </div>
+          <div style="background:#fef3c7;border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:10px;color:#92400e;font-weight:700;margin-bottom:4px;">DISBURSED</div>
+            <div style="font-size:22px;font-weight:800;color:#92400e" id="teamDisbursed">—</div>
+          </div>
+        </div>
+        <!-- Sub-partner list -->
+        <div id="teamMembersList" style="margin-bottom:20px;">
+          <div style="text-align:center;padding:30px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</div>
+        </div>
+        <!-- Selected sub-partner leads -->
+        <div id="teamLeadsSection" style="display:none;background:#fff;border-radius:12px;border:1px solid var(--border);padding:16px;">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:12px;" id="teamLeadsTitle">Leads</div>
+          <div id="teamLeadsTable"></div>
+        </div>
+      </div>
+
+      <!-- Invite Modal -->
+      <div id="inviteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:400px;">
+          <div style="font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px;">Invite Sub-Partner</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Neeche diya link share karo apne sub-partner ke saath</div>
+          <div style="background:var(--bg);border-radius:8px;padding:12px;font-size:11px;font-family:monospace;color:var(--navy);word-break:break-all;margin-bottom:14px;" id="inviteLinkText">Generating...</div>
+          <div style="display:flex;gap:8px;margin-bottom:8px;">
+            <button class="btn btn-primary" onclick="copyInviteLink()" style="flex:1"><i class="fa fa-copy"></i> Copy</button>
+            <button class="btn btn-green" onclick="shareInviteWhatsApp()" style="flex:1"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
+          </div>
+          <button onclick="document.getElementById('inviteModal').style.display='none'" style="width:100%;padding:8px;border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;">Cancel</button>
+        </div>
+      </div>
+
       <div id="page-followups" class="form-section">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">
           <div style="font-size:18px;font-weight:800">Follow-ups & Tasks</div>
@@ -2834,7 +2886,7 @@ function logout() {
 function showPortal() {
   partnerData = normalizePartner(partnerData);
   // Handle ?logout=1 URL param
-  if (new URLSearchParams(location.search).get('logout')) { localStorage.clear(); sessionStorage.clear(); location.href='/partner_portal.html'; return; }
+  if (new URLSearchParams(location.search).get('logout')) { localStorage.clear(); sessionStorage.clear(); location.href='/partner_portal.html?v=1780499308'; return; }
   // Fetch fresh onboarding_step from server before routing
   fetch('/api/partner/partner_auth.php', {
     method: 'POST',
@@ -2894,6 +2946,12 @@ function _showPortalUI() {
   document.getElementById('sidebarId').textContent = getPartnerId();
   const initials = (partnerData.partner_name||'P').split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
   document.getElementById('sidebarAvatar').textContent = initials;
+  // Show My Team only for Level 1 partners
+  const myTeamNav = document.getElementById('navMyTeam');
+  if (myTeamNav) {
+    const level = parseInt(partnerData.partner_level) || 1;
+    myTeamNav.style.display = level === 1 ? 'flex' : 'none';
+  }
   showPage('dashboard', {force:true});
   loadDashboard();
 }
@@ -2915,6 +2973,7 @@ function showPage(page, options={}) {
   if (page==='scoreReport')  loadScoreReport();
   if (page==='questionnaires') loadQuestionnaires();
   if (page==='waTemplates') loadWATemplates();
+  if (page==='myTeam') loadMyTeam();
   if (page==='emailReports') loadEmailReports();
   if (page==='followups') loadFollowups();
   if (page==='newLead' && !newLeadInitialized) { resetForm(true); newLeadInitialized=true; }
@@ -3181,6 +3240,7 @@ async function loadDrawerLead(leadId) {
    if (data.status==='ok' || data.success===true) {
       drawerLeadData = data;
       const l = data.lead;
+      window._currentLead = l;
       document.getElementById('drawerLeadId').textContent = 'WM-'+String(l.lead_id).padStart(6,'0');
       document.getElementById('drawerLeadName').textContent = l.customer_name || '—';
       document.getElementById('drawerCallBtn').onclick = ()=>window.open('tel:'+l.customer_mobile);
@@ -3234,6 +3294,7 @@ function renderDrawerTab(tab) {
         <div class="cs-header">
           <div class="cs-title"><i class="fa-solid fa-clipboard-list"></i> Case Summary</div>
           <div class="cs-actions">
+            <button class="btn btn-outline btn-xs" onclick="openEditLead()"><i class="fa-solid fa-pencil"></i> Edit</button>
             <button class="btn btn-outline btn-xs" onclick="copyCaseSummary()"><i class="fa-solid fa-copy"></i> Copy</button>
             <button class="btn btn-outline btn-xs" onclick="waSendSummary()"><i class="fa-brands fa-whatsapp"></i> Share</button>
           </div>
@@ -4424,6 +4485,265 @@ function _kycSetErr(key,msg){const el=document.getElementById(_kycMap[key].errId
 function _kycClearErr(key){const el=document.getElementById(_kycMap[key].errId),box=document.getElementById(_kycMap[key].boxId);if(el){el.style.display='none';el.textContent='';}if(box)box.classList.remove('kyc-has-error');}
 function _kycShowBanner(msg){const b=document.getElementById('kycErrBanner');if(!b)return;document.getElementById('kycErrText').textContent=msg;b.style.display='flex';b.scrollIntoView({behavior:'smooth',block:'center'});}
 function _kycFmtBytes(n){if(n<1024)return n+' B';if(n<1048576)return(n/1024).toFixed(1)+' KB';return(n/1048576).toFixed(2)+' MB';}
+
+// ═══ MY TEAM ═══
+async function loadMyTeam() {
+  try {
+    const r = await fetch('/api/partner/my_team.php?action=team_summary', {headers:{'Authorization':'Bearer '+authToken}}).then(x=>x.json());
+    if (!r.success) { toast(r.message||'Error loading team','error'); return; }
+
+    // Stats
+    document.getElementById('teamMemberCount').textContent = r.members?.length || 0;
+    document.getElementById('teamTotalLeads').textContent  = r.stats?.total_leads || 0;
+    document.getElementById('teamDisbursed').textContent   = r.stats?.disbursed || 0;
+
+    // Member cards
+    const list = document.getElementById('teamMembersList');
+    if (!r.members || !r.members.length) {
+      list.innerHTML = `<div style="text-align:center;padding:30px;background:#fff;border-radius:12px;border:1px solid var(--border)">
+        <div style="font-size:32px;margin-bottom:8px">👥</div>
+        <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px">Koi sub-partner nahi hai abhi</div>
+        <div style="font-size:12px;color:var(--muted)">Invite button se apne sub-partners ko onboard karo</div>
+      </div>`;
+      return;
+    }
+
+    // Update nav badge
+    const badge = document.getElementById('navTeamCount');
+    if (badge) { badge.textContent = r.members.length; badge.style.display = 'inline'; }
+
+    list.innerHTML = r.members.map(m => `
+      <div style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:16px;margin-bottom:10px;cursor:pointer;"
+           onclick="loadTeamMemberLeads(${m.id},'${m.partner_name}')">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="width:42px;height:42px;border-radius:50%;background:var(--navy-lt);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--navy);flex-shrink:0;">
+            ${(m.partner_name||'?').charAt(0).toUpperCase()}
+          </div>
+          <div style="flex:1;min-width:120px;">
+            <div style="font-size:14px;font-weight:700;color:var(--navy)">${m.partner_name||'—'}</div>
+            <div style="font-size:11px;color:var(--muted)">${m.mobile||''} · Joined ${m.joined||'—'}</div>
+          </div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div style="text-align:center;">
+              <div style="font-size:10px;color:var(--muted);font-weight:700">LEADS</div>
+              <div style="font-size:16px;font-weight:800;color:var(--navy)">${m.total_leads||0}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:10px;color:#059669;font-weight:700">DISBURSED</div>
+              <div style="font-size:16px;font-weight:800;color:#059669">${m.disbursed||0}</div>
+            </div>
+            <div style="text-align:center;">
+              <div style="font-size:10px;color:var(--orange-dk);font-weight:700">INTERESTED</div>
+              <div style="font-size:16px;font-weight:800;color:var(--orange-dk)">${m.interested||0}</div>
+            </div>
+          </div>
+          <div style="color:var(--muted);font-size:12px;margin-left:auto"><i class="fa fa-chevron-right"></i></div>
+        </div>
+      </div>
+    `).join('');
+
+  } catch(e) { toast('Network error: '+e.message,'error'); }
+}
+
+async function loadTeamMemberLeads(memberId, memberName) {
+  const section = document.getElementById('teamLeadsSection');
+  const title   = document.getElementById('teamLeadsTitle');
+  const table   = document.getElementById('teamLeadsTable');
+  section.style.display = 'block';
+  title.innerHTML = `<i class="fa fa-folder-open"></i> ${memberName} — All Leads`;
+  table.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)"><i class="fa fa-spinner fa-spin"></i> Loading...</div>';
+  section.scrollIntoView({behavior:'smooth', block:'start'});
+  try {
+    const r = await fetch('/api/partner/my_team.php?action=member_leads&member_id='+memberId, {headers:{'Authorization':'Bearer '+authToken}}).then(x=>x.json());
+    if (!r.success || !r.leads?.length) {
+      table.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted)">No leads found</div>';
+      return;
+    }
+    table.innerHTML = `
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12px;">
+          <thead><tr style="background:var(--navy-lt);">
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">#</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">Customer</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">Loan Type</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">Amount</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">City</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">Status</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--navy)">Date</th>
+          </tr></thead>
+          <tbody>
+            ${r.leads.map((l,i) => `<tr style="border-bottom:1px solid var(--border);">
+              <td style="padding:8px 10px;color:var(--muted)">${i+1}</td>
+              <td style="padding:8px 10px;font-weight:600">${l.customer_name||'—'}</td>
+              <td style="padding:8px 10px">${l.loan_type||'—'}</td>
+              <td style="padding:8px 10px;font-weight:700">₹${Math.round((l.amount||0)/100000)}L</td>
+              <td style="padding:8px 10px">${l.city||'—'}</td>
+              <td style="padding:8px 10px"><span style="background:var(--navy-lt);color:var(--navy);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700">${l.status||'new'}</span></td>
+              <td style="padding:8px 10px;color:var(--muted)">${l.created_at ? new Date(l.created_at).toLocaleDateString('en-IN') : '—'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } catch(e) { table.innerHTML = '<div style="color:red;padding:12px">Error: '+e.message+'</div>'; }
+}
+
+function showInviteModal() {
+  const modal = document.getElementById('inviteModal');
+  const linkEl = document.getElementById('inviteLinkText');
+  modal.style.display = 'flex';
+  // Generate invite link with partner's referral code
+  const partnerCode = partnerData?.partner_code || partnerData?.id || '';
+  const link = `${window.location.origin}/partner_portal.html?ref=${partnerCode}`;
+  linkEl.textContent = link;
+  window._inviteLink = link;
+}
+
+function copyInviteLink() {
+  const link = window._inviteLink || document.getElementById('inviteLinkText')?.textContent;
+  if (!link) return;
+  navigator.clipboard.writeText(link).then(() => toast('Link copied!','success'));
+}
+
+function shareInviteWhatsApp() {
+  const link = window._inviteLink || document.getElementById('inviteLinkText')?.textContent;
+  const msg = encodeURIComponent('WealthMetre ke saath kaam karo! Mere referral link se register karo: ' + link);
+  window.open('https://wa.me/?text='+msg, '_blank');
+}
+
+// ═══ EDIT LEAD ═══
+function openEditLead() {
+  const l = window._currentLead;
+  if (!l) { toast('No lead selected','error'); return; }
+  
+  document.getElementById('el_name').value        = l.customer_name || '';
+  document.getElementById('el_mobile').value      = l.customer_mobile || '';
+  document.getElementById('el_city').value        = l.city || '';
+  document.getElementById('el_loan_type').value   = l.loan_type || 'Home Loan';
+  document.getElementById('el_amount').value      = l.amount || '';
+  document.getElementById('el_valuation').value   = l.valuation || '';
+  document.getElementById('el_cibil').value       = l.cibil || '';
+  document.getElementById('el_income').value      = l.monthly_income || '';
+  document.getElementById('el_income_type').value = l.income_type || 'Salaried';
+  document.getElementById('el_property_title').value = l.property_title || 'JDA Approved';
+  document.getElementById('el_occupation').value  = l.occupation || '';
+  document.getElementById('el_remarks').value     = l.remarks || '';
+  document.getElementById('el_msg').textContent   = '';
+  
+  const modal = document.getElementById('editLeadModal');
+  modal.style.display = 'flex';
+}
+
+function closeEditLead() {
+  document.getElementById('editLeadModal').style.display = 'none';
+}
+
+async function saveEditLead() {
+  const l = window._currentLead;
+  if (!l) return;
+  const msg = document.getElementById('el_msg');
+  
+  const payload = {
+    lead_id:        l.lead_id,
+    customer_name:  document.getElementById('el_name').value,
+    customer_mobile:document.getElementById('el_mobile').value,
+    city:           document.getElementById('el_city').value,
+    loan_type:      document.getElementById('el_loan_type').value,
+    amount:         document.getElementById('el_amount').value,
+    valuation:      document.getElementById('el_valuation').value,
+    cibil:          document.getElementById('el_cibil').value,
+    monthly_income: document.getElementById('el_income').value,
+    income_type:    document.getElementById('el_income_type').value,
+    property_title: document.getElementById('el_property_title').value,
+    occupation:     document.getElementById('el_occupation').value,
+    remarks:        document.getElementById('el_remarks').value,
+  };
+
+  try {
+    const r = await fetch('/api/partner/leads_api.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json','Authorization':'Bearer '+authToken},
+      body: JSON.stringify({action:'update_lead', ...payload})
+    }).then(x=>x.json());
+
+    if (r.success) {
+      msg.textContent = '✓ Saved!';
+      msg.style.color = 'var(--green)';
+      // Update local lead data
+      Object.assign(window._currentLead, payload);
+      toast('Lead updated successfully','success');
+      setTimeout(() => {
+        closeEditLead();
+        // Refresh drawer
+        if (window._currentLead) openLeadDrawer(window._currentLead.lead_id);
+      }, 800);
+    } else {
+      msg.textContent = r.message || 'Error saving';
+      msg.style.color = 'var(--red)';
+    }
+  } catch(e) {
+    msg.textContent = 'Network error';
+    msg.style.color = 'var(--red)';
+  }
+}
 </script>
+
+<!-- Edit Lead Modal -->
+<div id="editLeadModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:100%;max-width:480px;margin:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;">
+      <div style="font-size:15px;font-weight:800;color:var(--navy)"><i class="fa-solid fa-pencil"></i> Edit Lead Details</div>
+      <button onclick="closeEditLead()" style="border:none;background:none;font-size:18px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="field"><label>Customer Name</label><input class="inp" id="el_name" type="text"/></div>
+      <div class="field"><label>Mobile</label><input class="inp" id="el_mobile" type="tel"/></div>
+      <div class="field"><label>City</label><input class="inp" id="el_city" type="text"/></div>
+      <div class="field"><label>Loan Type</label>
+        <select class="inp" id="el_loan_type">
+          <option>Home Loan</option>
+          <option>Loan Against Property (LAP)</option>
+          <option>Business Loan</option>
+          <option>Personal Loan</option>
+          <option>Car Loan</option>
+          <option>Balance Transfer</option>
+          <option>Working Capital / OD</option>
+        </select>
+      </div>
+      <div class="field"><label>Required Amount (₹)</label><input class="inp" id="el_amount" type="number"/></div>
+      <div class="field"><label>Property Value (₹)</label><input class="inp" id="el_valuation" type="number"/></div>
+      <div class="field"><label>CIBIL Score</label><input class="inp" id="el_cibil" type="number"/></div>
+      <div class="field"><label>Monthly Income (₹)</label><input class="inp" id="el_income" type="number"/></div>
+      <div class="field"><label>Income Type</label>
+        <select class="inp" id="el_income_type">
+          <option>Salaried</option>
+          <option>Self-Employed</option>
+          <option>Business</option>
+          <option>NIP</option>
+          <option>Cash Salaried</option>
+          <option>Rental Income</option>
+        </select>
+      </div>
+      <div class="field"><label>Property Title</label>
+        <select class="inp" id="el_property_title">
+          <option>JDA Approved</option>
+          <option>Society Patta</option>
+          <option>Nagar Nigam</option>
+          <option>Panchayat Patta</option>
+          <option>RHB</option>
+          <option>Agriculture</option>
+          <option>RIICO</option>
+          <option>Freehold</option>
+        </select>
+      </div>
+      <div class="field" style="grid-column:span 2"><label>Occupation</label><input class="inp" id="el_occupation" type="text"/></div>
+      <div class="field" style="grid-column:span 2"><label>Remarks / Notes</label><textarea class="inp" id="el_remarks" rows="2" style="resize:none"></textarea></div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px;">
+      <button class="btn btn-primary" onclick="saveEditLead()" style="flex:1"><i class="fa-solid fa-save"></i> Save Changes</button>
+      <button class="btn btn-outline" onclick="closeEditLead()" style="flex:1">Cancel</button>
+    </div>
+    <div id="el_msg" style="margin-top:8px;font-size:12px;text-align:center;"></div>
+  </div>
+</div>
 </body>
 </html>

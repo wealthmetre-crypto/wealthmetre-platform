@@ -69,7 +69,7 @@
     var snd = document.getElementById('dvSend');
     var cls = document.getElementById('dvClose');
     var rst = document.getElementById('dvReset');
-    var mic = document.getElementById('dvVoice');
+    var mic = document.getElementById('dvPopupVoice');
 
     /* Old panel not on this page — init the new launcher only */
     if (!pan || !bod || !inp) {
@@ -273,18 +273,21 @@
         _recognition.interimResults  = true;
         _recognition.maxAlternatives = 1;
         _recognition.continuous      = false;
+        var _activeMic = document.getElementById('dvPopupVoice') || mic;
+        var _activeInp = document.getElementById('dvPopupInput') || inp;
+        var _activeSend = typeof popHandleTextSend !== 'undefined' ? popHandleTextSend : (typeof handleSend !== 'undefined' ? handleSend : null);
         _recognition.onstart = function () {
             _isListening = true;
-            if (mic) { mic.classList.add('listening'); mic.title = 'Bol rahein hain... (tap to stop)'; }
+            if (_activeMic) { _activeMic.classList.add('listening'); _activeMic.title = 'Bol rahein hain... (tap to stop)'; }
             if (tog) tog.classList.add('dv-listening');
-            inp.placeholder = '\uD83C\uDF99\uFE0F Bol rahein hain...';
+            if (_activeInp) _activeInp.placeholder = '\uD83C\uDF99\uFE0F Bol rahein hain...';
         };
         _recognition.onresult = function (e) {
             var t = '';
             for (var i = e.resultIndex; i < e.results.length; i++) t += e.results[i][0].transcript;
-            inp.value = t;
+            if (_activeInp) _activeInp.value = t;
             if (e.results[e.results.length - 1].isFinal) {
-                setTimeout(function () { stopVoice(); if (inp.value.trim()) handleSend(); }, 500);
+                setTimeout(function () { stopVoice(); if (_activeInp && _activeInp.value.trim() && _activeSend) _activeSend(); }, 500);
             }
         };
         _recognition.onerror = function (e) {
@@ -299,9 +302,11 @@
     function stopVoice() {
         _isListening = false;
         if (_recognition) { try { _recognition.stop(); } catch (e) {} _recognition = null; }
-        if (mic) { mic.classList.remove('listening'); mic.title = 'Voice input'; }
+        var _activeMic2 = document.getElementById('dvPopupVoice') || mic;
+        var _activeInp2 = document.getElementById('dvPopupInput') || inp;
+        if (_activeMic2) { _activeMic2.classList.remove('listening'); _activeMic2.title = 'Voice input'; }
         if (tog) tog.classList.remove('dv-listening');
-        inp.placeholder = 'Type your message\u2026';
+        if (_activeInp2) _activeInp2.placeholder = 'Type your message\u2026';
     }
 
     function showToast(msg) {
@@ -1020,6 +1025,12 @@
         if (overlay)  overlay.addEventListener('click',   closePopup);
         if (sendBtn)  sendBtn.addEventListener('click',   popHandleTextSend);
         if (inputEl)  inputEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') popHandleTextSend(); });
+        var popMic = document.getElementById('dvPopupVoice');
+        if (popMic) {
+            var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) { popMic.classList.add('dv-voice-not-supported'); }
+            else { popMic.addEventListener('click', toggleVoice); }
+        }
 
         document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen) closePopup(); });
 

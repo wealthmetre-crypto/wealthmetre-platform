@@ -124,8 +124,8 @@ if($action==='partners_list'){
            p.status, p.created_at, p.last_login_at, p.company_name,
            (SELECT COUNT(*) FROM telecallers t WHERE t.partner_id=p.id) as telecaller_count,
            (SELECT COUNT(*) FROM calling_batches cb1 WHERE cb1.partner_id=p.id) as batch_count,
-           (SELECT COUNT(*) FROM calling_leads cl1 JOIN calling_batches cb2 ON cl1.batch_id=cb2.id WHERE cb2.partner_id=p.id) as lead_count,
-           (SELECT COUNT(*) FROM calling_leads cl2 JOIN calling_batches cb3 ON cl2.batch_id=cb3.id WHERE cb3.partner_id=p.id AND cl2.current_status='Interested') as interested_count
+           (SELECT COUNT(*) FROM calling_leads cl1 JOIN calling_batches cb2 ON cl1.batch_id=cb2.id WHERE cb2.partner_id=p.id) + (SELECT COUNT(*) FROM leads l1 WHERE l1.partner_id=p.id) as lead_count,
+           (SELECT COUNT(*) FROM calling_leads cl2 JOIN calling_batches cb3 ON cl2.batch_id=cb3.id WHERE cb3.partner_id=p.id AND cl2.current_status='Interested') + (SELECT COUNT(*) FROM leads l2 WHERE l2.partner_id=p.id AND l2.status='interested') as interested_count
          FROM partners p WHERE p.partner_name LIKE ? OR p.email LIKE ? OR p.mobile LIKE ? OR p.phone LIKE ?
          ORDER BY p.created_at DESC LIMIT {$limit} OFFSET {$offset}",
         [$sVal,$sVal,$sVal,$sVal]);
@@ -217,7 +217,10 @@ if($action==='leads_list'){
                cl.created_at, cl.cibil, cl.source,
                cl.assigned_telecaller_id,
                cl.disbursal_amount, cl.disbursal_date, cl.disbursed_lender,
-               p.partner_name, t.name AS telecaller_name, 'calling' AS lead_source
+               p.partner_name, t.name AS telecaller_name, 'calling' AS lead_source,
+               NULL AS valuation, NULL AS income_type, NULL AS occupation,
+               NULL AS monthly_income, NULL AS existing_emi, NULL AS property_type, NULL AS property_usage,
+               cl.loan_amount AS amount
         FROM calling_leads cl
         LEFT JOIN calling_batches cb ON cb.id = cl.batch_id
         LEFT JOIN partners p         ON p.id  = cb.partner_id
@@ -228,13 +231,16 @@ if($action==='leads_list'){
 
         SELECT l.id, l.customer_name AS name,
                COALESCE(l.customer_mobile, l.mobile) AS mobile,
-               l.city, l.loan_type, l.loan_amount,
+               l.city, l.loan_type, l.amount AS loan_amount,
                l.status AS status,
                NULL AS followup_date, l.notes AS notes,
                l.created_at, l.cibil, l.source,
                NULL AS assigned_telecaller_id,
                l.disbursal_amount, l.disbursal_date, l.disbursed_lender,
-               p.partner_name, NULL AS telecaller_name, 'direct' AS lead_source
+               p.partner_name, NULL AS telecaller_name, 'direct' AS lead_source,
+               l.valuation, l.income_type, l.occupation,
+               l.monthly_income, l.existing_emi, l.property_type, l.property_usage,
+               l.amount
         FROM leads l
         LEFT JOIN partners p ON p.id = l.partner_id
         WHERE {$wSqlL}
@@ -542,17 +548,34 @@ if($action==='update_lead_status'){
 
 if($action==='update_disbursal'){
     $b = getJsonBody();
-    $id     = intSafe($b['lead_id']??0);
-    $status = trim($b['status']??'');
-    $amount = intSafe($b['disbursal_amount']??0);
-    $date   = trim($b['disbursal_date']??'');
-    $lender = trim($b['disbursed_lender']??'');
-    $source = trim($b['lead_source']??'calling');
+    $id              = intSafe($b['lead_id']??0);
+    $status          = trim($b['status']??'');
+    $amount          = intSafe($b['disbursal_amount']??0);
+    $date            = trim($b['disbursal_date']??'');
+    $lender          = trim($b['disbursed_lender']??'');
+    $source          = trim($b['lead_source']??'calling');
+    $lender_pct      = (float)($b['lender_payout_pct']??1);
+    $channel_name    = trim($b['channel_name']??'');
+    $channel_cut_pct = (float)($b['channel_cut_pct']??0);
+    $tds_pct         = (float)($b['tds_pct']??2);
+    $gross_payout    = intSafe($b['gross_payout']??0);
+    $channel_cut_amt = intSafe($b['channel_cut_amt']??0);
+    $tds_amt         = intSafe($b['tds_amt']??0);
+    $net_received    = intSafe($b['net_received']??0);
+    $partner_payout  = intSafe($b['partner_payout_amt']??0);
+    $wm_earning      = intSafe($b['wm_earning']??0);
     if(!$id){ echo json_encode(['success'=>false,'message'=>'lead_id required']); exit; }
     try {
         if ($source === 'direct') {
-            $pdo->prepare("UPDATE leads SET status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
-                ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);
+            $pdo->prepare("UPDATE leads SET
+                status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?,
+                lender_payout_pct=?, channel_name=?, channel_cut_pct=?, tds_pct=?,
+                gross_payout=?, channel_cut_amt=?, tds_amt=?, net_received=?,
+                partner_payout_amt=?, wm_earning=?, updated_at=NOW() WHERE id=?")
+                ->execute([$status, $amount?:null, $date?:null, $lender?:null,
+                           $lender_pct, $channel_name?:null, $channel_cut_pct, $tds_pct,
+                           $gross_payout, $channel_cut_amt, $tds_amt, $net_received,
+                           $partner_payout, $wm_earning, $id]);
         } else {
             $pdo->prepare("UPDATE calling_leads SET current_status=?, disbursal_amount=?, disbursal_date=?, disbursed_lender=?, updated_at=NOW() WHERE id=?")
                 ->execute([$status, $amount?:null, $date?:null, $lender?:null, $id]);

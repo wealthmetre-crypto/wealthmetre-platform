@@ -35,17 +35,28 @@ $chk = $db->prepare("SELECT id FROM partners WHERE mobile=? OR phone=? LIMIT 1")
 $chk->execute([$mobile, $mobile]);
 if ($chk->fetch()) jsonError('Account already exists. Please login normally.', 409);
 
+// Referral / invite link handling
+$refCode      = trim($body['ref'] ?? $_GET['ref'] ?? '');
+$parentId     = null;
+$partnerLevel = 1;
+if ($refCode) {
+    $refStmt = $db->prepare("SELECT id FROM partners WHERE partner_code=? OR id=? LIMIT 1");
+    $refStmt->execute([$refCode, is_numeric($refCode) ? (int)$refCode : 0]);
+    $refRow = $refStmt->fetch();
+    if ($refRow) { $parentId = (int)$refRow['id']; $partnerLevel = 2; }
+}
+
 // Create partner record
 $partnerName = trim($first . ' ' . $last) . ($firm ? ' — ' . $firm : '');
 $address     = $city . ($state ? ', ' . $state : '') . ' — ' . $pin;
 
 $ins = $db->prepare("
     INSERT INTO partners
-        (partner_name, first_name, last_name, firm_name, mobile, dob, pin_code, branch_city, state, address, status, created_at, updated_at)
+        (partner_name, first_name, last_name, firm_name, mobile, dob, pin_code, branch_city, state, address, parent_partner_id, partner_level, status, created_at, updated_at)
     VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', NOW(), NOW())
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', NOW(), NOW())
 ");
-$ins->execute([$partnerName, $first, $last, $firm ?: null, $mobile, $dob ?: null, $pin, $city, $state ?: null, $address]);
+$ins->execute([$partnerName, $first, $last, $firm ?: null, $mobile, $dob ?: null, $pin, $city, $state ?: null, $address, $parentId, $partnerLevel]);
 $partnerId = (int)$db->lastInsertId();
 // Create partner_users record for login
 $db->prepare("INSERT IGNORE INTO partner_users (mobile, first_name, last_name, role, status) VALUES (?, ?, ?, 'partner', 'active')")->execute([$mobile, $first, $last]);

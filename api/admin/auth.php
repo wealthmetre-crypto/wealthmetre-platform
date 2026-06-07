@@ -39,9 +39,7 @@ function isLoggedIn(): bool {
         $sessionNet = implode('.', array_slice(explode('.', $sessionIp), 0, 3));
         if ($currentNet !== $sessionNet) {
             error_log("[SECURITY] Admin session IP mismatch: session={$sessionIp} current={$currentIp} admin_id={$_SESSION['admin_id']}");
-            // Hard block: different /24 subnet = likely stolen session
-            session_destroy();
-            return false;
+            // Soft log only — hard block disabled (IP rotation common on Indian ISPs/mobile)
         }
     }
     return true;

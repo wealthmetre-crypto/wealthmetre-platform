@@ -19,3 +19,6 @@ Thumbs.db
 *.swp
 Private/
 config/db.php
+api/rate_limit_logs/
+logs/
+test_parse*.php

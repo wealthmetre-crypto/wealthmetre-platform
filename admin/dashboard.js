@@ -98,7 +98,12 @@ async function loadDashboard() {
     if (sumRes.success) renderStats(sumRes.data);
     if (chartRes.success) renderCharts(chartRes.data);
     if (actRes.success) renderActivity(actRes.data);
-  } catch(e) { toast('Failed to load dashboard', 'error'); }
+  } catch(e) {
+    console.error('Dashboard load error:', e);
+    toast('Failed to load dashboard — ' + e.message, 'error');
+    document.getElementById('statsRow1').innerHTML = '<div style="padding:1rem;color:#dc2626">⚠ Stats failed to load. <a href="javascript:loadDashboard()">Retry</a></div>';
+    document.getElementById('statsRow2').innerHTML = '';
+  }
 }
 
 function renderStatSkeletons() {
@@ -1685,7 +1690,15 @@ function openCrmLead(l) {
     ['Mobile', l.mobile ? `<a href="tel:+91${l.mobile}" style="color:var(--navy);font-weight:700">+91 ${l.mobile}</a>` : '—'],
     ['City', l.city||'—'],
     ['Loan Type', l.loan_type||'—'],
-    ['Loan Amount', l.loan_amount ? '₹'+fmtNum(parseInt(l.loan_amount)/100000)+' Lakh' : '—'],
+    ['Loan Amount', (l.amount||l.loan_amount) ? '₹'+fmtNum(parseInt(l.amount||l.loan_amount)/100000)+' Lakh' : '—'],
+    ['Property Value', l.valuation ? '₹'+fmtNum(parseInt(l.valuation)/100000)+' Lakh' : '—'],
+    ['CIBIL Score', l.cibil||'—'],
+    ['Income Type', l.income_type||'—'],
+    ['Occupation', l.occupation||'—'],
+    ['Monthly Income', l.monthly_income ? '₹'+fmtNum(l.monthly_income) : '—'],
+    ['Existing EMI', l.existing_emi > 0 ? '₹'+fmtNum(l.existing_emi) : '—'],
+    ['Property Type', l.property_type||'—'],
+    ['Property Usage', l.property_usage||'—'],
     ['Partner', l.partner_name||'—'],
     ['Telecaller', l.telecaller_name||'—'],
     ['Status', l.status||'—'],
@@ -1708,7 +1721,7 @@ function openCrmLead(l) {
   // Disbursal section
   const disbursalHtml = `
   <div style="margin-top:14px;padding-top:14px;border-top:2px solid var(--border)">
-    <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:10px">UPDATE DISBURSAL</div>
+    <div style="font-size:12px;font-weight:800;color:var(--navy);margin-bottom:12px">📋 UPDATE STATUS</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
       <div>
         <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Status</label>
@@ -1722,19 +1735,19 @@ function openCrmLead(l) {
           <option value="rejected" ${(l.status==='rejected'?'selected':'')}>Rejected</option>
         </select>
       </div>
-      <div id="crm_dis_date_wrap">
+      <div>
         <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursal Date</label>
         <input type="date" class="inp" id="crm_dis_date" value="${l.disbursal_date||''}" style="width:100%"/>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px" id="crm_dis_fields">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
       <div>
-        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursal Amount (Rs.)</label>
-        <input type="number" class="inp" id="crm_dis_amount" value="${l.disbursal_amount||''}" placeholder="e.g. 5000000" style="width:100%"/>
+        <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursal Amount (₹)</label>
+        <input type="number" class="inp" id="crm_dis_amount" value="${l.disbursal_amount||''}" placeholder="e.g. 6000000" style="width:100%"/>
       </div>
       <div>
         <label style="font-size:11px;font-weight:700;color:var(--muted);display:block;margin-bottom:4px">Disbursed By (Lender)</label>
-        <input type="text" class="inp" id="crm_dis_lender" value="${l.disbursed_lender||''}" placeholder="e.g. HDFC Bank" style="width:100%"/>
+        <input type="text" class="inp" id="crm_dis_lender" value="${l.disbursed_lender||''}" placeholder="e.g. Aavas Finance" style="width:100%"/>
       </div>
     </div>
     <button class="btn btn-primary btn-sm" onclick="saveCrmDisbursal(${l.id})"><i class="fa fa-save"></i> Save Update</button>
@@ -1742,18 +1755,80 @@ function openCrmLead(l) {
   </div>`;
   body.innerHTML += disbursalHtml;
   document.getElementById('crmLeadModal').classList.add('open');
+  document.getElementById('crmLeadModal').classList.add('open');
+  document.getElementById('crmLeadModal').classList.add('open');
 }
+function calcCommission() {
+  const amount      = parseFloat(document.getElementById('crm_dis_amount')?.value) || 0;
+  const lenderPct   = parseFloat(document.getElementById('crm_lender_pct')?.value) || 0;
+  const channelCut  = parseFloat(document.getElementById('crm_channel_cut')?.value) || 0;
+  const tdsPct      = parseFloat(document.getElementById('crm_tds_pct')?.value) || 0;
+
+  if (!amount || !lenderPct) {
+    ['cb_gross','cb_channel_cut','cb_tds','cb_net','cb_partner','cb_wm'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.textContent = '—';
+    });
+    return;
+  }
+
+  const gross       = Math.round(amount * lenderPct / 100);
+  const channelAmt  = Math.round(gross * channelCut / 100);
+  const afterChannel = gross - channelAmt;
+  const tdsAmt      = Math.round(afterChannel * tdsPct / 100);
+  const netReceived = afterChannel - tdsAmt;
+
+  // Get partner % from commission rates (default 50%)
+  // We read from the active lead's partner commission
+  const partnerPct  = 50; // default — will be dynamic later
+  const partnerAmt  = Math.round(netReceived * partnerPct / 100);
+  const wmEarning   = netReceived - partnerAmt;
+
+  const fmt = n => '₹' + n.toLocaleString('en-IN');
+  document.getElementById('cb_gross').textContent        = fmt(gross);
+  document.getElementById('cb_channel_cut').textContent  = '- ' + fmt(channelAmt) + ' (' + channelCut + '%)';
+  document.getElementById('cb_tds').textContent          = '- ' + fmt(tdsAmt) + ' (' + tdsPct + '%)';
+  document.getElementById('cb_net').textContent          = fmt(netReceived);
+  document.getElementById('cb_partner').textContent      = fmt(partnerAmt) + ' (' + partnerPct + '%)';
+  document.getElementById('cb_wm').textContent           = fmt(wmEarning);
+
+  // Store calculated values for save
+  window._commCalc = { gross, channelAmt, tdsAmt, netReceived, partnerAmt, wmEarning };
+}
+
 async function saveCrmDisbursal(leadId) {
-  const status  = document.getElementById('crm_status').value;
-  const amount  = document.getElementById('crm_dis_amount').value;
-  const date    = document.getElementById('crm_dis_date').value;
-  const lender  = document.getElementById('crm_dis_lender').value;
-  const msg     = document.getElementById('crm_dis_msg');
+  const status      = document.getElementById('crm_status').value;
+  const amount      = document.getElementById('crm_dis_amount').value;
+  const date        = document.getElementById('crm_dis_date').value;
+  const lender      = document.getElementById('crm_dis_lender').value;
+  const lenderPct   = document.getElementById('crm_lender_pct').value;
+  const channelName = document.getElementById('crm_channel_name').value;
+  const channelCut  = document.getElementById('crm_channel_cut').value;
+  const tdsPct      = document.getElementById('crm_tds_pct').value;
+  const calc        = window._commCalc || {};
+  const msg         = document.getElementById('crm_dis_msg');
   try {
     const r = await fetch(API, {
       method:'POST', credentials:'include',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({action:'update_disbursal', lead_id:leadId, lead_source:window._crmLeadSource||'calling', status, disbursal_amount:amount, disbursal_date:date, disbursed_lender:lender})
+      body: JSON.stringify({
+        action:'update_disbursal',
+        lead_id:leadId,
+        lead_source:window._crmLeadSource||'calling',
+        status,
+        disbursal_amount:amount,
+        disbursal_date:date,
+        disbursed_lender:lender,
+        lender_payout_pct:lenderPct,
+        channel_name:channelName,
+        channel_cut_pct:channelCut,
+        tds_pct:tdsPct,
+        gross_payout:calc.gross||0,
+        channel_cut_amt:calc.channelAmt||0,
+        tds_amt:calc.tdsAmt||0,
+        net_received:calc.netReceived||0,
+        partner_payout_amt:calc.partnerAmt||0,
+        wm_earning:calc.wmEarning||0
+      })
     }).then(d=>d.json());
     if (r.success) {
       msg.textContent = 'Saved!';
@@ -1908,12 +1983,12 @@ function showMissingFields(missing, lenderName) {
         var tbody = document.getElementById('commRatesBody');
         tbody.innerHTML = '';
         _commProducts.forEach(function(prod){
-          var r = rates[prod] || {sub_partner_pct:50, override_pct:15};
-          var wm = 100 - parseFloat(r.sub_partner_pct) - parseFloat(r.override_pct);
+          var r = rates[prod] || {sub_partner_pct:50, override_pct:0};
+          var partnerPct = parseFloat(r.sub_partner_pct) || 50;
+          var wm = 100 - partnerPct;
           tbody.innerHTML += '<tr style="border-bottom:1px solid #f1f5f9;">'
             + '<td style="padding:12px 14px;font-size:13px;font-weight:600;color:#0a1628;">'+_commLabels[prod]+'</td>'
-            + '<td style="padding:12px 14px;text-align:center;"><input type="number" min="0" max="100" step="0.5" value="'+r.sub_partner_pct+'" id="sub_'+prod+'" onchange="recalcWM(this.id.slice(4))" style="width:80px;padding:6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-size:13px;font-weight:700;">%</td>'
-            + '<td style="padding:12px 14px;text-align:center;"><input type="number" min="0" max="100" step="0.5" value="'+r.override_pct+'" id="ovr_'+prod+'" onchange="recalcWM(this.id.slice(4))" style="width:80px;padding:6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-size:13px;font-weight:700;">%</td>'
+            + '<td style="padding:12px 14px;text-align:center;"><input type="number" min="0" max="100" step="0.5" value="'+partnerPct+'" id="sub_'+prod+'" onchange="recalcWM(this.id.slice(4))" style="width:80px;padding:6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-size:13px;font-weight:700;">%</td>'
             + '<td style="padding:12px 14px;text-align:center;font-size:14px;font-weight:800;color:#059669;" id="wm_'+prod+'">'+wm.toFixed(1)+'%</td>'
             + '</tr>';
         });
@@ -1939,8 +2014,7 @@ function showMissingFields(missing, lenderName) {
 
   function recalcWM(prod) {
     var sub = parseFloat(document.getElementById('sub_'+prod).value)||0;
-    var ovr = parseFloat(document.getElementById('ovr_'+prod).value)||0;
-    var wm  = 100 - sub - ovr;
+    var wm  = 100 - sub;
     document.getElementById('wm_'+prod).textContent = wm.toFixed(1)+'%';
     document.getElementById('wm_'+prod).style.color = wm < 0 ? '#ef4444' : '#059669';
   }
@@ -1950,8 +2024,7 @@ function showMissingFields(missing, lenderName) {
     var rates = {};
     _commProducts.forEach(function(prod){
       var sub = parseFloat(document.getElementById('sub_'+prod).value)||0;
-      var ovr = parseFloat(document.getElementById('ovr_'+prod).value)||0;
-      rates[prod] = {sub_partner_pct: sub, override_pct: ovr, wm_pct: 100-sub-ovr};
+      rates[prod] = {sub_partner_pct: sub, override_pct: 0, wm_pct: 100-sub};
     });
     fetch('/api/admin/commission_api.php', {
       method: 'POST',
@@ -1982,23 +2055,212 @@ async function loadMonthlySummary() {
     document.getElementById('sumTotalDis').textContent  = fmt(s.total_disbursed);
     document.getElementById('sumPartner').textContent   = fmt(s.total_partner);
     document.getElementById('sumWM').textContent        = fmt(s.total_wm);
-    const tbody = document.getElementById('summaryTableBody');
+
+    const wrap = document.getElementById('summaryTableWrap');
+    const cards = document.getElementById('summaryLeadCards');
+
     if (!d.leads || !d.leads.length) {
-      document.getElementById('summaryTableWrap').style.display = 'none';
+      wrap.style.display = 'none';
       document.getElementById('summaryEmpty').style.display = 'block';
       return;
     }
-    document.getElementById('summaryTableWrap').style.display = 'block';
+    wrap.style.display = 'block';
     document.getElementById('summaryEmpty').style.display = 'none';
-    tbody.innerHTML = d.leads.map((l,i) => `<tr style="border-bottom:1px solid #f1f5f9;">
-      <td style="padding:8px 12px;color:#64748b;">${i+1}</td>
-      <td style="padding:8px 12px;font-weight:600;">${l.name||'—'}</td>
-      <td style="padding:8px 12px;">${l.loan_type||'—'}</td>
-      <td style="padding:8px 12px;color:#64748b;">${l.disbursed_lender||'—'}</td>
-      <td style="padding:8px 12px;text-align:right;font-weight:700;">Rs.${Math.round((l.disbursal_amount||l.loan_amount||0)/100000)}L</td>
-      <td style="padding:8px 12px;text-align:right;color:#64748b;">${l.payout_rate}%</td>
-      <td style="padding:8px 12px;text-align:right;font-weight:700;color:#059669;">Rs.${Math.round(l.calc_partner).toLocaleString('en-IN')}</td>
-      <td style="padding:8px 12px;text-align:right;font-weight:700;color:#92400e;">Rs.${Math.round(l.calc_wm).toLocaleString('en-IN')}</td>
-    </tr>`).join('');
-  } catch(e) { toast('Network error', 'error'); }
+    if(document.getElementById('saveAllBtn')) document.getElementById('saveAllBtn').style.display = 'inline-flex';
+
+    // Store leads globally for save
+    window._summaryLeads = d.leads.map(l => ({...l}));
+
+    cards.innerHTML = d.leads.map((l, i) => renderSummaryCard(l, i)).join('');
+  } catch(e) { toast('Network error: '+e.message, 'error'); }
 }
+
+function renderSummaryCard(l, i) {
+  const disbAmt     = l.disbursal_amount || l.amount || 0;
+  const lenderPct   = parseFloat(l.lender_payout_pct) || 1;
+  const chCutPct    = parseFloat(l.channel_cut_pct) || 0;
+  const tdsPct      = parseFloat(l.tds_pct) || 2;
+  const gross       = l.gross_payout    || Math.round(disbAmt * lenderPct / 100);
+  const chCutAmt    = l.channel_cut_amt || Math.round(gross * chCutPct / 100);
+  const tdsAmt      = l.tds_amt         || Math.round((gross - chCutAmt) * tdsPct / 100);
+  const netWM       = l.net_received    || (gross - chCutAmt - tdsAmt);
+  const partnerPct  = l.partner_pct     || parseFloat(l.calc_partner && disbAmt ? (l.calc_partner/netWM*100).toFixed(1) : 50);
+  const partnerAmt  = l.partner_payout_amt || Math.round(netWM * partnerPct / 100);
+  const wmEarning   = l.wm_earning      || (netWM - partnerAmt);
+  const fmtR = n => n > 0 ? '₹'+Math.round(n).toLocaleString('en-IN') : '—';
+
+  return `<div class="sum-card" id="scard_${i}" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:10px;overflow:hidden;">
+    <!-- VIEW MODE -->
+    <div id="sview_${i}" style="display:flex;align-items:center;gap:0;cursor:pointer;padding:12px 16px;flex-wrap:wrap;gap:8px;" onclick="editSummaryCard(${i})">
+      <div style="min-width:160px;flex:2">
+        <div style="font-size:13px;font-weight:700;color:#0a1628">${l.name||'—'}</div>
+        <div style="font-size:11px;color:#64748b">${l.loan_type||'—'} · ${l.disbursed_lender||'—'}</div>
+      </div>
+      <div style="flex:1;min-width:90px;text-align:right">
+        <div style="font-size:11px;color:#64748b">Amount</div>
+        <div style="font-weight:700">₹${Math.round(disbAmt/100000)}L</div>
+      </div>
+      <div style="flex:1;min-width:90px;text-align:right">
+        <div style="font-size:11px;color:#64748b">Channel</div>
+        <div style="font-weight:600;color:#1e3a8a">${l.channel_name||'—'}</div>
+      </div>
+      <div style="flex:1;min-width:80px;text-align:right">
+        <div style="font-size:11px;color:#64748b">Net WM</div>
+        <div style="font-weight:700;color:#0d9488">${fmtR(netWM)}</div>
+      </div>
+      <div style="flex:1;min-width:80px;text-align:right">
+        <div style="font-size:11px;color:#64748b">Partner</div>
+        <div style="font-weight:700;color:#059669">${fmtR(partnerAmt)}</div>
+      </div>
+      <div style="flex:1;min-width:80px;text-align:right">
+        <div style="font-size:11px;color:#64748b">WM Earning</div>
+        <div style="font-weight:800;color:#92400e">${fmtR(wmEarning)}</div>
+      </div>
+      <div style="margin-left:8px;color:#94a3b8;font-size:12px"><i class="fa fa-pencil"></i> Edit</div>
+    </div>
+    <!-- EDIT MODE -->
+    <div id="sedit_${i}" style="display:none;padding:16px;background:#f8fafc;border-top:1px solid #e2e8f0;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">Loan Amount (₹)</label>
+          <input type="number" id="e_amt_${i}" value="${disbAmt}" oninput="recalcSummaryRow(${i})"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600"/>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">Corporate Channel</label>
+          <input type="text" id="e_ch_${i}" value="${l.channel_name||''}" placeholder="e.g. Andromeda"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px"/>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">Lender Payout %</label>
+          <input type="number" id="e_lpct_${i}" value="${lenderPct}" step="0.01" oninput="recalcSummaryRow(${i})"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600"/>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">Channel Cut %</label>
+          <input type="number" id="e_ccpct_${i}" value="${chCutPct}" step="0.01" oninput="recalcSummaryRow(${i})"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600"/>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">TDS %</label>
+          <input type="number" id="e_tds_${i}" value="${tdsPct}" step="0.01" oninput="recalcSummaryRow(${i})"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600"/>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:700;color:#64748b;display:block;margin-bottom:3px">Partner %</label>
+          <input type="number" id="e_ppct_${i}" value="${partnerPct}" step="0.1" oninput="recalcSummaryRow(${i})"
+            style="width:100%;padding:7px;border:1.5px solid #e2e8f0;border-radius:6px;font-size:13px;font-weight:600"/>
+        </div>
+      </div>
+      <!-- Calculated Results -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#64748b;font-weight:700">GROSS PAYOUT</div>
+          <div style="font-size:14px;font-weight:800;color:#1e3a8a" id="r_gross_${i}">${fmtR(gross)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#dc2626;font-weight:700">CH. CUT</div>
+          <div style="font-size:14px;font-weight:800;color:#dc2626" id="r_chcut_${i}">${fmtR(chCutAmt)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#dc2626;font-weight:700">TDS</div>
+          <div style="font-size:14px;font-weight:800;color:#dc2626" id="r_tds_${i}">${fmtR(tdsAmt)}</div>
+        </div>
+        <div style="text-align:center;border:2px solid #0d9488;border-radius:6px;padding:4px;">
+          <div style="font-size:10px;color:#0d9488;font-weight:700">NET WM</div>
+          <div style="font-size:15px;font-weight:800;color:#0d9488" id="r_netwm_${i}">${fmtR(netWM)}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:10px;color:#059669;font-weight:700">PARTNER AMT</div>
+          <div style="font-size:14px;font-weight:800;color:#059669" id="r_partner_${i}">${fmtR(partnerAmt)}</div>
+        </div>
+        <div style="text-align:center;border:2px solid #92400e;border-radius:6px;padding:4px;">
+          <div style="font-size:10px;color:#92400e;font-weight:700">WM EARNING</div>
+          <div style="font-size:15px;font-weight:800;color:#92400e" id="r_wm_${i}">${fmtR(wmEarning)}</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;text-align:right;">
+        <button onclick="closeSummaryEdit(${i})" style="padding:7px 16px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;font-size:12px;cursor:pointer;margin-right:8px;">Cancel</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function editSummaryCard(i) {
+  document.getElementById('sview_'+i).style.display = 'none';
+  document.getElementById('sedit_'+i).style.display = 'block';
+  recalcSummaryRow(i);
+}
+
+function closeSummaryEdit(i) {
+  document.getElementById('sview_'+i).style.display = 'flex';
+  document.getElementById('sedit_'+i).style.display = 'none';
+}
+
+function recalcSummaryRow(i) {
+  const amt      = parseFloat(document.getElementById('e_amt_'+i)?.value) || 0;
+  const lPct     = parseFloat(document.getElementById('e_lpct_'+i)?.value) || 0;
+  const ccPct    = parseFloat(document.getElementById('e_ccpct_'+i)?.value) || 0;
+  const tdsPct   = parseFloat(document.getElementById('e_tds_'+i)?.value) || 0;
+  const pPct     = parseFloat(document.getElementById('e_ppct_'+i)?.value) || 0;
+  const fmtR     = n => n > 0 ? '₹'+Math.round(n).toLocaleString('en-IN') : '—';
+
+  const gross    = Math.round(amt * lPct / 100);
+  const chCut    = Math.round(gross * ccPct / 100);
+  const tds      = Math.round((gross - chCut) * tdsPct / 100);
+  const netWM    = gross - chCut - tds;
+  const partner  = Math.round(netWM * pPct / 100);
+  const wmEarn   = netWM - partner;
+
+  document.getElementById('r_gross_'+i).textContent   = fmtR(gross);
+  document.getElementById('r_chcut_'+i).textContent   = fmtR(chCut);
+  document.getElementById('r_tds_'+i).textContent     = fmtR(tds);
+  document.getElementById('r_netwm_'+i).textContent   = fmtR(netWM);
+  document.getElementById('r_partner_'+i).textContent = fmtR(partner);
+  document.getElementById('r_wm_'+i).textContent      = fmtR(wmEarn);
+
+  // Update stored lead data
+  if (window._summaryLeads && window._summaryLeads[i]) {
+    Object.assign(window._summaryLeads[i], {
+      disbursal_amount: amt, lender_payout_pct: lPct,
+      channel_name: document.getElementById('e_ch_'+i)?.value || '',
+      channel_cut_pct: ccPct, tds_pct: tdsPct,
+      gross_payout: gross, channel_cut_amt: chCut,
+      tds_amt: tds, net_received: netWM,
+      partner_pct: pPct, partner_payout_amt: partner, wm_earning: wmEarn
+    });
+  }
+}
+
+async function saveAllCommission() {
+  const btn = document.getElementById('saveAllBtn');
+  const msg = document.getElementById('saveAllMsg');
+  if (!window._summaryLeads || !window._summaryLeads.length) return;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+  try {
+    const r = await fetch('/api/admin/commission_api.php', {
+      method: 'POST', credentials: 'include',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({action:'save_commission', leads: window._summaryLeads})
+    }).then(d=>d.json());
+    if (r.success) {
+      msg.textContent = '✓ Saved successfully!';
+      msg.style.color = '#059669';
+      btn.innerHTML = '<i class="fa fa-save"></i> Save All';
+      btn.disabled = false;
+      setTimeout(() => loadMonthlySummary(), 1000);
+    } else {
+      msg.textContent = r.message || 'Error saving';
+      msg.style.color = '#dc2626';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa fa-save"></i> Save All';
+    }
+  } catch(e) {
+    msg.textContent = 'Network error';
+    msg.style.color = '#dc2626';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa fa-save"></i> Save All';
+  }
+}
+

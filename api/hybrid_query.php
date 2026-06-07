@@ -194,6 +194,15 @@ function runHybrid(array $profile, string $freeQuery = ''): array {
     }
     $lenders = $deduped;
 
+    // ── Step 4b: Filter ineligible lenders ──────────────
+    $lenders = array_values(array_filter($lenders, function($l) {
+        // Remove hard ineligible (property title rejected, CIBIL too low etc.)
+        if (isset($l['eligible']) && $l['eligible'] === false && ($l['score'] ?? 0) < 50) {
+            return false;
+        }
+        return true;
+    }));
+
     // ── Step 5: Rank + personalised "why" text ────────────
     foreach ($lenders as $i => &$l) {
         $l['rank'] = $i + 1;

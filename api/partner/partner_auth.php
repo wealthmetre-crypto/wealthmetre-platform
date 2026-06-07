@@ -510,10 +510,12 @@ function createSession(\PDO $pdo, int $partnerId): string {
 
 function updateLastLogin(\PDO $pdo, int $pid): void {
     $pdo->prepare("UPDATE partners SET last_login_at=NOW() WHERE id=?")->execute([$pid]);
+    // Auto-fix: if kyc approved but status not active, fix it
+    $pdo->prepare("UPDATE partners SET status='active', onboarding_step='approved' WHERE id=? AND kyc_status='approved' AND status != 'active'")->execute([$pid]);
 }
 
 function loadPartnerPublic(\PDO $pdo, int $pid): array {
-    $s = $pdo->prepare("SELECT id,partner_name,first_name,last_name,mobile,email,company_name,branch_city,partner_code,user_id,is_registered,status,onboarding_step,kyc_status FROM partners WHERE id=?");
+    $s = $pdo->prepare("SELECT id,partner_name,first_name,last_name,mobile,email,company_name,branch_city,partner_code,user_id,is_registered,status,onboarding_step,kyc_status,partner_level,parent_partner_id FROM partners WHERE id=?");
     $s->execute([$pid]);
     return $s->fetch() ?: [];
 }
