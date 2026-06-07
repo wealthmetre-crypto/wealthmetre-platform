@@ -1,0 +1,453 @@
+{
+  "name": "WM - Blog Generator MVP",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5692ffab-809a-48b3-ba35-d3fad648be33",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  id,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  content_type,\n  source_reason,\n  priority_score,\n  status\nFROM seo_content_topics\nWHERE status = 'pending'\nORDER BY priority_score DESC, id ASC\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        208,
+        16
+      ],
+      "id": "8cc435f1-4fc6-41d8-947a-d6fad13cbaa1",
+      "name": "Get Pending Topic",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  id,\n  lender_name,\n  product_type,\n  loan_category,\n  city,\n  city_allowed,\n  cities_allowed,\n  city_coverage,\n  property_types,\n  property_allowed,\n  min_roi,\n  max_roi,\n  roi_min,\n  roi_max,\n  interest_rate_start,\n  max_ltv,\n  ltv_max_overall,\n  ltv_sorp,\n  ltv_socp,\n  ltv_soip,\n  ltv_land,\n  min_cibil,\n  cibil_policy,\n  max_loan_amount,\n  loan_max_lakh,\n  income_types,\n  income_types_allowed,\n  profile_allowed,\n  programs,\n  surrogate_banking,\n  surrogate_gst,\n  surrogate_itr,\n  surrogate_rtr,\n  surrogate_low_ltv,\n  surrogate_lip,\n  title_jda,\n  title_rhb,\n  title_society_patta,\n  title_society_patta_year,\n  title_gram_panchayat,\n  title_nagar_nigam,\n  title_riico,\n  geo_limit,\n  geo_limit_km,\n  processing_fee_pct,\n  processing_fee_flat,\n  notes,\n  rag_text,\n  searchable_text,\n  updated_at\nFROM lenders_products\nWHERE \n  is_active = 1\n  AND (\n    city_allowed LIKE CONCAT('%', '{{ $json.city }}', '%')\n    OR cities_allowed LIKE CONCAT('%', '{{ $json.city }}', '%')\n    OR city_coverage LIKE CONCAT('%', '{{ $json.city }}', '%')\n    OR city LIKE CONCAT('%', '{{ $json.city }}', '%')\n    OR city_allowed IS NULL\n    OR cities_allowed IS NULL\n    OR city_coverage IS NULL\n  )\n  AND (\n    product_type LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n    OR product LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n    OR products_supported LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n    OR loan_category LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n    OR searchable_text LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n    OR rag_text LIKE CONCAT('%', '{{ $json.loan_product }}', '%')\n  )\nORDER BY \n  COALESCE(roi_min, min_roi, interest_rate_start, 99) ASC,\n  COALESCE(ltv_max_overall, max_ltv, 0) DESC\nLIMIT 8;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        624,
+        0
+      ],
+      "id": "9a06a375-3b84-4c2a-9455-650c4d249291",
+      "name": "Get Relevant Lenders",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const topicItem = $('Get Pending Topic').first().json;\nconst lenderItems = $input.all().map(item => item.json);\n\nconst lenders = lenderItems.map((l, index) => ({\n  rank: index + 1,\n  lender_name: l.lender_name || '',\n  product_type: l.product_type || '',\n  loan_category: l.loan_category || '',\n  roi: {\n    min_roi: l.roi_min || l.min_roi || l.interest_rate_start || null,\n    max_roi: l.roi_max || l.max_roi || null\n  },\n  ltv: {\n    max_ltv: l.ltv_max_overall || l.max_ltv || null,\n    sorp: l.ltv_sorp || null,\n    socp: l.ltv_socp || null,\n    soip: l.ltv_soip || null,\n    land: l.ltv_land || null\n  },\n  cibil: l.min_cibil || l.cibil_policy || '',\n  city_coverage: l.city_allowed || l.cities_allowed || l.city_coverage || l.city || '',\n  property_policy: {\n    property_types: l.property_types || '',\n    property_allowed: l.property_allowed || '',\n    jda: l.title_jda || '',\n    rhb: l.title_rhb || '',\n    society_patta: l.title_society_patta || '',\n    society_patta_year: l.title_society_patta_year || '',\n    gram_panchayat: l.title_gram_panchayat || '',\n    nagar_nigam: l.title_nagar_nigam || '',\n    riico: l.title_riico || ''\n  },\n  income_policy: {\n    income_types: l.income_types || l.income_types_allowed || '',\n    profile_allowed: l.profile_allowed || '',\n    programs: l.programs || '',\n    surrogate_banking: l.surrogate_banking || '',\n    surrogate_gst: l.surrogate_gst || '',\n    surrogate_itr: l.surrogate_itr || '',\n    surrogate_rtr: l.surrogate_rtr || '',\n    surrogate_low_ltv: l.surrogate_low_ltv || '',\n    surrogate_lip: l.surrogate_lip || ''\n  },\n  fees: {\n    processing_fee_pct: l.processing_fee_pct || null,\n    processing_fee_flat: l.processing_fee_flat || null\n  },\n  geo_limit: l.geo_limit || l.geo_limit_km || '',\n  notes: l.notes || '',\n  rag_text: l.rag_text || '',\n  searchable_text: l.searchable_text || '',\n  updated_at: l.updated_at || ''\n}));\n\nreturn [\n  {\n    json: {\n      topic_id: topicItem.id,\n      topic: topicItem.topic,\n      target_keyword: topicItem.target_keyword,\n      city: topicItem.city,\n      loan_product: topicItem.loan_product,\n      content_type: topicItem.content_type,\n      source_reason: topicItem.source_reason,\n      lender_count: lenders.length,\n      lenders\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "a38c78be-9e33-441a-aece-e98e61b254cc",
+      "name": "Prepare Blog Input"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.requestBody) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "ba256486-0dd2-4346-bff4-3a5216f44a4a",
+      "name": "Call OpenAI - Generate Blog"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json;\n\nconst systemPrompt = `You are WealthMetre's SEO content strategist and loan advisory content writer.\n\nWrite practical, India-specific, Jaipur/Rajasthan-focused loan content.\n\nRules:\n- Output only valid JSON.\n- Do not use markdown outside JSON.\n- Do not invent lender policies.\n- Use lender context only where relevant.\n- If lender data is incomplete, explain generally instead of making false claims.\n- Tone: helpful, trustworthy, simple English with light Hinglish where natural.\n- Avoid guaranteeing approval, lowest rate, or fixed eligibility.\n- Add disclaimer that final eligibility depends on lender policy, credit profile, income, property type, legal/technical checks, and documentation.\n- Mention WealthMetre naturally as an AI-powered loan advisory platform comparing 140+ banks and NBFCs.`;\n\nconst userPrompt = `Generate a complete SEO blog draft as JSON using this input:\n\n${JSON.stringify(input, null, 2)}\n\nReturn valid JSON with exactly these keys:\n\n{\n  \"title\": \"\",\n  \"slug\": \"\",\n  \"meta_title\": \"\",\n  \"meta_description\": \"\",\n  \"focus_keyword\": \"\",\n  \"city\": \"\",\n  \"loan_product\": \"\",\n  \"intro\": \"\",\n  \"sections\": [\n    {\n      \"heading\": \"\",\n      \"body\": \"\"\n    }\n  ],\n  \"faq\": [\n    {\n      \"question\": \"\",\n      \"answer\": \"\"\n    }\n  ],\n  \"cta\": \"\",\n  \"disclaimer\": \"\",\n  \"suggested_internal_links\": [],\n  \"suggested_schema_type\": \"BlogPosting\"\n}\n\nContent requirements:\n- Blog length should be around 1000 to 1400 words.\n- Use clear headings.\n- Include practical borrower examples for Jaipur.\n- Include lender context only if supported by given data.\n- Explain property title / income / CIBIL / LTV / ROI factors where relevant.\n- Include 5 FAQs.\n- CTA should invite user to use Diva AI Loan Advisor on WealthMetre.\n- Slug should be lowercase and URL-friendly.`;\n\nreturn {\n  json: {\n    topic_id: input.topic_id,\n    topic: input.topic,\n    requestBody: {\n      model: \"gpt-4o-mini\",\n      temperature: 0.4,\n      response_format: {\n        type: \"json_object\"\n      },\n      messages: [\n        {\n          role: \"system\",\n          content: systemPrompt\n        },\n        {\n          role: \"user\",\n          content: userPrompt\n        }\n      ]\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1024,
+        0
+      ],
+      "id": "0ee0030a-ae56-48d6-b8e1-88a73c1fdfb7",
+      "name": "Build OpenAI Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const topicId = $('Build OpenAI Request').first().json.topic_id;\nconst topic = $('Build OpenAI Request').first().json.topic;\n\nlet content = $json.choices?.[0]?.message?.content || '';\n\ncontent = content.trim();\n\n// Safety cleanup in case model ever wraps JSON in code fences\ncontent = content\n  .replace(/^```json\\s*/i, '')\n  .replace(/^```\\s*/i, '')\n  .replace(/```$/i, '')\n  .trim();\n\nlet blog;\n\ntry {\n  blog = JSON.parse(content);\n} catch (error) {\n  throw new Error('Failed to parse OpenAI JSON: ' + error.message + '\\nRaw content: ' + content.slice(0, 500));\n}\n\nreturn {\n  json: {\n    topic_id: topicId,\n    original_topic: topic,\n    title: blog.title || '',\n    slug: blog.slug || '',\n    meta_title: blog.meta_title || '',\n    meta_description: blog.meta_description || '',\n    focus_keyword: blog.focus_keyword || '',\n    city: blog.city || '',\n    loan_product: blog.loan_product || '',\n    intro: blog.intro || '',\n    sections: blog.sections || [],\n    faq: blog.faq || [],\n    cta: blog.cta || '',\n    disclaimer: blog.disclaimer || '',\n    suggested_internal_links: blog.suggested_internal_links || [],\n    suggested_schema_type: blog.suggested_schema_type || 'BlogPosting',\n    full_json: blog\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "d3779bfa-6400-4381-b284-a2cd0aa7d7b7",
+      "name": "Parse Blog JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "const blog = $json;\n\nfunction cleanText(value) {\n  if (value === null || value === undefined) return '';\n  return String(value).trim();\n}\n\nfunction renderLongContent(blog) {\n  let out = '';\n\n  out += `# ${cleanText(blog.title)}\\n\\n`;\n\n  if (blog.intro) {\n    out += `${cleanText(blog.intro)}\\n\\n`;\n  }\n\n  if (Array.isArray(blog.sections)) {\n    for (const section of blog.sections) {\n      out += `## ${cleanText(section.heading)}\\n\\n`;\n      out += `${cleanText(section.body)}\\n\\n`;\n    }\n  }\n\n  if (Array.isArray(blog.faq) && blog.faq.length) {\n    out += `## FAQs\\n\\n`;\n    for (const item of blog.faq) {\n      out += `### ${cleanText(item.question)}\\n\\n`;\n      out += `${cleanText(item.answer)}\\n\\n`;\n    }\n  }\n\n  if (blog.cta) {\n    out += `## Next Step\\n\\n${cleanText(blog.cta)}\\n\\n`;\n  }\n\n  if (blog.disclaimer) {\n    out += `## Disclaimer\\n\\n${cleanText(blog.disclaimer)}\\n\\n`;\n  }\n\n  return out.trim();\n}\n\nconst contentLong = renderLongContent(blog);\n\nreturn {\n  json: {\n    topic_id: blog.topic_id,\n    content_type: 'blog',\n    topic: cleanText(blog.original_topic || blog.title),\n    target_keyword: cleanText(blog.focus_keyword),\n    city: cleanText(blog.city || 'Jaipur'),\n    loan_product: cleanText(blog.loan_product),\n    source_table: 'seo_content_topics,lenders_products',\n    source_record_ids: JSON.stringify({\n      topic_id: blog.topic_id\n    }),\n    title: cleanText(blog.title),\n    meta_title: cleanText(blog.meta_title),\n    meta_description: cleanText(blog.meta_description),\n    slug: cleanText(blog.slug),\n    content_long: contentLong,\n    content_short: cleanText(blog.intro).slice(0, 1000),\n    hashtags: '',\n    cta: cleanText(blog.cta),\n    image_prompt: `Create a clean professional blog image for WealthMetre about ${cleanText(blog.title)} in Jaipur. Use finance, property, and AI loan advisory theme. No text overlay.`,\n    status: 'needs_review',\n    ai_score: 0,\n    compliance_notes: cleanText(blog.disclaimer),\n    full_json: blog.full_json\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        0
+      ],
+      "id": "7842790f-3f44-4a1a-9c70-fecd6b315be7",
+      "name": "Build Content Queue Row"
+    },
+    {
+      "parameters": {
+        "jsCode": "const r = $json;\n\nfunction sqlEscape(value) {\n  if (value === null || value === undefined) return 'NULL';\n  return \"'\" + String(value)\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"\\\\'\")\n    .replace(/\\0/g, '\\\\0')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\x1a/g, '\\\\Z') + \"'\";\n}\n\nconst insertSql = `\nINSERT INTO content_queue (\n  content_type,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  source_table,\n  source_record_ids,\n  title,\n  meta_title,\n  meta_description,\n  slug,\n  content_long,\n  content_short,\n  hashtags,\n  cta,\n  image_prompt,\n  status,\n  ai_score,\n  compliance_notes,\n  created_by\n) VALUES (\n  ${sqlEscape(r.content_type)},\n  ${sqlEscape(r.topic)},\n  ${sqlEscape(r.target_keyword)},\n  ${sqlEscape(r.city)},\n  ${sqlEscape(r.loan_product)},\n  ${sqlEscape(r.source_table)},\n  ${sqlEscape(r.source_record_ids)},\n  ${sqlEscape(r.title)},\n  ${sqlEscape(r.meta_title)},\n  ${sqlEscape(r.meta_description)},\n  ${sqlEscape(r.slug)},\n  ${sqlEscape(r.content_long)},\n  ${sqlEscape(r.content_short)},\n  ${sqlEscape(r.hashtags)},\n  ${sqlEscape(r.cta)},\n  ${sqlEscape(r.image_prompt)},\n  ${sqlEscape(r.status)},\n  ${Number(r.ai_score || 0)},\n  ${sqlEscape(r.compliance_notes)},\n  'n8n'\n)\nON DUPLICATE KEY UPDATE\n  topic = VALUES(topic),\n  target_keyword = VALUES(target_keyword),\n  city = VALUES(city),\n  loan_product = VALUES(loan_product),\n  source_table = VALUES(source_table),\n  source_record_ids = VALUES(source_record_ids),\n  title = VALUES(title),\n  meta_title = VALUES(meta_title),\n  meta_description = VALUES(meta_description),\n  content_long = VALUES(content_long),\n  content_short = VALUES(content_short),\n  hashtags = VALUES(hashtags),\n  cta = VALUES(cta),\n  image_prompt = VALUES(image_prompt),\n  status = 'needs_review',\n  ai_score = VALUES(ai_score),\n  compliance_notes = VALUES(compliance_notes),\n  updated_at = NOW();\n`;\n\nreturn {\n  json: {\n    ...r,\n    insert_sql: insertSql\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        0
+      ],
+      "id": "8d5656e1-0097-492a-932d-ae1dc036b663",
+      "name": "Build Insert SQL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.insert_sql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        2080,
+        0
+      ],
+      "id": "0b62d34f-87b1-4fb2-b998-b9146c2a09ef",
+      "name": "Save Draft to Content Queue",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE seo_content_topics\nSET status = 'generated',\n    updated_at = NOW()\nWHERE id = {{ $('Build Content Queue Row').first().json.topic_id }};",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        2288,
+        0
+      ],
+      "id": "c96f26e3-5dda-4fd1-a472-a24fb855e232",
+      "name": "Mark Topic Generated",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const topicRow = $('Build Content Queue Row').first().json;\nconst openAiRequest = $('Build OpenAI Request').first().json.requestBody;\nconst parsedBlog = $('Parse Blog JSON').first().json;\n\nfunction sqlEscape(value) {\n  if (value === null || value === undefined) return 'NULL';\n  return \"'\" + String(value)\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"\\\\'\")\n    .replace(/\\0/g, '\\\\0')\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\\r/g, '\\\\r')\n    .replace(/\\x1a/g, '\\\\Z') + \"'\";\n}\n\nconst promptUsed = JSON.stringify({\n  model: openAiRequest.model,\n  temperature: openAiRequest.temperature,\n  messages: openAiRequest.messages\n});\n\nconst aiResponse = JSON.stringify(parsedBlog.full_json || parsedBlog);\n\nconst logSql = `\nINSERT INTO content_generation_logs (\n  workflow_name,\n  content_type,\n  source_id,\n  status,\n  prompt_used,\n  ai_response,\n  error_message\n) VALUES (\n  'WM - Blog Generator MVP',\n  ${sqlEscape(topicRow.content_type || 'blog')},\n  ${Number(topicRow.topic_id || 0)},\n  'success',\n  ${sqlEscape(promptUsed)},\n  ${sqlEscape(aiResponse)},\n  NULL\n);\n`;\n\nreturn {\n  json: {\n    topic_id: topicRow.topic_id,\n    log_sql: logSql\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2496,
+        0
+      ],
+      "id": "3cb777e9-7ca9-45ec-b316-b0d467c99d13",
+      "name": "Build Log SQL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.log_sql }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        2704,
+        0
+      ],
+      "id": "08ad2a18-1297-468d-abb2-81d2242e1a40",
+      "name": "Insert Generation Log",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        -288
+      ],
+      "id": "b63d69c6-87a9-463c-993a-99502fc5bf66",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4c6f1154-0a8d-4c0b-b472-ae794a40d272",
+              "leftValue": "=Value 1: {{ $json.id }} ",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        208
+      ],
+      "id": "be8506c7-83a4-480b-9d6b-1e070c915385",
+      "name": "Has Pending Topic?"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pending Topic": {
+      "main": [
+        [
+          {
+            "node": "Has Pending Topic?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Relevant Lenders": {
+      "main": [
+        [
+          {
+            "node": "Prepare Blog Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Blog Input": {
+      "main": [
+        [
+          {
+            "node": "Build OpenAI Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build OpenAI Request": {
+      "main": [
+        [
+          {
+            "node": "Call OpenAI - Generate Blog",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenAI - Generate Blog": {
+      "main": [
+        [
+          {
+            "node": "Parse Blog JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Blog JSON": {
+      "main": [
+        [
+          {
+            "node": "Build Content Queue Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Content Queue Row": {
+      "main": [
+        [
+          {
+            "node": "Build Insert SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Insert SQL": {
+      "main": [
+        [
+          {
+            "node": "Save Draft to Content Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Draft to Content Queue": {
+      "main": [
+        [
+          {
+            "node": "Mark Topic Generated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Topic Generated": {
+      "main": [
+        [
+          {
+            "node": "Build Log SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Log SQL": {
+      "main": [
+        [
+          {
+            "node": "Insert Generation Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Pending Topic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Pending Topic?": {
+      "main": [
+        [
+          {
+            "node": "Get Relevant Lenders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a94dac5c-6b8f-4a94-a022-55ef82f48135",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "317f14e9ff835c290cd7339fb580b0a8520328d9f39eea6fd64aaa1ea5d2035a"
+  },
+  "id": "Mf1h0XKXwshe80u0",
+  "tags": []
+}

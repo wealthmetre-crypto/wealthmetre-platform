@@ -1,0 +1,215 @@
+{
+  "name": "WM - Social Pack Generator Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  id,\n  content_type,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  title,\n  meta_title,\n  meta_description,\n  slug,\n  content_long,\n  content_short,\n  cta,\n  compliance_notes,\n  status,\n  created_at\nFROM content_queue\nWHERE content_type = 'blog'\n  AND id = {{ $json.body.blog_id }}\nLIMIT 1;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        240,
+        160
+      ],
+      "id": "a889f5e5-531b-42c4-9ca0-5e5514310147",
+      "name": "Get Blog Without Social Pack",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const blog = $json;\nconst sourceContent = `\nTitle: ${blog.title || ''}\nTopic: ${blog.topic || ''}\nKeyword: ${blog.target_keyword || ''}\nCity: ${blog.city || 'Jaipur'}\nLoan Product: ${blog.loan_product || ''}\nMeta Description: ${blog.meta_description || ''}\nCTA: ${blog.cta || ''}\nBlog Content:\n${blog.content_long || blog.content_short || ''}\n`;\n\nconst systemPrompt = `You are WealthMetre's social media content strategist.\nWealthMetre is an AI-powered loan advisory platform in Jaipur/Rajasthan.\nIt helps customers compare 140+ banks and NBFCs for Home Loan, LAP, Business Loan, Personal Loan, Car Loan and Working Capital.\nBrand tone: trusted, professional, tech-enabled, human advisory backed, local market expert.\nBrand colors: blue and gold fintech theme.\n\nSTRICT RULES:\n- Output only valid JSON. No markdown, no backticks, no preamble.\n- Never invent ROI, LTV, CIBIL thresholds, fees, or approval guarantees.\n- Never say \"guaranteed approval\", \"lowest rate guaranteed\", or \"instant approval\".\n- Always mention eligibility depends on lender policy, credit profile, income, property/legal checks.\n- Each platform caption MUST have a completely different opening line and tone.\n- Never start two platforms with the same word or phrase.`;\n\nconst userPrompt = `Create a social media pack from this blog content.\n${sourceContent}\n\nReturn valid JSON with exactly these keys:\n{\n  \"instagram\": { \"title\": \"\", \"caption\": \"\", \"hashtags\": \"\", \"cta\": \"\", \"image_prompt\": \"\" },\n  \"facebook\":  { \"title\": \"\", \"caption\": \"\", \"hashtags\": \"\", \"cta\": \"\", \"image_prompt\": \"\" },\n  \"linkedin\":  { \"title\": \"\", \"caption\": \"\", \"hashtags\": \"\", \"cta\": \"\", \"image_prompt\": \"\" },\n  \"gbp_post\":  { \"title\": \"\", \"caption\": \"\", \"hashtags\": \"\", \"cta\": \"\", \"image_prompt\": \"\" }\n}\n\nPLATFORM RULES — follow exactly:\n\nINSTAGRAM:\n- Start with a strong emoji hook on line 1. Examples: \"🏠 Jaipur property owners — listen up!\" or \"💰 LAP ke liye property title matter karta hai!\"\n- Use 3-5 short punchy lines. Max 150 words total.\n- Light Hinglish is encouraged where natural.\n- End with CTA like \"👇 Comment LOAN or DM us\" or \"Link in bio 🔗\"\n- 10-15 hashtags: mix of specific (#JaipurLAP) + broad (#HomeLoan) + brand (#WealthMetre)\n- Tone: energetic, local, conversational\n\nFACEBOOK:\n- Start with a relatable local question or pain point. Example: \"Jaipur mein property hai, lekin loan ke liye sahi lender kaun?\"\n- Write 2-3 short paragraphs. Educational and practical. Max 200 words.\n- Warm and helpful tone — like advice from a trusted local expert.\n- End with: \"Call/WhatsApp: 7976218596\"\n- 4-6 hashtags only\n- Tone: warm, practical, community-feel\n\nLINKEDIN:\n- Start with a data point or professional insight. Example: \"Most LAP rejections in Jaipur happen not because of low CIBIL — but because of property title issues.\"\n- Write 3-4 short paragraphs. Thought-leadership angle. No emojis except sparingly.\n- Target: business owners, CAs, property professionals, HNIs.\n- End with a professional insight or question to drive comments.\n- 3-5 hashtags: professional (#FinancialPlanning #MSME #LoanAdvisory)\n- Tone: authoritative, data-driven, insight-led\n\nGBP POST (Google Business Profile):\n- Max 700 characters total — strictly enforced.\n- Start with the city + service: \"Looking for Loan Against Property in Jaipur?\"\n- Plain language, no emojis, no hashtags.\n- Include the loan product and city name naturally.\n- End with: \"Contact WealthMetre — Call/WhatsApp 7976218596\"\n- Tone: clear, local SEO friendly, direct\n\nIMAGE PROMPT RULES (for all platforms):\n- Must be specific to the exact topic — never generic.\n- Always include: \"Premium [platform] creative for WealthMetre.\"\n- Always include the specific headline text to show on the creative.\n- Always specify: blue and gold fintech color scheme, clean professional layout, WealthMetre logo area at bottom.\n- Include a specific visual concept tied to the topic (not just \"a graphic about loans\").\n- Example for LAP topic: \"Premium Instagram square creative for WealthMetre. Topic: Loan Against Property — JDA vs Society Patta. Split-screen visual: left side shows JDA stamp/document, right side shows Society Patta document. Blue and gold fintech design, subtle AI network lines in background. Headline text: 'JDA ya Society Patta — kaun sa property loan ke liye better hai?' Subtext: 'Property title changes your loan eligibility.' WealthMetre logo at bottom center. Clean, premium, no spelling mistakes.\"\n- No generic descriptions like \"vibrant graphic\" or \"informative image\".\n`;\n\nreturn {\n  json: {\n    blog_id: blog.id,\n    blog_slug: blog.slug,\n    blog_topic: blog.topic,\n    blog_title: blog.title,\n    city: blog.city,\n    loan_product: blog.loan_product,\n    requestBody: {\n      model: \"gpt-4o-mini\",\n      temperature: 0.7,\n      response_format: { type: \"json_object\" },\n      messages: [\n        { role: \"system\", content: systemPrompt },\n        { role: \"user\",   content: userPrompt   }\n      ]\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "3e69afd8-db9f-46b9-b2b3-67cf06d886e4",
+      "name": "Build Social Pack Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        624,
+        0
+      ],
+      "id": "a28c7493-0edd-4b29-b18a-a1ff835ba9ef",
+      "name": "Call OpenAI - Generate Social Pack"
+    },
+    {
+      "parameters": {
+        "jsCode": "const openai = $json;\nconst source = $(\"Build Social Pack Request\").first().json;\n\nconst raw = openai.choices?.[0]?.message?.content || \"{}\";\n\nlet pack;\ntry {\n  pack = JSON.parse(raw);\n} catch (e) {\n  throw new Error(\"Failed to parse OpenAI social pack JSON: \" + e.message + \"\\nRaw content:\\n\" + raw);\n}\n\nreturn {\n  json: {\n    blog_id: source.blog_id,\n    blog_slug: source.blog_slug,\n    blog_topic: source.blog_topic,\n    blog_title: source.blog_title,\n    city: source.city,\n    loan_product: source.loan_product,\n\n    instagram: pack.instagram || {},\n    facebook: pack.facebook || {},\n    linkedin: pack.linkedin || {},\n    gbp_post: pack.gbp_post || {}\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "04f7da85-ea5b-4c73-988d-ba5db0e59af8",
+      "name": "Parse Social Pack JSON"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\nfunction esc(value) {\n  if (value === null || value === undefined) return '';\n  return String(value)\n    .replace(/\\\\/g, '\\\\\\\\')\n    .replace(/'/g, \"\\\\'\");\n}\nconst platforms = [\n  { type: 'instagram', suffix: 'instagram', payload: data.instagram || {} },\n  { type: 'facebook', suffix: 'facebook', payload: data.facebook || {} },\n  { type: 'linkedin', suffix: 'linkedin', payload: data.linkedin || {} },\n  { type: 'gbp_post', suffix: 'gbp', payload: data.gbp_post || {} }\n];\nconst sql = platforms.map((p) => {\n  const title = p.payload.title || '';\n  const caption = p.payload.caption || '';\n  const hashtags = p.payload.hashtags || '';\n  const cta = p.payload.cta || '';\n  const imagePrompt = p.payload.image_prompt || '';\n  const slug = `${data.blog_slug}-${p.suffix}`;\n  const contentLong = [\n    `Title: ${title}`,\n    '',\n    `Caption: ${caption}`,\n    hashtags ? `Hashtags: ${hashtags}` : '',\n    cta ? `CTA: ${cta}` : '',\n    imagePrompt ? `Image Prompt: ${imagePrompt}` : ''\n  ].filter(Boolean).join('\\n');\n  const complianceNotes =\n    `Generated from blog_id ${data.blog_id}. Review before publishing. ` +\n    `Final eligibility depends on lender policy, credit profile, income, property/legal/technical checks and documentation.`;\n  return `\nINSERT INTO content_queue\n(\n  content_type,\n  topic,\n  target_keyword,\n  city,\n  loan_product,\n  title,\n  meta_title,\n  meta_description,\n  slug,\n  content_long,\n  content_short,\n  hashtags,\n  cta,\n  image_prompt,\n  compliance_notes,\n  status,\n  created_by\n)\nVALUES\n(\n  '${esc(p.type)}',\n  '${esc(data.blog_topic || data.blog_title || '')}',\n  '${esc(data.blog_topic || '')}',\n  '${esc(data.city || '')}',\n  '${esc(data.loan_product || '')}',\n  '${esc(title)}',\n  '${esc(title)}',\n  '${esc(caption.substring(0, 160))}',\n  '${esc(slug)}',\n  '${esc(contentLong)}',\n  '${esc(caption)}',\n  '${esc(hashtags)}',\n  '${esc(cta)}',\n  '${esc(imagePrompt)}',\n  '${esc(complianceNotes)}',\n  'needs_review',\n  'n8n'\n)\nON DUPLICATE KEY UPDATE\n  topic = VALUES(topic),\n  target_keyword = VALUES(target_keyword),\n  city = VALUES(city),\n  loan_product = VALUES(loan_product),\n  title = VALUES(title),\n  meta_title = VALUES(meta_title),\n  meta_description = VALUES(meta_description),\n  content_long = VALUES(content_long),\n  content_short = VALUES(content_short),\n  hashtags = VALUES(hashtags),\n  cta = VALUES(cta),\n  image_prompt = VALUES(image_prompt),\n  compliance_notes = VALUES(compliance_notes),\n  status = VALUES(status),\n  updated_at = NOW()\n`.trim();\n}).join(';\\n\\n') + ';';\nreturn {\n  json: {\n    blog_id: data.blog_id,\n    blog_slug: data.blog_slug,\n    insertQuery: sql\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "a5bac01b-a838-4330-b7ff-35038ca0fdb4",
+      "name": "Build Social Insert SQL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "{{ $json.insertQuery }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "37d81d81-6f90-4292-98c8-d5f3b8f655c6",
+      "name": "Save Social Pack to Content Queue",
+      "credentials": {
+        "mySql": {
+          "id": "KMjaxzIbZ6rmHgLa",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "wm-social-pack",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        32,
+        0
+      ],
+      "id": "64a6752b-4b00-42c6-89a1-081718c26e4d",
+      "name": "Webhook",
+      "webhookId": "b0eeeac7-b1bd-42e5-ab3d-f97edfc34a69"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Blog Without Social Pack": {
+      "main": [
+        [
+          {
+            "node": "Build Social Pack Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Social Pack Request": {
+      "main": [
+        [
+          {
+            "node": "Call OpenAI - Generate Social Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenAI - Generate Social Pack": {
+      "main": [
+        [
+          {
+            "node": "Parse Social Pack JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Social Pack JSON": {
+      "main": [
+        [
+          {
+            "node": "Build Social Insert SQL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Social Insert SQL": {
+      "main": [
+        [
+          {
+            "node": "Save Social Pack to Content Queue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get Blog Without Social Pack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8fe9fe86-37ef-4de4-a3ba-f8e5d8f9fdc0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "317f14e9ff835c290cd7339fb580b0a8520328d9f39eea6fd64aaa1ea5d2035a"
+  },
+  "id": "Ng6AeHkMcpH2CYW3",
+  "tags": []
+}

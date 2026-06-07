@@ -1,0 +1,71 @@
+{
+  "name": "WealthMetre Social Auto Publisher",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-wealthmetre-social",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wealthmetre.com/api/social/publish_next.php",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "http-publish-next-wealthmetre-social",
+      "name": "Publish Next Approved Social Post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        528,
+        304
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Publish Next Approved Social Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e8ca2c93-aa73-4498-9540-5a30e52a0707",
+  "meta": {
+    "instanceId": "317f14e9ff835c290cd7339fb580b0a8520328d9f39eea6fd64aaa1ea5d2035a"
+  },
+  "id": "WM_SOCIAL_AUTO_PUBLISHER",
+  "tags": []
+}
