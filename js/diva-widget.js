@@ -269,7 +269,7 @@
         var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) return;
         _recognition = new SR();
-        _recognition.lang = 'hi-IN';
+        _recognition.lang = 'en-IN';
         _recognition.interimResults  = true;
         _recognition.maxAlternatives = 1;
         _recognition.continuous      = false;

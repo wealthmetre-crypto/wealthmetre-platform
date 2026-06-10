@@ -63,13 +63,13 @@ function searchLenders(array $p): array {
     $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, $propWord, 60, $covidDpd);
 
     if (count($rows) < 3) {
-        // Relax: remove property filter
-        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, $city, $stateKeyword, '', 60, $covidDpd);
+        // Relax: keep property filter, remove city only
+        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, '', '', $propWord, 60, $covidDpd);
     }
 
     if (count($rows) < 3) {
-        // Relax: remove city + property filter
-        $rows = queryDB($pdo, $loanKeywords, $cibil, $amountLakh, '', '', '', 60, $covidDpd);
+        // Relax: keep property filter, remove city + cibil/amount
+        $rows = queryDB($pdo, $loanKeywords, 0, 0, '', '', $propWord, 60, $covidDpd);
     }
 
     if (count($rows) < 3) {
@@ -148,11 +148,35 @@ function queryDB(
         $where[] = "(negative_bureau_allowed = 1 OR special_profiles LIKE '%covid%' OR special_profiles LIKE '%dpd%')";
     }
 
-    // ── Property title: NOT filtered in SQL ──────────────────
-    // Reason: property_allowed is inconsistently populated in DB.
-    // Many premium lenders (HSBC, IDFC etc.) leave it blank or use
-    // different terminology. Hard-filtering would exclude them.
-    // Instead, scoreLender() applies +12 (match) or -12 (no match).
+    // ── Property title: Hard filter using title_* columns ───
+    // title_* columns (title_jda, title_gram_panchayat etc.) are
+    // reliably populated — use them as hard SQL filters when present.
+    $titleColFilter = [
+        'jda'        => 'title_jda',
+        'gram'       => 'title_gram_panchayat',
+        'panchayat'  => 'title_gram_panchayat',
+        'society'    => 'title_society_patta',
+        'patta'      => 'title_society_patta',
+        'flat'       => 'title_society_patta',
+        'freehold'   => 'title_freehold',
+        'registry'   => 'title_freehold',
+        'rhb'        => 'title_rhb',
+        'riico'      => 'title_riico',
+        'nagar'      => 'title_nagar_nigam',
+        'nigam'      => 'title_nagar_nigam',
+        'agriculture'=> 'title_agriculture',
+        'agri'       => 'title_agriculture',
+    ];
+    if ($propWord) {
+        foreach ($titleColFilter as $keyword => $col) {
+            if (str_contains($propWord, $keyword)) {
+                // Hard filter: only lenders where this title column = 1
+                // Also include lenders where column is NULL (not specified)
+                $where[] = "({$col} = 1 OR {$col} IS NULL)";
+                break;
+            }
+        }
+    }
     // ─────────────────────────────────────────────────────────
 
     $sql = 'SELECT * FROM `' . DB_TABLE . '` WHERE ' . implode(' AND ', $where)

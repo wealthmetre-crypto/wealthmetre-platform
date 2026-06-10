@@ -196,8 +196,8 @@ function runHybrid(array $profile, string $freeQuery = ''): array {
 
     // ── Step 4b: Filter ineligible lenders ──────────────
     $lenders = array_values(array_filter($lenders, function($l) {
-        // Remove hard ineligible (property title rejected, CIBIL too low etc.)
-        if (isset($l['eligible']) && $l['eligible'] === false && ($l['score'] ?? 0) < 50) {
+        // Remove ALL hard ineligible lenders — property title rejected, CIBIL too low etc.
+        if (isset($l['eligible']) && $l['eligible'] === false) {
             return false;
         }
         return true;

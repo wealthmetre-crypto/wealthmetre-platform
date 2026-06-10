@@ -802,6 +802,9 @@ select.inp{cursor:pointer;appearance:none;background-image:url("data:image/svg+x
         <div class="card">
           <div class="leads-toolbar">
             <div class="search-wrap"><i class="fa-solid fa-search si"></i><input type="text" id="pipelineSearch" placeholder="Search leads…" oninput="renderPipeline()"/></div>
+            <select id="pipelineMonthFilter" onchange="renderPipeline()" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--card);color:var(--text);cursor:pointer">
+              <option value="">All Months</option>
+            </select>
             <div class="view-toggle">
               <button class="vt-btn active" id="pipelineListBtn" onclick="setPipelineView('list')" title="List"><i class="fa-solid fa-list"></i></button>
               <button class="vt-btn" id="pipelineKanbanBtn" onclick="setPipelineView('kanban')" title="Kanban"><i class="fa-solid fa-table-columns"></i></button>
@@ -2965,7 +2968,7 @@ function showPage(page, options={}) {
   document.getElementById('topbarTitle').textContent = titles[page] || page;
   if (page==='myLeads') loadLeads();
   if (page==='dashboard') loadDashboard();
-  if (page==='pipeline') { loadLeads().then(()=>renderPipeline()); }
+  if (page==='pipeline') { loadLeads().then(()=>{ populatePipelineMonths(); renderPipeline(); }); }
   if (page==='crmDashboard') loadCRMDashboard();
   if (page==='campaigns')    loadCampaigns();
   if (page==='crmLeads')     loadCRMLeads();
@@ -3018,7 +3021,7 @@ function renderDashboardStats() {
   const leads = currentLeads;
   const active = leads.filter(l=>!['disbursed','lost'].includes(l.status));
   const disbursed = leads.filter(l=>l.status==='disbursed');
-  const totalVal = leads.reduce((s,l)=>s+(+l.amount||0),0);
+  const totalVal = leads.filter(l=>!['lost','rejected','disbursed'].includes(l.status)).reduce((s,l)=>s+(+l.amount||0),0);
   document.getElementById('dashTotal').textContent = leads.length;
   document.getElementById('dashActive').textContent = active.length;
   document.getElementById('dashDisbursed').textContent = disbursed.length;
@@ -3160,6 +3163,29 @@ function renderLeadsTableHTML(leads, compact=false) {
 /* ════════════════════════════════════════════════════
    PIPELINE VIEW
 ════════════════════════════════════════════════════ */
+function populatePipelineMonths() {
+  const sel = document.getElementById('pipelineMonthFilter');
+  if (!sel) return;
+  const months = {};
+  currentLeads.forEach(l=>{
+    // Use next_action_date for month grouping, fallback to created_at
+    const dateStr = l.next_action_date || l.created_at || '';
+    if (!dateStr) return;
+    const d = new Date(dateStr.replace(' ','T'));
+    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    const label = d.toLocaleDateString('en-IN',{month:'short',year:'numeric'});
+    months[ym] = label;
+  });
+  const sorted = Object.keys(months).sort().reverse();
+  const current = sel.value;
+  sel.innerHTML = '<option value="">All Months</option>';
+  sorted.forEach(ym=>{ 
+    const opt = document.createElement('option');
+    opt.value = ym; opt.textContent = months[ym];
+    if (ym===current) opt.selected=true;
+    sel.appendChild(opt);
+  });
+}
 function setPipelineView(view) {
   pipelineView = view;
   document.getElementById('pipelineListBtn').classList.toggle('active', view==='list');
@@ -3169,11 +3195,18 @@ function setPipelineView(view) {
 
 function renderPipeline() {
   const searchQ = (document.getElementById('pipelineSearch')?.value||'').toLowerCase();
+  const monthFilter = document.getElementById('pipelineMonthFilter')?.value||'';
   let leads = currentLeads.filter(l=>!['disbursed','lost'].includes(l.status));
   if (searchQ) leads = leads.filter(l=>(l.customer_name||'').toLowerCase().includes(searchQ)||(l.city||'').toLowerCase().includes(searchQ));
-
+  if (monthFilter) leads = leads.filter(l=>{
+    // Use next_action_date for pipeline month, fallback to created_at
+    const dateStr = l.next_action_date || l.created_at || '';
+    if (!dateStr) return false;
+    const d = new Date(dateStr.replace(' ','T'));
+    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    return ym === monthFilter;
+  });
   const container = document.getElementById('pipelineContent');
-  if (!container) return;
 
   if (pipelineView === 'list') {
     container.innerHTML = leads.length ? renderLeadsTableHTML(leads, false) : '<div class="empty-state"><div class="empty-icon"><i class="fa-solid fa-table-columns"></i></div><h3>Pipeline is empty</h3><p>Create your first lead to start the pipeline.</p></div>';
@@ -3661,7 +3694,7 @@ async function shareLenderCase(leadId, lenderName, offeredRoi='', offeredLtv='',
     // 2b. Fetch latest notes
     let notesText = '';
     try {
-      const nr = await apiCall(API_NOTE, {action:'list', lead_id:leadId});
+      const nr = await apiCall(API_NOTE, {action:'get', lead_id:leadId});
       if (nr.notes?.length) notesText = nr.notes.slice(0,3).map(n=>n.note||n.content||n.text||'').filter(Boolean).join('\n');
     } catch(e) {}
     // 2. Build WhatsApp message
