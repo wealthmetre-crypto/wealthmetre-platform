@@ -33,8 +33,14 @@ if ($act === 'create') {
 
 if ($act === 'list') {
     $db = getDB();
-    $s  = $db->prepare("SELECT id AS lead_id, id, partner_id, customer_name, COALESCE(customer_mobile,mobile) AS customer_mobile, city, loan_type, COALESCE(amount,loan_amount) AS amount, COALESCE(monthly_income,income) AS monthly_income, cibil, source, priority, status, next_action, next_action_date, created_at, updated_at FROM leads WHERE partner_id=? ORDER BY created_at DESC LIMIT 100");
-    $s->bind_param('i',$pid);
+    $status = $_GET['status'] ?? '';
+    if ($status) {
+        $s = $db->prepare("SELECT id AS lead_id, id, partner_id, customer_name, COALESCE(customer_mobile,mobile) AS customer_mobile, city, loan_type, COALESCE(amount,loan_amount) AS amount, COALESCE(monthly_income,income) AS monthly_income, cibil, source, priority, status, next_action, next_action_date, created_at, updated_at FROM leads WHERE partner_id=? AND status=? ORDER BY created_at DESC LIMIT 100");
+        $s->bind_param('is', $pid, $status);
+    } else {
+        $s = $db->prepare("SELECT id AS lead_id, id, partner_id, customer_name, COALESCE(customer_mobile,mobile) AS customer_mobile, city, loan_type, COALESCE(amount,loan_amount) AS amount, COALESCE(monthly_income,income) AS monthly_income, cibil, source, priority, status, next_action, next_action_date, created_at, updated_at FROM leads WHERE partner_id=? ORDER BY created_at DESC LIMIT 100");
+        $s->bind_param('i', $pid);
+    }
     $s->execute();
     $leads = $s->get_result()->fetch_all(MYSQLI_ASSOC);
     jsonOk(['leads'=>$leads,'total'=>count($leads)]);
