@@ -504,6 +504,8 @@ function scoreLenderV2(array $l, int $cibil, float $ltv, float $foir, int $amoun
         'riico'      => 'title_riico',
         'agriculture'=> 'title_agriculture',
         'agri'       => 'title_agriculture',
+        'khatedari'  => 'title_khatedari',
+        'niji'       => 'title_niji_khatedari',
     ];
     $propTitlePts = 0; $propTitleNote = ''; $titleColUsed = null;
     foreach ($titleColMap as $keyword => $col) {

@@ -166,6 +166,8 @@ function queryDB(
         'nigam'      => 'title_nagar_nigam',
         'agriculture'=> 'title_agriculture',
         'agri'       => 'title_agriculture',
+        'khatedari'  => 'title_khatedari',
+        'niji'       => 'title_niji_khatedari',
     ];
     if ($propWord) {
         foreach ($titleColFilter as $keyword => $col) {
@@ -332,6 +334,8 @@ function normalizeLenderRow(array $row): array {
         'title_nagar_nigam'        => isset($row['title_nagar_nigam'])       ? (int)$row['title_nagar_nigam']       : null,
         'title_riico'              => isset($row['title_riico'])             ? (int)$row['title_riico']             : null,
         'title_freehold'           => isset($row['title_freehold'])          ? (int)$row['title_freehold']          : null,
+        'title_khatedari'          => isset($row['title_khatedari'])         ? (int)$row['title_khatedari']         : null,
+        'title_niji_khatedari'     => isset($row['title_niji_khatedari'])    ? (int)$row['title_niji_khatedari']    : null,
         'title_agriculture'        => isset($row['title_agriculture'])       ? (int)$row['title_agriculture']       : null,
         'title_society_patta_year' => (int)($row['title_society_patta_year'] ?? 0),
         // LTV by property type
